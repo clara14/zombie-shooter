@@ -8,11 +8,16 @@ void render(Global &gl, Game &g)
         r.bot = gl.yres - 20;
         r.left = 10;
         r.center = 0;
-        ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
-        ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
-        ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
-        ggprint8b(&r, 16, 0x00ffff00, "n asteroids destroyed: ");
-        //
+        ggprint8b(&r, 16, 0x00ff0000, "-------------Player1 HUD-------------");
+        ggprint8b(&r, 16, 0x00ffff00, "| \t PlayerName: ");
+	//printf(" %s ", g.player1.name);
+        ggprint8b(&r, 16, 0x00ffff00, "| \t Health: %i", g.player1.health);
+        ggprint8b(&r, 16, 0x00ffff00, "| \t Weapon: 9mm Handgun");
+        ggprint8b(&r, 16, 0x00ff0000, "-------------------------------------------");
+
+	//glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, g.player1.name);
+
+	//
         //-------------
         //Draw the ship
         glColor3fv(g.ship.color);
