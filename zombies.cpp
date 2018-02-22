@@ -230,8 +230,7 @@ public:
 };
 */
 //function prototypes
-void init_opengl(Global &gl, Game &g);
-void check_mouse(XEvent *e);
+extern void init_opengl(Global &gl, Game &g);
 extern int check_keys(XEvent *e, Global &gl, Game &g);
 extern void physics(Global &gl, Game &g);
 extern void render(Global &gl, Game &g);
@@ -263,7 +262,7 @@ int main()
 	logClose();
 	return 0;
 }
-
+/*
 void init_opengl(Global &gl, Game &g)
 {
 	//OpenGL initialization
@@ -285,7 +284,7 @@ void init_opengl(Global &gl, Game &g)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 }
-/*
+
 void normalize2d(Vec v)
 {
 	Flt len = v[0]*v[0] + v[1]*v[1];
