@@ -1,13 +1,4 @@
-
-//
-//
-//
 //program: zombies.cpp
-//author:  
-//date:    2018
-//mod spring 2015: added constructors
-//mod spring 2018: X11 wrapper class
-//This program is a game starting point for a 3350 project.
 #include "zlib.h"
 
 
@@ -17,10 +8,10 @@ extern int check_keys(XEvent *e, Global &gl, Game &g);
 extern void physics(Global &gl, Game &g);
 extern void render(Global &gl, Game &g);
 extern void normalize2d(Vec v);
+
 //==========================================================================
 // M A I N
 //==========================================================================
-
 int main()
 {
 	logOpen();
@@ -45,5 +36,6 @@ int main()
 	logClose();
 	return 0;
 }
+
 
 
