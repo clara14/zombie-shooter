@@ -8,7 +8,8 @@
 //mod spring 2015: added constructors
 //mod spring 2018: X11 wrapper class
 //This program is a game starting point for a 3350 project.
-//
+#include "zlib.h"
+/*
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -47,6 +48,8 @@ const float GRAVITY = 0.1;
 #define ALPHA 1
 const int MAX_BULLETS = 11;
 const Flt MINIMUM_ASTEROID_SIZE = 60.0;
+const int XRES = 1250;
+const int YRES = 900;
 
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -65,7 +68,7 @@ public:
 		yres = 900;
 		memset(keys, 0, 65536);
 	}
-} gl;
+};
 
 class Ship {
 public:
@@ -77,8 +80,8 @@ public:
 public:
 	Ship() {
 		VecZero(dir);
-		pos[0] = (Flt)(gl.xres/2);
-		pos[1] = (Flt)(gl.yres/2);
+		pos[0] = (Flt)(XRES/2);
+		pos[1] = (Flt)(YRES/2);
 		pos[2] = 0.0f;
 		VecZero(vel);
 		angle = 0.0;
@@ -106,7 +109,7 @@ public:
 	struct timespec mouseThrustTimer;
 	bool mouseThrustOn;
 public:
-	Game() {
+	Game(Global gl) {
 		barr = new Bullet[MAX_BULLETS];
 		nasteroids = 0;
 		nbullets = 0;
@@ -116,7 +119,7 @@ public:
 	~Game() {
 		delete [] barr;
 	}
-} g;
+};
 
 //X Windows variables
 class X11_wrapper {
@@ -125,11 +128,11 @@ private:
 	Window win;
 	GLXContext glc;
 public:
-	X11_wrapper() {
+	X11_wrapper(Global &gl) {
 		GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
 		//GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, None };
 		XSetWindowAttributes swa;
-		setup_screen_res(gl.xres, gl.yres);
+		setup_screen_res(gl.xres, gl.yres, gl);
 		dpy = XOpenDisplay(NULL);
 		if (dpy == NULL) {
 			std::cout << "\n\tcannot connect to X server" << std::endl;
@@ -163,7 +166,7 @@ public:
 		XMapWindow(dpy, win);
 		XStoreName(dpy, win, "Asteroids template");
 	}
-	void check_resize(XEvent *e) {
+	void check_resize(XEvent *e, Global &gl) {
 		//The ConfigureNotify is sent by the
 		//server if the window is resized.
 		if (e->type != ConfigureNotify)
@@ -171,19 +174,19 @@ public:
 		XConfigureEvent xce = e->xconfigure;
 		if (xce.width != gl.xres || xce.height != gl.yres) {
 			//Window size did change.
-			reshape_window(xce.width, xce.height);
+			reshape_window(xce.width, xce.height, gl);
 		}
 	}
-	void reshape_window(int width, int height) {
+	void reshape_window(int width, int height, Global &gl) {
 		//window has been resized.
-		setup_screen_res(width, height);
+		setup_screen_res(width, height, gl);
 		glViewport(0, 0, (GLint)width, (GLint)height);
 		glMatrixMode(GL_PROJECTION); glLoadIdentity();
 		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
 		glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
 		set_title();
 	}
-	void setup_screen_res(const int w, const int h) {
+	void setup_screen_res(const int w, const int h, Global &gl) {
 		gl.xres = w;
 		gl.yres = h;
 	}
@@ -224,33 +227,36 @@ public:
 		//it will undo the last change done by XDefineCursor
 		//(thus do only use ONCE XDefineCursor and then XUndefineCursor):
 	}
-} x11;
-
+};
+*/
 //function prototypes
-void init_opengl();
+void init_opengl(Global &gl, Game &g);
 void check_mouse(XEvent *e);
-int check_keys(XEvent *e);
-void physics();
-void render();
-void normalize2d(Vec v);
+extern int check_keys(XEvent *e, Global &gl, Game &g);
+extern void physics(Global &gl, Game &g);
+extern void render(Global &gl, Game &g);
+extern void normalize2d(Vec v);
 //==========================================================================
 // M A I N
 //==========================================================================
 int main()
 {
 	logOpen();
-	init_opengl();
+	Global gl;
+	X11_wrapper x11(gl);
+	Game g(gl);
+	init_opengl(gl, g);
 	srand(time(NULL));
 	x11.set_mouse_position(100, 100);
 	int done=0;
 	while (!done) {
 		while (x11.getXPending()) {
 			XEvent e = x11.getXNextEvent();
-			x11.check_resize(&e);
-			done = check_keys(&e);
+			x11.check_resize(&e, gl);
+			done = check_keys(&e, gl, g);
 		}
-		physics();
-		render();
+		physics(gl,g);
+		render(gl,g);
 		x11.swapBuffers();
 	}
 	cleanup_fonts();
@@ -258,7 +264,7 @@ int main()
 	return 0;
 }
 
-void init_opengl()
+void init_opengl(Global &gl, Game &g)
 {
 	//OpenGL initialization
 	glViewport(0, 0, gl.xres, gl.yres);
@@ -279,7 +285,7 @@ void init_opengl()
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 }
-
+/*
 void normalize2d(Vec v)
 {
 	Flt len = v[0]*v[0] + v[1]*v[1];
@@ -293,7 +299,7 @@ void normalize2d(Vec v)
 	v[1] *= len;
 }
 
-int check_keys(XEvent *e)
+int check_keys(XEvent *e, Global &gl, Game &g)
 {
 	//keyboard input?
 	static int shift=0;
@@ -319,12 +325,10 @@ int check_keys(XEvent *e)
 		case XK_w:
 			break;
 		case XK_a:
-			g.ship.vel[0] -= .2;
 			break;
 		case XK_s:
 			break;
 		case XK_d:
-			g.ship.vel[0] += .2;
 			break;
 		case XK_equal:
 			break;
@@ -334,7 +338,7 @@ int check_keys(XEvent *e)
 	return 0;
 }
 
-void physics()
+void physics(Global &gl, Game &g)
 {
 	//Update ship position
 	if (g.ship.pos[1] > 100) {
@@ -464,7 +468,7 @@ void physics()
 	}
 }
 
-void render()
+void render(Global &gl, Game &g)
 {
 	Rect r;
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -540,7 +544,7 @@ void render()
 	}
 }
 
-
+*/
 
 
 
