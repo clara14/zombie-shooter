@@ -3,6 +3,7 @@
 extern struct timespec timeStart, timeCurrent;
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
+void normalize2d(Vec);
 
 
 void physics(Global &gl, Game &g)
@@ -11,20 +12,19 @@ void physics(Global &gl, Game &g)
         if (g.ship.pos[1] > 100) {
                 g.ship.pos[0] += g.ship.vel[0];
                 g.ship.pos[1] += g.ship.vel[1];
-                g.ship.vel[1] -= GRAVITY;
         }
         //Check for collision with window edges
         if (g.ship.pos[0] < 0.0) {
-                g.ship.pos[0] += (float)gl.xres;
+		g.ship.pos[0] = 0;
         }
         else if (g.ship.pos[0] > (float)gl.xres) {
-                g.ship.pos[0] -= (float)gl.xres;
+		g.ship.pos[0] = gl.xres;
         }
         else if (g.ship.pos[1] < 0.0) {
-                g.ship.pos[1] += (float)gl.yres;
+		g.ship.pos[1] = 0;
         }
         else if (g.ship.pos[1] > (float)gl.yres) {
-                g.ship.pos[1] -= (float)gl.yres;
+		g.ship.pos[1] = gl.yres;
         }
         //
         //Update bullet positions
@@ -48,16 +48,20 @@ void physics(Global &gl, Game &g)
                 b->pos[1] += b->vel[1];
                 //Check for collision with window edges
                 if (b->pos[0] < 0.0) {
-                        b->pos[0] += (float)gl.xres;
+                        //b->pos[0] += (float)gl.xres;
+                        b->pos[0] += 0;
                 }
                 else if (b->pos[0] > (float)gl.xres) {
-                        b->pos[0] -= (float)gl.xres;
+                        //b->pos[0] -= (float)gl.xres;
+                        b->pos[0] = gl.xres;
                 }
                 else if (b->pos[1] < 0.0) {
-                        b->pos[1] += (float)gl.yres;
+                        //b->pos[1] += (float)gl.yres;
+                        b->pos[1] = gl.xres;
                 }
                 else if (b->pos[1] > (float)gl.yres) {
-                        b->pos[1] -= (float)gl.yres;
+                        //b->pos[1] -= (float)gl.yres;
+                        b->pos[1] = gl.xres;
                 }
                 i++;
         }
@@ -65,34 +69,53 @@ void physics(Global &gl, Game &g)
 
         //---------------------------------------------------
         //check keys pressed now
-        if (gl.keys[XK_Left]) {
+	//       LEFT
+	//g.ship.angle = -90;
+        if (gl.keys[XK_a]) {
+	   /* 
                 g.ship.angle += 4.0;
                 if (g.ship.angle >= 360.0f)
                         g.ship.angle -= 360.0f;
+	   */
+	    g.ship.pos[0]-=3.5;
         }
-        if (gl.keys[XK_Right]) {
+	//       RIGHT
+        if (gl.keys[XK_d]) {
+	   /* 
                 g.ship.angle -= 4.0;
                 if (g.ship.angle < 0.0f)
                         g.ship.angle += 360.0f;
+           */
+
+	    g.ship.pos[0]+=3.5;
         }
-        if (gl.keys[XK_Up]) {
+	//       UP
+        if (gl.keys[XK_w]) {
                 //apply thrust
                 //convert ship angle to radians
-                Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+                //Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
                 //convert angle to a vector
-                Flt xdir = cos(rad);
-                Flt ydir = sin(rad);
-                g.ship.vel[0] += xdir*0.02f;
-                g.ship.vel[1] += ydir*0.02f;
+                //Flt xdir = cos(rad);
+                //Flt ydir = sin(rad);
+                //g.ship.vel[0] += xdir*0.02f;
+                //g.ship.vel[1] += ydir*0.02f;
+
                 Flt speed = sqrt(g.ship.vel[0]*g.ship.vel[0]+
-                                g.ship.vel[1]*g.ship.vel[1]);
+                              g.ship.vel[1]*g.ship.vel[1]);
                 if (speed > 10.0f) {
                         speed = 10.0f;
-                        // normalize2d(g.ship.vel);
+                        normalize2d(g.ship.vel);
                         g.ship.vel[0] *= speed;
                         g.ship.vel[1] *= speed;
                 }
-        }        if (gl.keys[XK_space]) {
+		g.ship.pos[1]+=3.5;
+
+        }
+	if(gl.keys[XK_s]) {
+		
+	    g.ship.pos[1]-=3.5;
+	}	    
+	if (gl.keys[XK_space]) {
                 //a little time between each bullet
                 struct timespec bt;
                 clock_gettime(CLOCK_REALTIME, &bt);
@@ -114,7 +137,7 @@ void physics(Global &gl, Game &g)
                                 Flt xdir = cos(rad);
                                 Flt ydir = sin(rad);
                                 b->pos[0] += xdir*20.0f;
-                                b->pos[1] += ydir*20.0f;
+                                //b->pos[1] += ydir*20.0f;
                                 b->vel[0] += xdir*6.0f + rnd()*0.1;
                                 b->vel[1] += ydir*6.0f + rnd()*0.1;
                                 b->color[0] = 1.0f;
