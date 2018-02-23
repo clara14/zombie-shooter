@@ -5,17 +5,18 @@
 
 #include "zlib.h"
 
+#define MAX_BOXES 3
+
 // object definitions
 //
-
-struct Vec {
+struct Pos {
         float x, y, z;
 };
 
 struct Shape {
         float width, height;
         float radius;
-        Vec center;
+        Pos center;
 };
 
 class Global_menu {
@@ -23,7 +24,7 @@ public:
         int xres, yres;
         char keys[65536];
 	Shape box[MAX_BOXES];
-        Global() {
+        Global_menu() {
                 xres = 1250;
                 yres = 900;
                 memset(keys, 0, 65536);
@@ -43,7 +44,7 @@ private:
         Window win;
         GLXContext glc;
 public:
-        X11_wrapper(Global_menu &gl) {
+        X11_menu(Global_menu &gl) {
                 GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
                 //GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, None };
                 XSetWindowAttributes swa;
@@ -72,7 +73,7 @@ public:
                 glXMakeCurrent(dpy, win, glc);
                 show_mouse_cursor(0);
         }
-        ~X11_wrapper() {
+        ~X11_menu() {
                 XDestroyWindow(dpy, win);
                 XCloseDisplay(dpy);
         }
@@ -142,7 +143,7 @@ public:
                 //it will undo the last change done by XDefineCursor
                 //(thus do only use ONCE XDefineCursor and then XUndefineCursor):
         }
-} 
+}; 
 
 // Main Menu Function
 // 
