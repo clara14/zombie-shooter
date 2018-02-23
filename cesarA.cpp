@@ -3,9 +3,9 @@
 extern struct timespec timeStart, timeCurrent;
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
-extern void normalize2d(Vec);
+extern void normalize2d(Vec;
 
-extern 
+
 void cesar_physics(Global &gl, Game &g)
 {
         //end of wall
