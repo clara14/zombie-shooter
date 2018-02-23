@@ -12,6 +12,7 @@ void normalize2d(Vec v);
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 extern void hud(Global &gl, Game &g);
+extern void showFloor(Global &gl, Game &g);
 
 //==========================================================================
 int main()
@@ -104,6 +105,7 @@ void render(Global &gl, Game &g)
 	// rendering the heads up display	
 	hud(gl, g);
 	//
+	showFloor(gl, g);
         //-------------
         //Draw the ship
         glColor3fv(g.ship.color);
