@@ -37,7 +37,7 @@ public:
 		
         }
 };
-
+/*
 class X11_menu {
 private:
         Display *dpy;
@@ -143,7 +143,15 @@ public:
                 //it will undo the last change done by XDefineCursor
                 //(thus do only use ONCE XDefineCursor and then XUndefineCursor):
         }
-}; 
+;
+*/ 
+
+// Function prototypes
+//
+void menu_physics(Global_menu &gl);
+void menu_render(Global_menu &gl);
+void menu_opengl(Global_menu &gl);
+int menu_check_keys(XEvent *e, Global_menu &gl);
 
 // Main Menu Function
 // 
@@ -152,7 +160,7 @@ int Menu()
 {
         logOpen();
         Global_menu gl;
-        X11_menu x11(gl);
+        X11_wrapper x11(gl);
         menu_opengl(gl);
         srand(time(NULL));
         x11.set_mouse_position(100, 100);
@@ -161,7 +169,7 @@ int Menu()
                 while (x11.getXPending()) {
                         XEvent e = x11.getXNextEvent();
                         x11.check_resize(&e, gl);
-                        done = check_keys(&e, gl);
+                        done = menu_check_keys(&e, gl);
                 }
                 menu_physics(gl);
                 menu_render(gl);
@@ -171,14 +179,6 @@ int Menu()
         logClose();
         return 0;
 }
-
-
-// Function prototypes
-//
-void menu_physics(Global_menu &gl);
-void menu_render(Global_menu &gl);
-void menu_opengl(Global_menu &gl);
-int menu_check_keys(XEvent *e, Global_menu &gl);
 
 // Function definitions
 //
