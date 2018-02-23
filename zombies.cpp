@@ -3,14 +3,15 @@
 
 
 //function prototypes
-extern void init_opengl(Global &gl, Game &g);
-extern int check_keys(XEvent *e, Global &gl, Game &g);
-extern void physics(Global &gl, Game &g);
-extern void render(Global &gl, Game &g);
-extern void normalize2d(Vec v);
+void init_opengl(Global &gl, Game &g);
+int check_keys(XEvent *e, Global &gl, Game &g);
+void physics(Global &gl, Game &g);
+void render(Global &gl, Game &g);
+void normalize2d(Vec v);
+extern double timeDiff(struct timespec *start, struct timespec *end);
+extern void timeCopy(struct timespec *dest, struct timespec *source);
+extern void hud(Global &gl, Game &g);
 
-//==========================================================================
-// M A I N
 //==========================================================================
 int main()
 {
@@ -37,5 +38,301 @@ int main()
 	return 0;
 }
 
+// Function definitions
+
+void physics(Global &gl, Game &g)
+{
+        //Update ship position
+        if (g.ship.pos[1] > 100) {
+                g.ship.pos[0] += g.ship.vel[0];
+                g.ship.pos[1] += g.ship.vel[1];
+        }
+        //Check for collision with window edges
+        if (g.ship.pos[0] < 0.0) {
+		g.ship.pos[0] = 0;
+        }
+        else if (g.ship.pos[0] > (float)gl.xres) {
+		g.ship.pos[0] = gl.xres;
+        }
+        else if (g.ship.pos[1] < 0.0) {
+		g.ship.pos[1] = 0;
+        }
+        else if (g.ship.pos[1] > (float)gl.yres) {
+		g.ship.pos[1] = gl.yres;
+        }
+        //
+        //Update bullet positions
+        struct timespec bt;
+        clock_gettime(CLOCK_REALTIME, &bt);
+        int i=0;
+        while (i < g.nbullets) {
+                Bullet *b = &g.barr[i];
+                //How long has bullet been alive?
+                double ts = timeDiff(&b->time, &bt);
+                if (ts > 2.5) {
+                        //time to delete the bullet.
+                        memcpy(&g.barr[i], &g.barr[g.nbullets-1],
+                                sizeof(Bullet));
+                        g.nbullets--;
+                        //do not increment i.
+                        continue;
+                }
+                //move the bullet
+                b->pos[0] += b->vel[0];
+                b->pos[1] += b->vel[1];
+                //Check for collision with window edges
+                if (b->pos[0] < 0.0) {
+                        //b->pos[0] += (float)gl.xres;
+                        b->pos[0] += 0;
+                }
+                else if (b->pos[0] > (float)gl.xres) {
+                        //b->pos[0] -= (float)gl.xres;
+                        b->pos[0] = gl.xres;
+                }
+                else if (b->pos[1] < 0.0) {
+                        //b->pos[1] += (float)gl.yres;
+                        b->pos[1] = gl.xres;
+                }
+                else if (b->pos[1] > (float)gl.yres) {
+                        //b->pos[1] -= (float)gl.yres;
+                        b->pos[1] = gl.xres;
+                }
+                i++;
+        }
+
+
+        //---------------------------------------------------
+        //check keys pressed now
+	//       LEFT
+	//g.ship.angle = -90;
+        if (gl.keys[XK_a]) {
+	   /* 
+                g.ship.angle += 4.0;
+                if (g.ship.angle >= 360.0f)
+                        g.ship.angle -= 360.0f;
+	   */
+	    g.ship.pos[0]-=3.5;
+        }
+	//       RIGHT
+        if (gl.keys[XK_d]) {
+	   /* 
+                g.ship.angle -= 4.0;
+                if (g.ship.angle < 0.0f)
+                        g.ship.angle += 360.0f;
+           */
+
+	    g.ship.pos[0]+=3.5;
+        }
+	//       UP
+        if (gl.keys[XK_w]) {
+                //apply thrust
+                //convert ship angle to radians
+                //Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+                //convert angle to a vector
+                //Flt xdir = cos(rad);
+                //Flt ydir = sin(rad);
+                //g.ship.vel[0] += xdir*0.02f;
+                //g.ship.vel[1] += ydir*0.02f;
+
+                Flt speed = sqrt(g.ship.vel[0]*g.ship.vel[0]+
+                              g.ship.vel[1]*g.ship.vel[1]);
+                if (speed > 10.0f) {
+                        speed = 10.0f;
+                        normalize2d(g.ship.vel);
+                        g.ship.vel[0] *= speed;
+                        g.ship.vel[1] *= speed;
+                }
+		g.ship.pos[1]+=3.5;
+
+        }
+	if(gl.keys[XK_s]) {
+		
+	    g.ship.pos[1]-=3.5;
+	}	    
+	if (gl.keys[XK_space]) {
+                //a little time between each bullet
+                struct timespec bt;
+                clock_gettime(CLOCK_REALTIME, &bt);
+                double ts = timeDiff(&g.bulletTimer, &bt);
+                if (ts > 0.1) {
+                        timeCopy(&g.bulletTimer, &bt);
+                        if (g.nbullets < MAX_BULLETS) {
+                                //shoot a bullet...
+                                //Bullet *b = new Bullet;
+                                Bullet *b = &g.barr[g.nbullets];
+                                timeCopy(&b->time, &bt);
+                                b->pos[0] = g.ship.pos[0];
+                                b->pos[1] = g.ship.pos[1];
+                                b->vel[0] = g.ship.vel[0];
+                                b->vel[1] = g.ship.vel[1];
+                                //convert ship angle to radians
+                                Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+                                //convert angle to a vector
+                                Flt xdir = cos(rad);
+                                Flt ydir = sin(rad);
+                                b->pos[0] += xdir*20.0f;
+                                //b->pos[1] += ydir*20.0f;
+                                b->vel[0] += xdir*6.0f + rnd()*0.1;
+                                b->vel[1] += ydir*6.0f + rnd()*0.1;
+                                b->color[0] = 1.0f;
+                                b->color[1] = 1.0f;
+                                b->color[2] = 1.0f;
+                                g.nbullets++;
+                        }
+                }
+        }
+        if (g.mouseThrustOn) {
+                //should thrust be turned off
+                struct timespec mtt;
+                clock_gettime(CLOCK_REALTIME, &mtt);
+                double tdif = timeDiff(&mtt, &g.mouseThrustTimer);
+                if (tdif < -0.3)
+                        g.mouseThrustOn = false;
+        }
+}
+
+
+int check_keys(XEvent *e, Global &gl, Game &g)
+{
+        //keyboard input?
+        static int shift=0;
+        if (e->type != KeyPress && e->type != KeyRelease)
+                return 0;
+        int key = (XLookupKeysym(&e->xkey, 0) & 0x0000ffff);
+        //Log("key: %i\n", key);
+        if (e->type == KeyRelease) {
+                gl.keys[key]=0;
+                if (key == XK_Shift_L || key == XK_Shift_R)
+                        shift=0;
+                return 0;
+        }
+        gl.keys[key]=1;
+        if (key == XK_Shift_L || key == XK_Shift_R) {
+                shift=1;
+                return 0;
+        }
+        (void)shift; 
+        switch (key) {
+                case XK_Escape:
+                        return 1;
+                case XK_w:
+                        break;
+                case XK_a:
+                        break;
+                case XK_s:
+                        break;
+                case XK_d:
+                        break;
+                case XK_equal:
+                        break;
+                case XK_minus:
+                        break;
+        }
+        return 0;
+}
+
+void normalize2d(Vec v)
+{
+        Flt len = v[0]*v[0] + v[1]*v[1];
+        if (len == 0.0f) {
+                v[0] = 1.0;
+                v[1] = 0.0;
+                return;
+        }
+        len = 1.0f / sqrt(len);
+        v[0] *= len;
+        v[1] *= len;
+}
+
+
+void render(Global &gl, Game &g)
+{
+	// rendering the heads up display	
+	hud(gl, g);
+	//
+        //-------------
+        //Draw the ship
+        glColor3fv(g.ship.color);
+        glPushMatrix();
+        glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
+        glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
+        glBegin(GL_TRIANGLES);
+                glVertex2f(-12.0f, -10.0f);
+                glVertex2f(  0.0f, 20.0f);
+                glVertex2f(  0.0f, -6.0f);
+                glVertex2f(  0.0f, -6.0f);
+                glVertex2f(  0.0f, 20.0f);
+                glVertex2f( 12.0f, -10.0f);
+        glEnd();
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glBegin(GL_POINTS);
+                glVertex2f(0.0f, 0.0f);
+        glEnd();
+        glPopMatrix();
+        if (gl.keys[XK_Up] || g.mouseThrustOn) {
+                int i;
+                //draw thrust
+                Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+                //convert angle to a vector
+                Flt xdir = cos(rad);
+                Flt ydir = sin(rad);
+                Flt xs,ys,xe,ye,r;
+                glBegin(GL_LINES);
+                        for (i=0; i<16; i++) {
+                                xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
+                                ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
+                                r = rnd()*40.0+40.0;
+                                xe = -xdir * r + rnd() * 18.0 - 9.0;
+                                ye = -ydir * r + rnd() * 18.0 - 9.0;
+                                glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
+                                glVertex2f(g.ship.pos[0]+xs,g.ship.pos[1]+ys);
+                                glVertex2f(g.ship.pos[0]+xe,g.ship.pos[1]+ye);
+                        }
+                glEnd();
+        }
+        //------------------
+        //----------------
+        //Draw the bullets
+        Bullet *b = &g.barr[0];
+        for (int i=0; i<g.nbullets; i++) {
+                //Log("draw bullet...\n");
+                glColor3f(1.0, 1.0, 1.0);
+                glBegin(GL_POINTS);
+                        glVertex2f(b->pos[0],      b->pos[1]);
+                        glVertex2f(b->pos[0]-1.0f, b->pos[1]);
+                        glVertex2f(b->pos[0]+1.0f, b->pos[1]);
+                        glVertex2f(b->pos[0],      b->pos[1]-1.0f);
+                        glVertex2f(b->pos[0],      b->pos[1]+1.0f);
+                        glColor3f(0.8, 0.8, 0.8);
+                        glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
+                        glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
+                        glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
+                        glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
+                glEnd();
+                ++b;
+        }
+}
+
+void init_opengl(Global &gl, Game &g)
+{
+        //OpenGL initialization
+        glViewport(0, 0, gl.xres, gl.yres);
+        //Initialize matrices
+        glMatrixMode(GL_PROJECTION); glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+        //This sets 2D mode (no perspective)
+        glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
+        //
+        glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_FOG);
+        glDisable(GL_CULL_FACE);
+        //
+        //Clear the screen to black 
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        //Do this to allow fonts
+        glEnable(GL_TEXTURE_2D);
+        initialize_fonts();
+}
 
 
