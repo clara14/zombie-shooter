@@ -20,7 +20,7 @@ extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 
 
 extern void showFloor(Global &gl, Game &g);
-
+extern void show_jorge(Global &gl, Game &g);
 	
 bool displayNames = false;
 
@@ -129,7 +129,7 @@ void render(Global &gl, Game &g)
 
 	display_name_cesar(gl, g);
 	
-
+	show_jorge(gl, g);
 	showFloor(gl, g);
         //-------------
         //Draw the ship
