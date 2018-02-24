@@ -1,3 +1,4 @@
+//Cesar Aleman
 #include "zlib.h"
 
 extern struct timespec timeStart, timeCurrent;
