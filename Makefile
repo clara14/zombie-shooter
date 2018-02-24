@@ -14,9 +14,9 @@ LFLAGS = -lrt -lX11 -lGL
 
 all: zombies
 
-zombies: zombies.cpp log.cpp timers.cpp alfredoZ.cpp cesarA.cpp
+zombies: zombies.cpp log.cpp timers.cpp alfredoZ.cpp cesarA.cpp jorgeV.cpp
 	g++ $(CFLAGS) zombies.cpp log.cpp timers.cpp alfredoZ.cpp cesarA.cpp \
-	libggfonts.a -Wall $(LFLAGS) -o zombies
+	jorgeV.cpp libggfonts.a -Wall $(LFLAGS) -o zombies
 
 clean:
 	rm -f zombies

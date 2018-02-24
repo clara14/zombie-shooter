@@ -11,9 +11,8 @@ extern void normalize2d(Vec);
 void display_name_cesar(Global &gl, Game &g)
 {
       Rect r1;
-      glClear(GL_COLOR_BUFFER_BIT);
-      //
-      r1.bot = gl.yres - 30;
+      
+      r1.bot = 480;
       r1.left = 50;
       r1.center = 80;
       ggprint8b(&r1, 16, 0x00ff0000, "Cesar Aleman");

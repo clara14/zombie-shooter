@@ -11,8 +11,18 @@ void render(Global &gl, Game &g);
 void normalize2d(Vec v);
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
-extern void hud(Global &gl, Game &g);
+
+extern void display_name_cesar(Global &gl, Game &g);
+
+extern void displayHUD(Global &gl, Game &g);
+extern void displayAlfredo(int botPos, int leftPos, int centerPos,
+			int textColor, const char* textName); 
+
+
 extern void showFloor(Global &gl, Game &g);
+
+	
+bool displayNames = false;
 
 //==========================================================================
 int main()
@@ -25,6 +35,7 @@ int main()
 	srand(time(NULL));
 	x11.set_mouse_position(100, 100);
 	int done=0;
+
 	while (!done) {
 		while (x11.getXPending()) {
 			XEvent e = x11.getXNextEvent();
@@ -82,6 +93,9 @@ int check_keys(XEvent *e, Global &gl, Game &g)
                         break;
                 case XK_minus:
                         break;
+		case XK_n:
+			displayNames = true;
+			break;
         }
         return 0;
 }
@@ -103,8 +117,19 @@ void normalize2d(Vec v)
 void render(Global &gl, Game &g)
 {
 	// rendering the heads up display	
-	hud(gl, g);
-	//
+	displayHUD(gl, g);
+	//p
+		
+	if ( displayNames == false ) {	
+		displayAlfredo( 500, 100, 150, 0x0079ccb3, 
+			"Press 'n' to display names");	
+	} else {
+		displayAlfredo( 500, 100, 150, 0x0079ccb3, "Alfredo Zavala");	
+	}
+
+	display_name_cesar(gl, g);
+	
+
 	showFloor(gl, g);
         //-------------
         //Draw the ship

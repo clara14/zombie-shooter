@@ -63,7 +63,7 @@ public:
         float color[3];
 	
 	int health;
-	string name;
+	const char * name;
 	string weaponType;
 
 public:
@@ -77,8 +77,8 @@ public:
                 color[0] = color[1] = color[2] = 1.0;
 
 		health = 100;
-		name = "player1";
-		weaponType = "9mm Handgun";
+		name = "DOOM_GUY";
+		weaponType = "BFG";
         }
 };
 
