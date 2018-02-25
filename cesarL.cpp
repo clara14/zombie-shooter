@@ -16,6 +16,7 @@ void displayCesarL(int bpos, int cpos, int lpos, int color,
 
 // object definitions
 //
+
 struct Pos {
         float x, y, z;
 };
@@ -29,31 +30,39 @@ struct Shape {
 class Global_menu : public Global {
 public:
 	Shape box[3];
+	int option;
         Global_menu() {
                 xres = 1250;
                 yres = 900;
                 memset(keys, 0, 65536);
+		option = 0;
 		for(int i=0;i<3;i++) {
-			box[i].width = 110;
-			box[i].height = 30;
+			box[i].width = 200;
+			box[i].height = 40;
 			box[i].center.x = xres/2;
-			box[i].center.y = yres/2;
+			box[i].center.y = 500 - (i*160);
 		}
 		
         }
+	void menuUp() {
+		option--;
+	}
+        void menuDown() { 
+                option++;
+        }
+
 };
 
 // Function prototypes
 //
-void menu_physics(Global_menu &gl);
 void menu_render(Global_menu &gl);
 void menu_opengl(Global_menu &gl);
 int menu_check_keys(XEvent *e, Global_menu &gl);
-
+extern void game();
 // Main Menu Function
 // 
 
-int Menu() {
+void Menu() {
         logOpen();
         Global_menu gl;
         X11_wrapper x11(gl);
@@ -61,19 +70,19 @@ int Menu() {
         srand(time(NULL));
         x11.set_mouse_position(100, 100);
         int done=0;
-        while (!done) {
+        while (done != 3) {
                 while (x11.getXPending()) {
                         XEvent e = x11.getXNextEvent();
                         x11.check_resize(&e, gl);
                         done = menu_check_keys(&e, gl);
                 }
-                menu_physics(gl);
                 menu_render(gl);
                 x11.swapBuffers();
         }
+
         cleanup_fonts();
         logClose();
-        return 0;
+        return;
 }
 
 // Function definitions
@@ -120,18 +129,69 @@ int menu_check_keys(XEvent *e, Global_menu &gl) {
         (void)shift;
         switch (key) {
                 case XK_Escape:
-                        return 1;
+                        return 2;
                 case XK_w:
-                        break;
+			if (gl.option > 0)
+				gl.menuUp();
+			break;
                 case XK_s:
-                        break;
+			if (gl.option < 2)
+				gl.menuDown();
+			break;
+		case XK_e:
+			cout << "enter was pressed\n";
+			return (gl.option+1);
         }
         return 0;
 }
 
-void menu_physics(Global_menu &gl) {
-}
-
 void menu_render(Global_menu &gl) {
+	// Render game title
+	//
+	glClear(GL_COLOR_BUFFER_BIT);
+        Rect r;
+        r.bot = 700;
+        r.center = 450;
+        r.left = 625;
+        ggprint16(&r, 16, 0x00ffffff, "ZOMBIE SHOOTER: %i", gl.option);
+        // Render boxes for main menu options
+	//
+	float w, h;
+	for(int i=0;i<3;i++) {
+            Shape *s;
+            glColor3ub(30,84,33);
+            s = &gl.box[i];
+            glPushMatrix();
+            glTranslatef(s->center.x, s->center.y, s->center.z);
+            w = s->width;
+            h = s->height;
+            glBegin(GL_QUADS);
+                glVertex2i(-w, -h);
+                glVertex2i(-w,  h);
+                glVertex2i( w,  h);
+                glVertex2i( w, -h);
+            glEnd();
+            glPopMatrix();
+	}	
+	// Render the 'cursor' for choosing the menu options
+	//
+	Shape *s;
+	s = &gl.box[gl.option];
+        glColor3ub(255, 255, 255);
+        glPushMatrix();
+        glTranslatef(865, s->center.y , s->center.z);
+        glBegin(GL_TRIANGLES);
+                glVertex2f(-40.0f, 0.0f);
+                glVertex2f(  0.0f, 40.0f);
+                glVertex2f(  0.0f, 0.0f);
+                glVertex2f(  0.0f, -40.0f);
+                glVertex2f(  0.0f, 0.0f);
+                glVertex2f( -40.0f, 0.0f);
+        glEnd();
+	glBegin(GL_POINTS);
+		glVertex2f(0.0f, 0.0f);
+	glEnd();
+	glPopMatrix();
+
 }
 
