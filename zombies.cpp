@@ -18,12 +18,11 @@ extern void displayHUD(Global &gl, Game &g);
 extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 			int textColor, const char* textName); 
 
-
 extern void showFloor(Global &gl, Game &g);
 extern void show_jorge(Global &gl, Game &g);
 	
 bool displayNames = false;
-
+bool showCesarL = false;
 //==========================================================================
 int main()
 {
@@ -96,6 +95,12 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 		case XK_n:
 			displayNames = true;
 			break;
+		case XK_l:
+			if (showCesarL)
+				showCesarL = false;
+			else
+				showCesarL = true;
+			break;
         }
         return 0;
 }
@@ -113,13 +118,14 @@ void normalize2d(Vec v)
         v[1] *= len;
 }
 
+extern void displayCesarL(int, int, int, int, const char*);
 
 void render(Global &gl, Game &g)
 {
 	// rendering the heads up display	
 	displayHUD(gl, g);
-	//p
-		
+	// Displaying group names for lab5 assignment
+	//
 	if ( displayNames == false ) {	
 		displayAlfredo( 500, 100, 150, 0x0079ccb3, 
 			"Press 'n' to display names");	
@@ -127,6 +133,12 @@ void render(Global &gl, Game &g)
 		displayAlfredo( 500, 100, 150, 0x0079ccb3, "Alfredo Zavala");	
 	}
 
+	if (showCesarL)
+		displayCesarL(600, 150, 200, 0x009508f8, "Cesar Lara");
+	else
+		displayCesarL(600, 150, 200, 0x009508f8,
+				"Press 'L' to display my name");
+	
 	display_name_cesar(gl, g);
 	
 	show_jorge(gl, g);
