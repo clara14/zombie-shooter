@@ -29,18 +29,18 @@ struct Shape {
 
 class Global_menu : public Global {
 public:
-	Shape box[3];
+	Shape box[4];
 	int option;
         Global_menu() {
                 xres = 1250;
                 yres = 900;
                 memset(keys, 0, 65536);
 		option = 0;
-		for(int i=0;i<3;i++) {
+		for(int i=0;i<4;i++) {
 			box[i].width = 200;
 			box[i].height = 40;
 			box[i].center.x = xres/2;
-			box[i].center.y = 500 - (i*160);
+			box[i].center.y = 500 - (i*120);
 		}
 		
         }
@@ -58,11 +58,10 @@ public:
 void menu_render(Global_menu &gl);
 void menu_opengl(Global_menu &gl);
 int menu_check_keys(XEvent *e, Global_menu &gl);
-extern void game();
 // Main Menu Function
 // 
 
-void Menu() {
+int menu() {
         logOpen();
         Global_menu gl;
         X11_wrapper x11(gl);
@@ -70,7 +69,7 @@ void Menu() {
         srand(time(NULL));
         x11.set_mouse_position(100, 100);
         int done=0;
-        while (done != 3) {
+        while (done==0) {
                 while (x11.getXPending()) {
                         XEvent e = x11.getXNextEvent();
                         x11.check_resize(&e, gl);
@@ -82,7 +81,7 @@ void Menu() {
 
         cleanup_fonts();
         logClose();
-        return;
+        return done;
 }
 
 // Function definitions
@@ -129,13 +128,13 @@ int menu_check_keys(XEvent *e, Global_menu &gl) {
         (void)shift;
         switch (key) {
                 case XK_Escape:
-                        return 2;
+                        return 4;
                 case XK_w:
 			if (gl.option > 0)
 				gl.menuUp();
 			break;
                 case XK_s:
-			if (gl.option < 2)
+			if (gl.option < 3)
 				gl.menuDown();
 			break;
 		case XK_e:
@@ -153,13 +152,13 @@ void menu_render(Global_menu &gl) {
         r.bot = 700;
         r.center = 450;
         r.left = 625;
-        ggprint16(&r, 16, 0x00ffffff, "ZOMBIE SHOOTER: %i", gl.option);
+        ggprint16(&r, 16, 0x00ffffff, "ZOMBIE SHOOTER");
         // Render boxes for main menu options
 	//
 	float w, h;
-	for(int i=0;i<3;i++) {
+	for(int i=0;i<4;i++) {
             Shape *s;
-            glColor3ub(30,84,33);
+            glColor3ub(20,74,23);
             s = &gl.box[i];
             glPushMatrix();
             glTranslatef(s->center.x, s->center.y, s->center.z);
@@ -173,6 +172,24 @@ void menu_render(Global_menu &gl) {
             glEnd();
             glPopMatrix();
 	}	
+	// Draw text for menu options
+	//
+        for(int i=0;i<4;i++){
+            Shape *s;
+            s = &gl.box[i];
+            r.bot = s->center.y - 12;
+            r.left = s->center.x;
+            r.center=-20;
+            if(i==0)
+                ggprint16(&r, 16, 0xffffffff, "%s", "Play Game");
+            if(i==1)
+                ggprint16(&r, 16, 0xffffffff, "%s", "Tutorial");
+            if(i==2)
+                ggprint16(&r, 16, 0xffffffff, "%s", "High Scores");
+            if(i==3)
+                ggprint16(&r, 16, 0xffffffff, "%s", "Exit Game");
+
+        }
 	// Render the 'cursor' for choosing the menu options
 	//
 	Shape *s;
@@ -193,5 +210,17 @@ void menu_render(Global_menu &gl) {
 	glEnd();
 	glPopMatrix();
 
+}
+
+// Tutorial Menu-state
+//
+int tutorial() {
+	return 0;
+}
+
+// High Scores Menu-state
+//
+int highScores() {
+	return 0;
 }
 

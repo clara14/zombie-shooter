@@ -20,11 +20,30 @@ extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 
 extern void showFloor(Global &gl, Game &g);
 extern void show_jorge(Global &gl, Game &g);
+extern int menu();
+int game();
+extern int tutorial();
+extern int highScores();
 	
 bool displayNames = false;
 bool showCesarL = false;
 //==========================================================================
-int main()
+int main() {
+	int option = 0;
+	while (option!=4) {
+		if (option == 0)
+			option = menu();
+		if (option == 1)
+			option = game();
+		if (option == 2)
+			option = tutorial();
+		if (option == 3)
+			option = highScores();
+	}
+	return 0;
+}
+
+int game()
 {
 	logOpen();
 	Global gl;
