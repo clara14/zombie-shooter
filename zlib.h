@@ -37,6 +37,7 @@ const float GRAVITY = 0.1;
 #define PI 3.141592653589793
 #define ALPHA 1
 const int MAX_BULLETS = 11;
+const int MAX_ZOMBIES = 10;
 const Flt MINIMUM_ASTEROID_SIZE = 60.0;
 const int XRES = 1250;
 const int YRES = 900;
@@ -102,6 +103,23 @@ public:
         }
 };
 
+class Zombie {
+public:
+	Vec dir;
+	Vec pos;
+	Vec vel;
+	int health;
+	float attack;
+	float defense;
+	struct Zombie *prev;
+	struct Zombie *next;
+public:
+	Zombie() {
+		prev = NULL;
+		next = NULL;
+	}
+};
+
 class Bullet {
 public:
         Vec pos;
@@ -117,15 +135,19 @@ public:
         Player1 player1;
     
     	Ship ship;
+	Zombie *zarr;
         Bullet *barr;
         int nasteroids;
         int nbullets;
+	int nzombies;
         struct timespec bulletTimer;
         struct timespec mouseThrustTimer;
         bool mouseThrustOn;
 public:
         Game(Global gl) {
                 barr = new Bullet[MAX_BULLETS];
+		zarr = new Zombie[MAX_ZOMBIES];
+		nzombies = 0;
                 nasteroids = 0;
                 nbullets = 0;
                 mouseThrustOn = false;
@@ -133,6 +155,7 @@ public:
         }
         ~Game() {
                 delete [] barr;
+		delete [] zarr;
         }
 };
 

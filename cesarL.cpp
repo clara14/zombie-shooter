@@ -64,6 +64,7 @@ public:
 	}
 };
 
+
 // Function prototypes
 //
 void menu_render(Global_menu &gl);
