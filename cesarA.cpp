@@ -29,11 +29,11 @@ void cesar_physics (Global &gl, Game &g)
       else if (g.ship.pos[0] > (float)gl.xres) {
 	     g.ship.pos[0] = gl.xres;
       }
-      else if (g.ship.pos[1] < 0.0) {
-	     g.ship.pos[1] = 0;
+      else if (g.ship.pos[1] > 340) {
+	     g.ship.pos[1] = 340;
       }
-      else if (g.ship.pos[1] > (float)gl.yres) {
-	     g.ship.pos[1] = gl.yres;
+      else if (g.ship.pos[1] < 0) {
+       g.ship.pos[1] = 0;
       }
       //bullet positions
       struct timespec bt;
@@ -128,7 +128,18 @@ void cesar_physics (Global &gl, Game &g)
                         g.nbullets++;
                   }
             }
-      }  
+  }
+  //bug fix
+  /*
+  if ((g.ship.pos[0] = 0) && (g.ship.pos[1] = 330)) {
+        g.ship.pos[0] = 10;
+        g.ship.pos[1] = 340;
+        
+  }
+  */
+  
 }
+
+    
 
 
