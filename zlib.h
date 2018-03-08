@@ -13,7 +13,7 @@ using namespace std;
 #include <GL/glx.h>
 #include "log.h"
 #include "fonts.h"
-
+#include <fstream>
 #include <stdio.h>
 
 //defined types
