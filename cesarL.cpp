@@ -473,10 +473,23 @@ void scores_render(Global_scores &gl) {
 	r.bot = 800;
 	r.left = 625;
 	ggprint16(&r, 16, 0x00ffffff, "High Scores");
-	r.bot = 750;
+	r.bot = 725;
 	r.left = 312;
 	for(int i=0;i<10;i++) {
-		ggprint16(&r, 16, 0x00ffffff, "NAME: ");
+	    	ggprint16(&r, 16, 0x00ffffff, "NAME: ");
 		r.bot -= 50;
 	}
+	r.bot = 725;
+	r.left = 625;
+	for(int i=0;i<10;i++) {
+		ggprint16(&r, 16, 0x00ffffff, "-");
+		r.bot -= 50;
+	}
+	r.bot = 725;
+	r.left = 937;
+	for(int i=0; i<10;i++) {
+		ggprint16(&r, 16, 0x00ffffff, "SCORE");
+		r.bot -= 50;
+	}
+	
 }
