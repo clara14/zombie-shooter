@@ -4,13 +4,23 @@
 #include "zlib.h"
 #include "fonts.h"
 
+extern double timeDiff(struct timespec *start, struct timespec *end);
+extern void timeCopy(struct timespec *dest, struct timespec *source);
+
 void displayCesarL(int bpos, int cpos, int lpos, int color,
 			 const char* name) {
-	Rect r;
+	static double duration = 0.0;
+	struct timespec timeStart, timeEnd;
+	clock_gettime(CLOCK_REALTIME, &timeStart);
+    	Rect r;
 	r.bot = bpos;
 	r.center = cpos;
 	r.left = lpos;
 	ggprint16(&r, 16, color, name);
+	clock_gettime(CLOCK_REALTIME, &timeEnd);
+	duration += timeDiff(&timeStart, &timeEnd);
+	r.bot -= 10;
+	ggprint16(&r, 16, color, "function time: %f", duration);
 }
 	
 
@@ -64,7 +74,26 @@ public:
 	}
 };
 
-
+class Global_scores : public Global {
+public:
+    	string name[10];
+	int score[10];
+    	Global_scores() {
+	    	xres = 1250;
+		yres = 900;
+		memset(keys, 0, 65536);
+		ifstream fin;
+		fin.open("scores.txt", ios::in);
+		if(fin.fail()) {
+		    exit(1);
+		}
+		for(int i=0;i<10;i++) {
+		    fin >> name[i];
+		    fin >> score[i];
+		}
+		fin.close();
+	}
+};
 // Function prototypes
 //
 void menu_render(Global_menu &gl);
@@ -167,6 +196,10 @@ int menu_check_keys(XEvent *e, Global_menu &gl) {
 }
 
 void menu_render(Global_menu &gl) {
+	// Implementing a timer
+        static double duration = 0.0;
+        struct timespec timeStart, timeEnd;
+        clock_gettime(CLOCK_REALTIME, &timeStart);
 	// Render game title
 	//
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -231,6 +264,13 @@ void menu_render(Global_menu &gl) {
 		glVertex2f(0.0f, 0.0f);
 	glEnd();
 	glPopMatrix();
+	// Add time to it
+        clock_gettime(CLOCK_REALTIME, &timeEnd);
+        duration += timeDiff(&timeStart, &timeEnd);
+	r.bot = gl.yres - 50;
+	r.left = 100;
+	r.center += 20;
+	ggprint16(&r, 16, 0x00ff00fff, "render function time: %f", duration);
 
 }
 //----------------------------------------------------------------------------
@@ -351,7 +391,92 @@ void tutorial_render(Global_tutorial &gl) {
 //----------------------------------------------------------------------------
 // High Scores Menu-state
 //----------------------------------------------------------------------------
+//Function prototypes
+//
+int scores_keys(XEvent *e, Global_scores &gl);
+void scores_opengl(Global_scores &gl);
+void scores_render(Global_scores &gl);
+
 int highScores() {
-	return 0;
+    	Global_scores gl;
+	X11_wrapper x11(gl);
+	scores_opengl(gl);
+        int done=0;
+        while (done==0) {
+                while (x11.getXPending()) {
+                        XEvent e = x11.getXNextEvent();
+                        x11.check_resize(&e, gl);
+                        done = scores_keys(&e, gl);
+                }
+                scores_render(gl);
+                x11.swapBuffers();
+        }
+        cleanup_fonts();
+        return 0;
 }
 
+//Function definitions
+//
+void scores_opengl(Global_scores &gl) {
+        //OpenGL initialization
+        glViewport(0, 0, gl.xres, gl.yres);
+        //Initialize matrices
+        glMatrixMode(GL_PROJECTION); glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+        //This sets 2D mode (no perspective)
+        glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
+        //
+        glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_FOG);
+        glDisable(GL_CULL_FACE);
+        //
+        //Clear the screen to black
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        //Do this to allow fonts
+        glEnable(GL_TEXTURE_2D);
+        initialize_fonts();
+
+}
+
+int scores_keys(XEvent *e, Global_scores &gl) {
+        //keyboard input?
+        static int shift=0;
+        if (e->type != KeyPress && e->type != KeyRelease)
+                return 0;
+        int key = (XLookupKeysym(&e->xkey, 0) & 0x0000ffff);
+        //Log("key: %i\n", key);
+        if (e->type == KeyRelease) {
+                gl.keys[key]=0;
+                if (key == XK_Shift_L || key == XK_Shift_R)
+                        shift=0;
+                return 0;
+        }
+        gl.keys[key]=1;
+        if (key == XK_Shift_L || key == XK_Shift_R) {
+                shift=1;
+                return 0;
+        }
+        (void)shift;
+        switch (key) {
+                case XK_Escape:
+			return 1;
+		case XK_q:
+			return 1;
+        }
+        return 0;
+}
+
+void scores_render(Global_scores &gl) {
+	glClear(GL_COLOR_BUFFER_BIT);
+	Rect r;
+	r.bot = 800;
+	r.left = 625;
+	ggprint16(&r, 16, 0x00ffffff, "High Scores");
+	r.bot = 750;
+	r.left = 312;
+	for(int i=0;i<10;i++) {
+		ggprint16(&r, 16, 0x00ffffff, "NAME: ");
+		r.bot -= 50;
+	}
+}
