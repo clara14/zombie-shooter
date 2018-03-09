@@ -20,30 +20,15 @@ extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 
 extern void showFloor(Global &gl, Game &g);
 extern void show_jorge(Global &gl, Game &g);
-extern int menu();
+extern void menu_render(Global &gl);
 int game();
 extern int tutorial();
 extern int highScores();
 	
 bool displayNames = false;
 bool showCesarL = false;
-//==========================================================================
-int main() {
-	int option = 0;
-	while (option!=4) {
-		if (option == 0)
-			option = menu();
-		if (option == 1)
-			option = game();
-		if (option == 2)
-			option = tutorial();
-		if (option == 3)
-			option = highScores();
-	}
-	return 0;
-}
-
-int game()
+// menu - 1, game - 2, help - 3, scores - 4, exit - 5
+int main()
 {
 	logOpen();
 	Global gl;
@@ -53,7 +38,6 @@ int game()
 	srand(time(NULL));
 	x11.set_mouse_position(100, 100);
 	int done=0;
-
 	while (!done) {
 		while (x11.getXPending()) {
 			XEvent e = x11.getXNextEvent();
@@ -73,7 +57,8 @@ int game()
 
 void physics(Global &gl, Game &g)
 {
-    cesar_physics(gl, g);       
+	if (gl.menuState == 2)
+		cesar_physics(gl, g);       
 }
 
 int check_keys(XEvent *e, Global &gl, Game &g)
@@ -98,15 +83,38 @@ int check_keys(XEvent *e, Global &gl, Game &g)
         (void)shift; 
         switch (key) {
                 case XK_Escape:
-                        return 1;
+                        if (gl.menuState == 1) {
+				return 1;
+			}
+			if (gl.menuState == 2) {
+				gl.menuState = 1;
+			}
                 case XK_w:
+			if (gl.menuState == 1) {
+				if (gl.menuOption > 0)
+					gl.menuOption--;
+			}
                         break;
                 case XK_a:
                         break;
                 case XK_s:
+                        if (gl.menuState == 1) {
+				if (gl.menuOption < 3)
+					gl.menuOption++;
+                        }
                         break;
                 case XK_d:
                         break;
+		case XK_e:
+			if (gl.menuState == 1) {
+				if (gl.menuOption == 0) {
+					gl.menuState = 2;
+				} else if (gl.menuOption == 1) {
+				} else if (gl.menuOption == 2) {
+				} else {
+					return 1;
+				}
+			}
                 case XK_equal:
                         break;
                 case XK_minus:
@@ -141,88 +149,93 @@ extern void displayCesarL(int, int, int, int, const char*);
 
 void render(Global &gl, Game &g)
 {
-	// rendering the heads up display	
-	displayHUD(gl, g);
-	// Displaying group names for lab5 assignment
-	//
-	if ( displayNames == false ) {	
-		displayAlfredo( 500, 100, 150, 0x0079ccb3, 
-			"Press 'n' to display names");	
-	} else {
-		displayAlfredo( 500, 100, 150, 0x0079ccb3, "Alfredo Zavala");	
+	if (gl.menuState == 1) {
+		menu_render(gl);
 	}
+	if (gl.menuState == 2) {
+		// rendering the heads up display	
+		displayHUD(gl, g);
+		// Displaying group names for lab5 assignment
+		//
+		if ( displayNames == false ) {	
+			displayAlfredo( 500, 100, 150, 0x0079ccb3, 
+					"Press 'n' to display names");	
+		} else {
+			displayAlfredo( 500, 100, 150, 0x0079ccb3, "Alfredo Zavala");	
+		}
 
-	if (showCesarL)
-		displayCesarL(600, 150, 200, 0x009508f8, "Cesar Lara");
-	else
-		displayCesarL(600, 150, 200, 0x009508f8,
-				"Press 'L' to display my name");
+		if (showCesarL)
+			displayCesarL(600, 150, 200, 0x009508f8, "Cesar Lara");
+		else
+			displayCesarL(600, 150, 200, 0x009508f8,
+					"Press 'L' to display my name");
 	
-	display_name_cesar(gl, g);
+		display_name_cesar(gl, g);
 	
-	show_jorge(gl, g);
-	showFloor(gl, g);
-        //-------------
-        //Draw the ship
-        glColor3fv(g.ship.color);
-        glPushMatrix();
-        glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
-        glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
-        glBegin(GL_TRIANGLES);
-                glVertex2f(-12.0f, -10.0f);
-                glVertex2f(  0.0f, 20.0f);
-                glVertex2f(  0.0f, -6.0f);
-                glVertex2f(  0.0f, -6.0f);
-                glVertex2f(  0.0f, 20.0f);
-                glVertex2f( 12.0f, -10.0f);
-        glEnd();
-        glColor3f(1.0f, 0.0f, 0.0f);
-        glBegin(GL_POINTS);
+		show_jorge(gl, g);
+		showFloor(gl, g);
+        	//-------------
+        	//Draw the ship
+        	glColor3fv(g.ship.color);
+        	glPushMatrix();
+        	glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
+        	glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
+        	glBegin(GL_TRIANGLES);
+                	glVertex2f(-12.0f, -10.0f);
+                	glVertex2f(  0.0f, 20.0f);
+                	glVertex2f(  0.0f, -6.0f);
+                	glVertex2f(  0.0f, -6.0f);
+                	glVertex2f(  0.0f, 20.0f);
+                	glVertex2f( 12.0f, -10.0f);
+        	glEnd();
+        	glColor3f(1.0f, 0.0f, 0.0f);
+        	glBegin(GL_POINTS);
                 glVertex2f(0.0f, 0.0f);
-        glEnd();
-        glPopMatrix();
-        if (gl.keys[XK_Up] || g.mouseThrustOn) {
-                int i;
-                //draw thrust
-                Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
-                //convert angle to a vector
-                Flt xdir = cos(rad);
-                Flt ydir = sin(rad);
-                Flt xs,ys,xe,ye,r;
-                glBegin(GL_LINES);
-                        for (i=0; i<16; i++) {
-                                xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
-                                ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
-                                r = rnd()*40.0+40.0;
-                                xe = -xdir * r + rnd() * 18.0 - 9.0;
-                                ye = -ydir * r + rnd() * 18.0 - 9.0;
-                                glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
-                                glVertex2f(g.ship.pos[0]+xs,g.ship.pos[1]+ys);
-                                glVertex2f(g.ship.pos[0]+xe,g.ship.pos[1]+ye);
-                        }
-                glEnd();
-        }
-        //------------------
-        //----------------
-        //Draw the bullets
-        Bullet *b = &g.barr[0];
-        for (int i=0; i<g.nbullets; i++) {
-                //Log("draw bullet...\n");
-                glColor3f(1.0, 1.0, 1.0);
-                glBegin(GL_POINTS);
-                        glVertex2f(b->pos[0],      b->pos[1]);
-                        glVertex2f(b->pos[0]-1.0f, b->pos[1]);
-                        glVertex2f(b->pos[0]+1.0f, b->pos[1]);
-                        glVertex2f(b->pos[0],      b->pos[1]-1.0f);
-                        glVertex2f(b->pos[0],      b->pos[1]+1.0f);
+        	glEnd();
+        	glPopMatrix();
+        	if (gl.keys[XK_Up] || g.mouseThrustOn) {
+                	int i;
+                	//draw thrust
+                	Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+                	//convert angle to a vector
+                	Flt xdir = cos(rad);
+                	Flt ydir = sin(rad);
+                	Flt xs,ys,xe,ye,r;
+                	glBegin(GL_LINES);
+                        	for (i=0; i<16; i++) {
+                                	xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
+                                	ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
+                                	r = rnd()*40.0+40.0;
+                                	xe = -xdir * r + rnd() * 18.0 - 9.0;
+                                	ye = -ydir * r + rnd() * 18.0 - 9.0;
+                                	glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
+                                	glVertex2f(g.ship.pos[0]+xs,g.ship.pos[1]+ys);
+                                	glVertex2f(g.ship.pos[0]+xe,g.ship.pos[1]+ye);
+                        	}
+                	glEnd();
+        	}
+        	//------------------
+        	//----------------
+        	//Draw the bullets
+        	Bullet *b = &g.barr[0];
+        	for (int i=0; i<g.nbullets; i++) {
+                	//Log("draw bullet...\n");
+                	glColor3f(1.0, 1.0, 1.0);
+                	glBegin(GL_POINTS);
+                        	glVertex2f(b->pos[0],      b->pos[1]);
+                        	glVertex2f(b->pos[0]-1.0f, b->pos[1]);
+                        	glVertex2f(b->pos[0]+1.0f, b->pos[1]);
+                        	glVertex2f(b->pos[0],      b->pos[1]-1.0f);
+                        	glVertex2f(b->pos[0],      b->pos[1]+1.0f);
                         glColor3f(0.8, 0.8, 0.8);
-                        glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
-                        glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
-                        glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
-                        glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
-                glEnd();
-                ++b;
-        }
+                        	glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
+                        	glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
+                        	glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
+                        	glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
+                	glEnd();
+                	++b;
+        	}
+	} 
 }
 
 void init_opengl(Global &gl, Game &g)

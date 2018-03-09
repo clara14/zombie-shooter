@@ -43,6 +43,39 @@ const int XRES = 1250;
 const int YRES = 900;
 
 #pragma once
+struct Pos {
+        float x, y, z;
+};
+
+struct Shape {
+        float width, height;
+        float radius;
+        Pos center;
+};
+
+class Global {
+public:
+        int menuState;
+        int xres, yres;
+        int menuOption;
+        int helpScreen;
+        char keys[65536];
+        Shape box[4];
+        Global() {
+                xres = 1250;
+                yres = 900;
+                menuState = 1;
+                menuOption = 0;
+                helpScreen = 1;
+                memset(keys, 0, 65536);
+                for(int i=0;i<4;i++) {
+                        box[i].width = 200;
+                        box[i].height = 40;
+                        box[i].center.x = xres/2;
+                        box[i].center.y = 500 - (i*120);
+                }
+	}
+};
 
 class Player1 {
 public:

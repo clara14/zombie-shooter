@@ -26,7 +26,7 @@ void displayCesarL(int bpos, int cpos, int lpos, int color,
 
 // object definitions
 //
-
+/*
 struct Pos {
         float x, y, z;
 };
@@ -36,44 +36,7 @@ struct Shape {
         float radius;
         Pos center;
 };
-
-class Global_menu : public Global {
-public:
-	Shape box[4];
-	int option;
-        Global_menu() {
-                xres = 1250;
-                yres = 900;
-                memset(keys, 0, 65536);
-		option = 0;
-		for(int i=0;i<4;i++) {
-			box[i].width = 200;
-			box[i].height = 40;
-			box[i].center.x = xres/2;
-			box[i].center.y = 500 - (i*120);
-		}
-		
-        }
-	void menuUp() {
-		option--;
-	}
-        void menuDown() { 
-                option++;
-        }
-
-};
-
-class Global_tutorial : public Global {
-public:
-	int screen;
-	Global_tutorial() {
-		xres = 1250;
-		yres = 900;
-		memset(keys, 0, 65536);
-		screen = 1;
-	}
-};
-
+*/
 class Global_scores : public Global {
 public:
     	string name[10];
@@ -96,60 +59,10 @@ public:
 };
 // Function prototypes
 //
-void menu_render(Global_menu &gl);
-void menu_opengl(Global_menu &gl);
-int menu_check_keys(XEvent *e, Global_menu &gl);
-//-----------------------------------------------------------------------------
-// Main Menu Function
-//----------------------------------------------------------------------------- 
-
-int menu() {
-        logOpen();
-        Global_menu gl;
-        X11_wrapper x11(gl);
-        menu_opengl(gl);
-        srand(time(NULL));
-        x11.set_mouse_position(100, 100);
-        int done=0;
-        while (done==0) {
-                while (x11.getXPending()) {
-                        XEvent e = x11.getXNextEvent();
-                        x11.check_resize(&e, gl);
-                        done = menu_check_keys(&e, gl);
-                }
-                menu_render(gl);
-                x11.swapBuffers();
-        }
-
-        cleanup_fonts();
-        logClose();
-        return done;
-}
-
-// Function definitions
-//
-void menu_opengl(Global_menu &gl) {
-        //OpenGL initialization
-        glViewport(0, 0, gl.xres, gl.yres);
-        //Initialize matrices
-        glMatrixMode(GL_PROJECTION); glLoadIdentity();
-        glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-        //This sets 2D mode (no perspective)
-        glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
-        //
-        glDisable(GL_LIGHTING);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_FOG);
-        glDisable(GL_CULL_FACE);
-        //
-        //Clear the screen to black
-        glClearColor(0.0, 0.0, 0.0, 1.0);
-        //Do this to allow fonts
-        glEnable(GL_TEXTURE_2D);
-        initialize_fonts();
-}
+void menu_render(Global &gl);
+int menu_check_keys(XEvent *e, Global &gl);
  
-int menu_check_keys(XEvent *e, Global_menu &gl) {
+int menu_check_keys(XEvent *e, Global &gl) {
         //keyboard input?
         static int shift=0;
         if (e->type != KeyPress && e->type != KeyRelease)
@@ -172,30 +85,30 @@ int menu_check_keys(XEvent *e, Global_menu &gl) {
                 case XK_Escape:
                         return 4;
                 case XK_w:
-			if (gl.option > 0)
-				gl.menuUp();
+			if (gl.menuOption > 0)
+				gl.menuOption--;
 			break;
 		case XK_Up:
-			if (gl.option > 0)
-				gl.menuUp();
+			if (gl.menuOption > 0)
+				gl.menuOption--;
 			break;
                 case XK_s:
-			if (gl.option < 3)
-				gl.menuDown();
+			if (gl.menuOption < 3)
+				gl.menuOption++;
 			break;
 		case XK_Down:
-			if (gl.option < 3)
-				gl.menuDown();
+			if (gl.menuOption < 3)
+				gl.menuOption++;
 			break;
 		case XK_e:
-			return (gl.option+1);
+			return (gl.menuOption+1);
 		case XK_Return:
-			return (gl.option+1);
+			return (gl.menuOption+1);
         }
         return 0;
 }
 
-void menu_render(Global_menu &gl) {
+void menu_render(Global &gl) {
 	// Implementing a timer
         static double duration = 0.0;
         struct timespec timeStart, timeEnd;
@@ -248,7 +161,7 @@ void menu_render(Global_menu &gl) {
 	// Render the 'cursor' for choosing the menu options
 	//
 	Shape *s;
-	s = &gl.box[gl.option];
+	s = &gl.box[gl.menuOption];
         glColor3ub(255, 255, 255);
         glPushMatrix();
         glTranslatef(880, s->center.y , s->center.z);
@@ -278,56 +191,10 @@ void menu_render(Global_menu &gl) {
 //----------------------------------------------------------------------------
 // Function prototypes
 //
-void tutorial_opengl(Global_tutorial &gl);
-int tutorial_keys(XEvent *e, Global_tutorial &gl);
-void tutorial_render(Global_tutorial &gl);
+int tutorial_keys(XEvent *e, Global &gl);
+void tutorial_render(Global &gl);
 
-int tutorial() {
-        Global_tutorial gl;
-        X11_wrapper x11(gl);
-        tutorial_opengl(gl);
-        srand(time(NULL));
-        x11.set_mouse_position(100, 100);
-        int done=0;
-        while (done==0) {
-                while (x11.getXPending()) {
-                        XEvent e = x11.getXNextEvent();
-                        x11.check_resize(&e, gl);
-                        done = tutorial_keys(&e, gl);
-                }
-                tutorial_render(gl);
-                x11.swapBuffers();
-        }
-
-        cleanup_fonts();
-	return 0;
-}
-
-//Function definitions
-//
-void tutorial_opengl(Global_tutorial &gl) {
-        //OpenGL initialization
-        glViewport(0, 0, gl.xres, gl.yres);
-        //Initialize matrices
-        glMatrixMode(GL_PROJECTION); glLoadIdentity();
-        glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-        //This sets 2D mode (no perspective)
-        glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
-        //
-        glDisable(GL_LIGHTING);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_FOG);
-        glDisable(GL_CULL_FACE);
-        //
-        //Clear the screen to black
-        glClearColor(0.0, 0.0, 0.0, 1.0);
-        //Do this to allow fonts
-        glEnable(GL_TEXTURE_2D);
-        initialize_fonts();
-
-}
-
-int tutorial_keys(XEvent *e, Global_tutorial &gl) {
+int tutorial_keys(XEvent *e, Global &gl) {
         //keyboard input?
         static int shift=0;
         if (e->type != KeyPress && e->type != KeyRelease)
@@ -348,20 +215,20 @@ int tutorial_keys(XEvent *e, Global_tutorial &gl) {
         (void)shift;
         switch (key) {
                 case XK_Escape:
-                        if (gl.screen > 1)
-				gl.screen -= 1;
+                        if (gl.helpScreen > 1)
+				gl.helpScreen -= 1;
 			else
 				return 1;
 			break;
                 case XK_e:
-			if (gl.screen < 4)
-                               gl.screen += 1;
+			if (gl.helpScreen < 4)
+                               gl.helpScreen += 1;
                         else
                                 return 1;
 			break;
                 case XK_Return:
-                        if (gl.screen < 4)
-				gl.screen += 1;
+                        if (gl.helpScreen < 4)
+				gl.helpScreen += 1;
 			else
 				return 1;
 			break;
@@ -369,22 +236,22 @@ int tutorial_keys(XEvent *e, Global_tutorial &gl) {
 	return 0;
 }
 
-void tutorial_render(Global_tutorial &gl) {
+void tutorial_render(Global &gl) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	Rect r;
 	r.bot = 700;
 	r.center = 0;
 	r.left = 625;
-	if (gl.screen == 1) {
+	if (gl.helpScreen == 1) {
 		ggprint16(&r, 16, 0x00ffffff, "Intro");
 	}
-	if (gl.screen == 2) {
+	if (gl.helpScreen == 2) {
 		ggprint16(&r, 16, 0x00ffffff, "Controls");
 	}
-        if (gl.screen == 3) {
+        if (gl.helpScreen == 3) {
                 ggprint16(&r, 16, 0x00ffffff, "Extra Info");
         }
-        if (gl.screen == 4) {
+        if (gl.helpScreen == 4) {
                 ggprint16(&r, 16, 0x00ffffff, "Extra Info 2");
         }
 }
@@ -393,53 +260,11 @@ void tutorial_render(Global_tutorial &gl) {
 //----------------------------------------------------------------------------
 //Function prototypes
 //
-int scores_keys(XEvent *e, Global_scores &gl);
-void scores_opengl(Global_scores &gl);
-void scores_render(Global_scores &gl);
+int scores_keys(XEvent *e, Global &gl);
+void scores_render(Global &gl);
 
-int highScores() {
-    	Global_scores gl;
-	X11_wrapper x11(gl);
-	scores_opengl(gl);
-        int done=0;
-        while (done==0) {
-                while (x11.getXPending()) {
-                        XEvent e = x11.getXNextEvent();
-                        x11.check_resize(&e, gl);
-                        done = scores_keys(&e, gl);
-                }
-                scores_render(gl);
-                x11.swapBuffers();
-        }
-        cleanup_fonts();
-        return 0;
-}
 
-//Function definitions
-//
-void scores_opengl(Global_scores &gl) {
-        //OpenGL initialization
-        glViewport(0, 0, gl.xres, gl.yres);
-        //Initialize matrices
-        glMatrixMode(GL_PROJECTION); glLoadIdentity();
-        glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-        //This sets 2D mode (no perspective)
-        glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
-        //
-        glDisable(GL_LIGHTING);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_FOG);
-        glDisable(GL_CULL_FACE);
-        //
-        //Clear the screen to black
-        glClearColor(0.0, 0.0, 0.0, 1.0);
-        //Do this to allow fonts
-        glEnable(GL_TEXTURE_2D);
-        initialize_fonts();
-
-}
-
-int scores_keys(XEvent *e, Global_scores &gl) {
+int scores_keys(XEvent *e, Global &gl) {
         //keyboard input?
         static int shift=0;
         if (e->type != KeyPress && e->type != KeyRelease)
@@ -467,7 +292,7 @@ int scores_keys(XEvent *e, Global_scores &gl) {
         return 0;
 }
 
-void scores_render(Global_scores &gl) {
+void scores_render(Global &gl) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	Rect r;
 	r.bot = 800;
