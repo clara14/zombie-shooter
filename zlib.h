@@ -43,17 +43,6 @@ const int XRES = 1250;
 const int YRES = 900;
 
 #pragma once
-class Global {
-public:
-        int xres, yres;
-        char keys[65536];
-        Global() {
-                xres = 1250;
-                yres = 900;
-                memset(keys, 0, 65536);
-        }
-};
-
 
 class Player1 {
 public:
