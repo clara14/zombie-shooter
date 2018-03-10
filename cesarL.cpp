@@ -109,6 +109,9 @@ int menu_check_keys(XEvent *e, Global &gl) {
 }
 
 void menu_render(Global &gl) {
+	// reset tutorial screen
+	if (gl.helpScreen != 1)
+		gl.helpScreen = 1;
 	// Implementing a timer
         static double duration = 0.0;
         struct timespec timeStart, timeEnd;

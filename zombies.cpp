@@ -21,6 +21,8 @@ extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 extern void showFloor(Global &gl, Game &g);
 extern void show_jorge(Global &gl, Game &g);
 extern void menu_render(Global &gl);
+extern void tutorial_render(Global &gl);
+extern void scores_render(Global &gl);
 int game();
 extern int tutorial();
 extern int highScores();
@@ -86,7 +88,7 @@ int check_keys(XEvent *e, Global &gl, Game &g)
                         if (gl.menuState == 1) {
 				return 1;
 			}
-			if (gl.menuState == 2) {
+			else if (gl.menuState == 2) {
 				gl.menuState = 1;
 			}
                 case XK_w:
@@ -109,12 +111,36 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 			if (gl.menuState == 1) {
 				if (gl.menuOption == 0) {
 					gl.menuState = 2;
-				} else if (gl.menuOption == 1) {
-				} else if (gl.menuOption == 2) {
-				} else {
+				} 
+				if (gl.menuOption == 1) {
+					gl.menuState = 3;
+				}
+				if (gl.menuOption == 2) {
+					gl.menuState = 4;
+				} 
+				if (gl.menuOption == 3) {
 					return 1;
 				}
 			}
+			else if (gl.menuState == 3) {
+				if (gl.helpScreen < 4)
+					gl.helpScreen += 1;
+				else {
+					gl.menuState = 1;
+				}
+			}
+			break;
+		case XK_q:
+			if (gl.menuState == 3) {
+				if (gl.helpScreen > 1)
+					gl.helpScreen -= 1;
+				else 
+					gl.menuState = 1;
+			}
+			else if (gl.menuState == 4) {
+				gl.menuState = 1;
+			}
+			break;
                 case XK_equal:
                         break;
                 case XK_minus:
@@ -151,8 +177,8 @@ void render(Global &gl, Game &g)
 {
 	if (gl.menuState == 1) {
 		menu_render(gl);
-	}
-	if (gl.menuState == 2) {
+	} else if (gl.menuState == 2) {
+		glClear(GL_COLOR_BUFFER_BIT);
 		// rendering the heads up display	
 		displayHUD(gl, g);
 		// Displaying group names for lab5 assignment
@@ -235,7 +261,15 @@ void render(Global &gl, Game &g)
                 	glEnd();
                 	++b;
         	}
-	} 
+	}
+	
+	else if (gl.menuState == 3) {
+		tutorial_render(gl);
+	}
+	
+	else if (gl.menuState == 4) {
+		scores_render(gl);
+	}
 }
 
 void init_opengl(Global &gl, Game &g)
