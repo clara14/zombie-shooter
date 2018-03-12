@@ -43,48 +43,48 @@ void showMenu(Global &gl) {
         ggprint16(&r, 16, 0x00ffffff, "ZOMBIE SHOOTER");
         // Render boxes for main menu options
 	//
-	float w, h;
 	for(int i=0;i<4;i++) {
-            Shape *s;
-            glColor3ub(20,74,23);
-            s = &gl.box[i];
-            glPushMatrix();
-            glTranslatef(s->center.x, s->center.y, s->center.z);
-            w = s->width;
-            h = s->height;
-            glBegin(GL_QUADS);
-                glVertex2i(-w, -h);
-                glVertex2i(-w,  h);
-                glVertex2i( w,  h);
-                glVertex2i( w, -h);
-            glEnd();
-            glPopMatrix();
+		glColor3ub(20,74,23);
+		glPushMatrix();
+		glTranslatef(625, (500 - (i*120)), 0);
+		glBegin(GL_QUADS);
+			glVertex2i(-200, -40);
+			glVertex2i(-200, 40);
+			glVertex2i(200, 40);
+			glVertex2i(200, -40);
+		glEnd();
+		glPopMatrix();
 	}	
 	// Draw text for menu options
 	//
-        for(int i=0;i<4;i++){
-            Shape *s;
-            s = &gl.box[i];
-            r.bot = s->center.y - 12;
-            r.left = s->center.x;
+        for(int i=0;i<4;i++) {
+            r.bot = (500 - (i*120)) - 12;
+            r.left = 625;
             r.center=-20;
-            if(i==0)
+            if(i == 0)
                 ggprint16(&r, 16, 0xffffffff, "%s", "Play Game");
-            if(i==1)
+            if(i == 1)
                 ggprint16(&r, 16, 0xffffffff, "%s", "Tutorial");
-            if(i==2)
+            if(i == 2)
                 ggprint16(&r, 16, 0xffffffff, "%s", "High Scores");
-            if(i==3)
+            if(i == 3)
                 ggprint16(&r, 16, 0xffffffff, "%s", "Exit Game");
 
         }
 	// Render the 'cursor' for choosing the menu options
 	//
-	Shape *s;
-	s = &gl.box[gl.menuOption];
         glColor3ub(255, 255, 255);
         glPushMatrix();
-        glTranslatef(880, s->center.y , s->center.z);
+	int position;
+	if (gl.menuOption == 0)
+		position = 500;
+	if (gl.menuOption == 1)
+		position = 380;
+	if (gl.menuOption == 2)
+		position = 260;
+	if (gl.menuOption == 3)
+		position = 140;
+        glTranslatef(880, position , 0);
         glBegin(GL_TRIANGLES);
                 glVertex2f(-55.0f, 0.0f);
                 glVertex2f(  0.0f, 30.0f);

@@ -23,9 +23,15 @@ extern void show_jorge(Global &gl, Game &g);
 extern void showMenu(Global &gl);
 extern void showTutorial(Global &gl);
 extern void showScores(Global &gl);
+
+#define MENU 1
+#define GAME 2
+#define HELP 3
+#define SCORES 4
+
 bool displayNames = false;
 bool showCesarL = false;
-// menu - 1, game - 2, help - 3, scores - 4, exit - 5
+
 int main()
 {
 	logOpen();
@@ -55,7 +61,7 @@ int main()
 
 void physics(Global &gl, Game &g)
 {
-	if (gl.menuState == 2)
+	if (gl.menuState == GAME)
 		cesar_physics(gl, g);       
 }
 
@@ -81,22 +87,22 @@ int check_keys(XEvent *e, Global &gl, Game &g)
         (void)shift; 
         switch (key) {
                 case XK_Escape:
-                        if (gl.menuState == 1) {
+                        if (gl.menuState == MENU) {
 				return 1;
 			}
-			else if (gl.menuState == 2) {
-				gl.menuState = 1;
+			if (gl.menuState == GAME) {
+				gl.menuState = MENU;
 			}
-			else if (gl.menuState == 3) {
+			if (gl.menuState == HELP) {
 				if (gl.helpScreen == 1)
-					gl.menuState = 1;
+					gl.menuState = MENU;
 			}
-			else if (gl.menuState == 4) {
-				gl.menuState = 1;
+			if (gl.menuState == SCORES) {
+				gl.menuState = MENU;
 			}
 			break;
                 case XK_w:
-			if (gl.menuState == 1) {
+			if (gl.menuState == MENU) {
 				if (gl.menuOption > 0)
 					gl.menuOption--;
 			}
@@ -104,7 +110,7 @@ int check_keys(XEvent *e, Global &gl, Game &g)
                 case XK_a:
                         break;
                 case XK_s:
-                        if (gl.menuState == 1) {
+                        if (gl.menuState == MENU) {
 				if (gl.menuOption < 3)
 					gl.menuOption++;
                         }
@@ -112,37 +118,37 @@ int check_keys(XEvent *e, Global &gl, Game &g)
                 case XK_d:
                         break;
 		case XK_e:
-			if (gl.menuState == 1) {
+			if (gl.menuState == MENU) {
 				if (gl.menuOption == 0) {
-					gl.menuState = 2;
+					gl.menuState = GAME;
 				} 
-				if (gl.menuOption == 1) {
-					gl.menuState = 3;
+				else if (gl.menuOption == 1) {
+					gl.menuState = HELP;
 				}
-				if (gl.menuOption == 2) {
-					gl.menuState = 4;
+				else if (gl.menuOption == 2) {
+					gl.menuState = SCORES;
 				} 
-				if (gl.menuOption == 3) {
+				else if (gl.menuOption == 3) {
 					return 1;
 				}
 			}
-			else if (gl.menuState == 3) {
+			else if (gl.menuState == HELP) {
 				if (gl.helpScreen < 4)
 					gl.helpScreen += 1;
 				else {
-					gl.menuState = 1;
+					gl.menuState = MENU;
 				}
 			}
 			break;
 		case XK_q:
-			if (gl.menuState == 3) {
+			if (gl.menuState == HELP) {
 				if (gl.helpScreen > 1)
 					gl.helpScreen -= 1;
 				else 
-					gl.menuState = 1;
+					gl.menuState = MENU;
 			}
-			else if (gl.menuState == 4) {
-				gl.menuState = 1;
+			else if (gl.menuState == SCORES) {
+				gl.menuState = MENU;
 			}
 			break;
                 case XK_equal:
@@ -180,9 +186,9 @@ extern void displayCesarL(int, int, int, int, const char*);
 void render(Global &gl, Game &g)
 {
 	// Show the menu, game, tutorial, or high scores
-	if (gl.menuState == 1) {
+	if (gl.menuState == MENU) {
 		showMenu(gl);
-	} else if (gl.menuState == 2) {
+	} else if (gl.menuState == GAME) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		// rendering the heads up display	
 		displayHUD(gl, g);
@@ -268,11 +274,11 @@ void render(Global &gl, Game &g)
         	}
 	}
 	
-	else if (gl.menuState == 3) {
+	else if (gl.menuState == HELP) {
 		showTutorial(gl);
 	}
 	
-	else if (gl.menuState == 4) {
+	else if (gl.menuState == SCORES) {
 		showScores(gl);
 	}
 }
