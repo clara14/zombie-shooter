@@ -20,13 +20,9 @@ extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 
 extern void showFloor(Global &gl, Game &g);
 extern void show_jorge(Global &gl, Game &g);
-extern void menu_render(Global &gl);
-extern void tutorial_render(Global &gl);
-extern void scores_render(Global &gl);
-int game();
-extern int tutorial();
-extern int highScores();
-	
+extern void showMenu(Global &gl);
+extern void showTutorial(Global &gl);
+extern void showScores(Global &gl);
 bool displayNames = false;
 bool showCesarL = false;
 // menu - 1, game - 2, help - 3, scores - 4, exit - 5
@@ -91,6 +87,14 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 			else if (gl.menuState == 2) {
 				gl.menuState = 1;
 			}
+			else if (gl.menuState == 3) {
+				if (gl.helpScreen == 1)
+					gl.menuState = 1;
+			}
+			else if (gl.menuState == 4) {
+				gl.menuState = 1;
+			}
+			break;
                 case XK_w:
 			if (gl.menuState == 1) {
 				if (gl.menuOption > 0)
@@ -175,8 +179,9 @@ extern void displayCesarL(int, int, int, int, const char*);
 
 void render(Global &gl, Game &g)
 {
+	// Show the menu, game, tutorial, or high scores
 	if (gl.menuState == 1) {
-		menu_render(gl);
+		showMenu(gl);
 	} else if (gl.menuState == 2) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		// rendering the heads up display	
@@ -264,11 +269,11 @@ void render(Global &gl, Game &g)
 	}
 	
 	else if (gl.menuState == 3) {
-		tutorial_render(gl);
+		showTutorial(gl);
 	}
 	
 	else if (gl.menuState == 4) {
-		scores_render(gl);
+		showScores(gl);
 	}
 }
 

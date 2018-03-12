@@ -23,92 +23,9 @@ void displayCesarL(int bpos, int cpos, int lpos, int color,
 	ggprint16(&r, 16, color, "function time: %f", duration);
 }
 	
+void showMenu(Global &gl);
 
-// object definitions
-//
-/*
-struct Pos {
-        float x, y, z;
-};
-
-struct Shape {
-        float width, height;
-        float radius;
-        Pos center;
-};
-*/
-class Global_scores : public Global {
-public:
-    	string name[10];
-	int score[10];
-    	Global_scores() {
-	    	xres = 1250;
-		yres = 900;
-		memset(keys, 0, 65536);
-		ifstream fin;
-		fin.open("scores.txt", ios::in);
-		if(fin.fail()) {
-		    exit(1);
-		}
-		for(int i=0;i<10;i++) {
-		    fin >> name[i];
-		    fin >> score[i];
-		}
-		fin.close();
-	}
-};
-// Function prototypes
-//
-void menu_render(Global &gl);
-int menu_check_keys(XEvent *e, Global &gl);
- 
-int menu_check_keys(XEvent *e, Global &gl) {
-        //keyboard input?
-        static int shift=0;
-        if (e->type != KeyPress && e->type != KeyRelease)
-                return 0;
-        int key = (XLookupKeysym(&e->xkey, 0) & 0x0000ffff);
-        //Log("key: %i\n", key);
-        if (e->type == KeyRelease) {
-                gl.keys[key]=0;
-                if (key == XK_Shift_L || key == XK_Shift_R)
-                        shift=0;
-                return 0;
-        }
-        gl.keys[key]=1;
-        if (key == XK_Shift_L || key == XK_Shift_R) {
-                shift=1;
-                return 0;
-        }
-        (void)shift;
-        switch (key) {
-                case XK_Escape:
-                        return 4;
-                case XK_w:
-			if (gl.menuOption > 0)
-				gl.menuOption--;
-			break;
-		case XK_Up:
-			if (gl.menuOption > 0)
-				gl.menuOption--;
-			break;
-                case XK_s:
-			if (gl.menuOption < 3)
-				gl.menuOption++;
-			break;
-		case XK_Down:
-			if (gl.menuOption < 3)
-				gl.menuOption++;
-			break;
-		case XK_e:
-			return (gl.menuOption+1);
-		case XK_Return:
-			return (gl.menuOption+1);
-        }
-        return 0;
-}
-
-void menu_render(Global &gl) {
+void showMenu(Global &gl) {
 	// reset tutorial screen
 	if (gl.helpScreen != 1)
 		gl.helpScreen = 1;
@@ -189,57 +106,9 @@ void menu_render(Global &gl) {
 	ggprint16(&r, 16, 0x00ff00fff, "render function time: %f", duration);
 
 }
-//----------------------------------------------------------------------------
-// Tutorial Menu-state
-//----------------------------------------------------------------------------
-// Function prototypes
-//
-int tutorial_keys(XEvent *e, Global &gl);
-void tutorial_render(Global &gl);
+void showTutorial(Global &gl);
 
-int tutorial_keys(XEvent *e, Global &gl) {
-        //keyboard input?
-        static int shift=0;
-        if (e->type != KeyPress && e->type != KeyRelease)
-                return 0;
-        int key = (XLookupKeysym(&e->xkey, 0) & 0x0000ffff);
-        //Log("key: %i\n", key);
-        if (e->type == KeyRelease) {
-                gl.keys[key]=0;
-                if (key == XK_Shift_L || key == XK_Shift_R)
-                        shift=0;
-                return 0;
-        }
-        gl.keys[key]=1;
-        if (key == XK_Shift_L || key == XK_Shift_R) {
-                shift=1;
-                return 0;
-        }
-        (void)shift;
-        switch (key) {
-                case XK_Escape:
-                        if (gl.helpScreen > 1)
-				gl.helpScreen -= 1;
-			else
-				return 1;
-			break;
-                case XK_e:
-			if (gl.helpScreen < 4)
-                               gl.helpScreen += 1;
-                        else
-                                return 1;
-			break;
-                case XK_Return:
-                        if (gl.helpScreen < 4)
-				gl.helpScreen += 1;
-			else
-				return 1;
-			break;
-        }
-	return 0;
-}
-
-void tutorial_render(Global &gl) {
+void showTutorial(Global &gl) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	Rect r;
 	r.bot = 700;
@@ -258,44 +127,10 @@ void tutorial_render(Global &gl) {
                 ggprint16(&r, 16, 0x00ffffff, "Extra Info 2");
         }
 }
-//----------------------------------------------------------------------------
-// High Scores Menu-state
-//----------------------------------------------------------------------------
-//Function prototypes
-//
-int scores_keys(XEvent *e, Global &gl);
-void scores_render(Global &gl);
 
+void showScores(Global &g);
 
-int scores_keys(XEvent *e, Global &gl) {
-        //keyboard input?
-        static int shift=0;
-        if (e->type != KeyPress && e->type != KeyRelease)
-                return 0;
-        int key = (XLookupKeysym(&e->xkey, 0) & 0x0000ffff);
-        //Log("key: %i\n", key);
-        if (e->type == KeyRelease) {
-                gl.keys[key]=0;
-                if (key == XK_Shift_L || key == XK_Shift_R)
-                        shift=0;
-                return 0;
-        }
-        gl.keys[key]=1;
-        if (key == XK_Shift_L || key == XK_Shift_R) {
-                shift=1;
-                return 0;
-        }
-        (void)shift;
-        switch (key) {
-                case XK_Escape:
-			return 1;
-		case XK_q:
-			return 1;
-        }
-        return 0;
-}
-
-void scores_render(Global &gl) {
+void showScores(Global &gl) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	Rect r;
 	r.bot = 800;
