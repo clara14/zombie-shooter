@@ -148,13 +148,15 @@ public:
 class Game {
 public:
         Player1 player1;
-    
+	int topScores[10];
+	string topPlayers[10];
     	Ship ship;
 	Zombie *zarr;
         Bullet *barr;
         int nasteroids;
         int nbullets;
 	int nzombies;
+	int score;
         struct timespec bulletTimer;
         struct timespec mouseThrustTimer;
         bool mouseThrustOn;
@@ -165,8 +167,19 @@ public:
 		nzombies = 0;
                 nasteroids = 0;
                 nbullets = 0;
+		score = 0;
                 mouseThrustOn = false;
                 clock_gettime(CLOCK_REALTIME, &bulletTimer);
+		ifstream fin;
+		fin.open("scores.txt", ios::in);
+		if(fin.fail()) {
+			exit(1);
+		}
+		for (int i=0;i<10;i++) {
+			fin >> topPlayers[i];
+			fin >> topScores[i];
+		}
+		fin.close();
         }
         ~Game() {
                 delete [] barr;
