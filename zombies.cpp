@@ -22,7 +22,7 @@ extern void showFloor(Global &gl, Game &g);
 extern void show_jorge(Global &gl, Game &g);
 extern void showMenu(Global &gl);
 extern void showTutorial(Global &gl);
-extern void showScores(Global &gl);
+extern void showScores(Global &gl, Game &g);
 
 #define MENU 1
 #define GAME 2
@@ -279,7 +279,7 @@ void render(Global &gl, Game &g)
 	}
 	
 	else if (gl.menuState == SCORES) {
-		showScores(gl);
+		showScores(gl, g);
 	}
 }
 

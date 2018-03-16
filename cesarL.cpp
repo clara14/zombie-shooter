@@ -22,6 +22,17 @@ void displayCesarL(int bpos, int cpos, int lpos, int color,
 	r.bot -= 10;
 	ggprint16(&r, 16, color, "function time: %f", duration);
 }
+
+bool checkScore(Game &g);
+
+bool checkScore(Game &g) {
+	bool check = false;
+	if (g.topScores[9] < g.score)
+		check = true;
+	return check;
+}
+
+
 	
 void showMenu(Global &gl);
 
@@ -128,29 +139,32 @@ void showTutorial(Global &gl) {
         }
 }
 
-void showScores(Global &g);
+void showScores(Global &gl, Game &g);
 
-void showScores(Global &gl) {
+void showScores(Global &gl, Game &g) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	Rect r;
 	r.bot = 800;
 	r.left = 625;
+	r.center = 0;
 	ggprint16(&r, 16, 0x00ffffff, "High Scores");
 	r.bot = 725;
 	r.left = 312;
 	for(int i=0;i<10;i++) {
-	    	ggprint16(&r, 16, 0x00ffffff, "NAME: ");
+		r.left = 312;
+		if (g.topPlayers[i] != "null")
+	    		ggprint16(&r, 16, 0x00ffffff, "NAME: ");
 		r.bot -= 50;
 	}
 	r.bot = 725;
-	r.left = 625;
 	for(int i=0;i<10;i++) {
+		r.left = 625;
 		ggprint16(&r, 16, 0x00ffffff, "-");
 		r.bot -= 50;
 	}
 	r.bot = 725;
-	r.left = 937;
-	for(int i=0; i<10;i++) {
+	for(int i=0;i<10;i++) {
+		r.left = 937;
 		ggprint16(&r, 16, 0x00ffffff, "SCORE");
 		r.bot -= 50;
 	}
