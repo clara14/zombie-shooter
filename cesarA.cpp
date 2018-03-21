@@ -1,5 +1,11 @@
 //Cesar Aleman
 //movement and boundaries of the play area
+//this also includes the bullets currently we do have
+//a cap on how many bullets there are but our basic requirement
+//only involves infintite bullets once we get that working we will
+//incorportate a mechanic that allows resupply and limits on bullers.
+
+//21MAR2018 upadate: bug has been fixed explained below
 
 #include "zlib.h"
 #include <time.h>       
@@ -37,11 +43,15 @@ void display_name_cesar(Global &gl, Game &g)
       r2.bot = 725;
       r2.left = 100;
       r2.center = 80;
+      
       ggprint8b(&r2, 20, 0x00fff000, "Display name func: %lf", (time * 1000));
       ggprint8b(&r2, 20, 0x00fff000, "using pow function: %lf", (time_function1() * 1000));
       ggprint8b(&r2, 20, 0x00fff000, "using asterisk: %lf", (time_function2() * 1000));
       ggprint8b(&r2, 20, 0x00fff000, "using sqrt: %lf", (time_function3() * 1000));
       ggprint8b(&r2, 20, 0x00fff000, "using pow with 0.5: %lf", (time_function4() * 1000));
+	  
+      ggprint8b(&r2, 20, 0x00fff000, "y postion of ship: %lf", g.ship.pos[1]);
+	  ggprint8b(&r2, 20, 0x00fff000, "x postion of ship: %lf", g.ship.pos[0]);
 
 }
 
@@ -154,17 +164,25 @@ void cesar_physics (Global &gl, Game &g)
       b->pos[0] += b->vel[0];
       b->pos[1] += b->vel[1];
       //window edge collision
+      //along with deletion of bullet once it has left the boundary
       if (b->pos[0] < 0.0) {
-          b->pos[0] += 0;
+          b->pos[0] += 5;
+          memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
       }
       else if (b->pos[0] > (float)gl.xres) {
-          b->pos[0] = gl.xres;
+          b->pos[0] = gl.xres + 5;
+		  memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
+		  g.nbullets--;
       }
       else if (b->pos[1] < 0.0) {
           b->pos[1] = gl.xres;
+          memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
+          g.nbullets--;
       }
       else if (b->pos[1] > (float)gl.yres) {
-          b->pos[1] = gl.xres;
+          b->pos[1] = gl.yres;
+          memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
+          g.nbullets--;
       }
       i++;
   }
@@ -229,13 +247,32 @@ void cesar_physics (Global &gl, Game &g)
       }
     }
   }
-  //bug fix
-  
-  if ((g.ship.pos[0] == 0) && (g.ship.pos[1] == 330) && (gl.keys[XK_a] && gl.keys[XK_w])) {
-        g.ship.pos[0] = 10;
-        g.ship.pos[1] = 340;
-        
-  }
+  //the bug allowed the player to go outside the boundary of the game
+  //area. once the player got to any of the corners and held the appropriate
+  //keys to go diagnoally, the object would exit the boundary, below is the
+  //solution I found to this issue
+
+  //*****************bug fix***************** 
+  //top left corner
+  	while(((g.ship.pos[0] == -3.5) && (g.ship.pos[1] > 343.5))) {
+        g.ship.pos[0] = 0;
+        g.ship.pos[1] = 340;    
+  	}
+  	//top right corner
+  	while(((g.ship.pos[0] == 1253.5) && (g.ship.pos[1] > 343.5))) {
+        g.ship.pos[0] = 1250;
+        g.ship.pos[1] = 340;    
+  	}
+  	//bottom left corner
+  	while(((g.ship.pos[0] == -3.5) && (g.ship.pos[1] < -3.5))) {
+        g.ship.pos[0] = 0;
+        g.ship.pos[1] = 0;
+    }
+    //bottom right corner    
+  	while(((g.ship.pos[0] == 1253.5) && (g.ship.pos[1] < -3.5))) {
+        g.ship.pos[0] = 1250;
+        g.ship.pos[1] = 0;
+    }
   
 }
 
