@@ -1,8 +1,6 @@
 //program: zombies.cpp
 #include "zlib.h"
 
-#define PROFILING_OFF
-
 
 //function prototypes
 void init_opengl(Global &gl, Game &g);
@@ -196,8 +194,6 @@ void render(Global &gl, Game &g)
 		displayHUD(gl, g);
 		// Displaying group names for lab5 assignment
 		//
-                #ifdef PROFILING_ON
-
 		if ( displayNames == false ) {	
 			displayAlfredo( 500, 100, 150, 0x0079ccb3, 
 					"Press 'n' to display names");	
@@ -212,10 +208,9 @@ void render(Global &gl, Game &g)
 					"Press 'L' to display my name");
 	
 		display_name_cesar(gl, g);
+	
 		show_jorge(gl, g);
-                #endif
 		showFloor(gl, g);
-                
         	//-------------
         	//Draw the ship
         	glColor3fv(g.ship.color);

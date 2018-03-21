@@ -1,5 +1,5 @@
 // Author: Cesar Lara
-//
+
 
 #include "zlib.h"
 #include "fonts.h"
@@ -47,6 +47,27 @@ void listScores(Game &g) {
 		}
 	}
 }
+
+
+
+void drawZombies(Game &g);
+
+void drawZombies(Game &g) {
+    	Zombie *z = g.zarr;
+	while (z) {
+	    glColor3ub(20,74,23);
+	    glPushMatrix();
+	    glTranslatef(z->pos[0], z->pos[1], z->pos[2]);
+	    glBegin(GL_QUADS);
+	    	glVertex2i(-25, -50);
+		glVertex2i(-25, 50);
+		glVertex2i(25, 50);
+		glVertex2i(25, -50);
+	    glEnd();
+	    glPopMatrix();
+	    z = z->next;
+	}
+}
 	
 void showMenu(Global &gl);
 
@@ -55,9 +76,11 @@ void showMenu(Global &gl) {
 	if (gl.helpScreen != 1)
 		gl.helpScreen = 1;
 	// Implementing a timer
+#ifdef PROFILING_ON
         static double duration = 0.0;
         struct timespec timeStart, timeEnd;
         clock_gettime(CLOCK_REALTIME, &timeStart);
+#endif
 	// Render game title
 	//
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -122,12 +145,14 @@ void showMenu(Global &gl) {
 	glEnd();
 	glPopMatrix();
 	// Add time to it
+#ifdef PROFILING_ON
         clock_gettime(CLOCK_REALTIME, &timeEnd);
         duration += timeDiff(&timeStart, &timeEnd);
 	r.bot = gl.yres - 50;
 	r.left = 100;
 	r.center += 20;
 	ggprint16(&r, 16, 0x00ff00fff, "render function time: %f", duration);
+#endif
 
 }
 void showTutorial(Global &gl);
