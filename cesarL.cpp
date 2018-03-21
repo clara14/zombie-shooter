@@ -32,7 +32,21 @@ bool checkScore(Game &g) {
 	return check;
 }
 
+void listScores(Game &g);
 
+void listScores(Game &g) {
+	string name(g.player1.name);
+	g.topPlayers[9] = name;
+	g.topScores[9] = g.score;
+	for(int oloop=0;oloop<10;oloop++) {
+		for(int iloop=0;iloop<9;iloop++) {
+			if(g.topScores[iloop] < g.topScores[iloop+1]) {
+				swap(g.topScores[iloop],g.topScores[iloop+1]);
+				swap(g.topPlayers[iloop],g.topPlayers[iloop+1]);
+			}
+		}
+	}
+}
 	
 void showMenu(Global &gl);
 
@@ -71,7 +85,6 @@ void showMenu(Global &gl) {
         for(int i=0;i<4;i++) {
             r.bot = (500 - (i*120)) - 12;
             r.left = 625;
-            r.center=-20;
             if(i == 0)
                 ggprint16(&r, 16, 0xffffffff, "%s", "Play Game");
             if(i == 1)
@@ -146,7 +159,6 @@ void showScores(Global &gl, Game &g) {
 	Rect r;
 	r.bot = 800;
 	r.left = 625;
-	r.center = 0;
 	ggprint16(&r, 16, 0x00ffffff, "High Scores");
 	r.bot = 725;
 	r.left = 312;
@@ -165,7 +177,8 @@ void showScores(Global &gl, Game &g) {
 	r.bot = 725;
 	for(int i=0;i<10;i++) {
 		r.left = 937;
-		ggprint16(&r, 16, 0x00ffffff, "SCORE");
+		if (g.topScores[i] != 0)
+			ggprint16(&r, 16, 0x00ffffff, "SCORE");
 		r.bot -= 50;
 	}
 	
