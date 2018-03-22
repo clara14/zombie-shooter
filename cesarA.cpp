@@ -54,8 +54,8 @@ void display_name_cesar(Global &gl, Game &g)
       ggprint8b(&r2, 20, 0x00fff000, "using sqrt: %lf", (time_function3() * 1000));
       ggprint8b(&r2, 20, 0x00fff000, "using pow with 0.5: %lf", (time_function4() * 1000));
 	  
-      ggprint8b(&r2, 20, 0x00fff000, "y postion of ship: %lf", g.ship.pos[1]);
-	  ggprint8b(&r2, 20, 0x00fff000, "x postion of ship: %lf", g.ship.pos[0]);
+      ggprint8b(&r2, 20, 0x00fff000, "y postion of player1: %lf", g.player1.pos[1]);
+	  ggprint8b(&r2, 20, 0x00fff000, "x postion of player1: %lf", g.player1.pos[0]);
 
 }
 
@@ -132,17 +132,17 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 {
   bug_fix(g);
   //end of wall
-  if (g.ship.pos[0] < 0.0) {
-	   g.ship.pos[0] = 0;
+  if (g.player1.pos[0] < 0.0) {
+	   g.player1.pos[0] = 0;
   }
-  else if (g.ship.pos[0] > (float)gl.xres) {
-	   g.ship.pos[0] = gl.xres;
+  else if (g.player1.pos[0] > (float)gl.xres) {
+	   g.player1.pos[0] = gl.xres;
   }
-  else if (g.ship.pos[1] > 340) {
-	   g.ship.pos[1] = 340;
+  else if (g.player1.pos[1] > 340) {
+	   g.player1.pos[1] = 340;
   }
-  else if (g.ship.pos[1] < 0) {
-     g.ship.pos[1] = 0;
+  else if (g.player1.pos[1] < 0) {
+     g.player1.pos[1] = 0;
   }
 
   //bullet positions
@@ -190,31 +190,31 @@ void cesar_physics_and_movement (Global &gl, Game &g)
         //---------------------------------------------------
         //check keys pressed now
 	     //     LEFT
-	    //g.ship.angle = 90;
+	    //g.player1.angle = 90;
   if (gl.keys[XK_a]) {
-	   g.ship.pos[0]-=3.5;
-     g.ship.angle = 90;
+	   g.player1.pos[0]-=3.5;
+     g.player1.angle = 90;
   }
 	//     RIGHT
   if (gl.keys[XK_d]) {
-	   g.ship.pos[0]+=3.5;
-     g.ship.angle = -90;
+	   g.player1.pos[0]+=3.5;
+     g.player1.angle = -90;
   }
 	//     UP
   if (gl.keys[XK_w]) {
-      Flt speed = sqrt(g.ship.vel[0]*g.ship.vel[0]+
-                            g.ship.vel[1]*g.ship.vel[1]);
+      Flt speed = sqrt(g.player1.vel[0]*g.player1.vel[0]+
+                            g.player1.vel[1]*g.player1.vel[1]);
       if (speed > 10.0f) {                    
           speed = 10.0f;
-          normalize2d(g.ship.vel);
-          g.ship.vel[0] *= speed;
-          g.ship.vel[1] *= speed;                
+          normalize2d(g.player1.vel);
+          g.player1.vel[0] *= speed;
+          g.player1.vel[1] *= speed;                
       }
-	g.ship.pos[1]+=3.5;
+	g.player1.pos[1]+=3.5;
       }
     //      DOWN
 	if (gl.keys[XK_s]) {
-	    g.ship.pos[1] -= 3.5;
+	    g.player1.pos[1] -= 3.5;
 	}	    
 	if (gl.keys[XK_space]) {
                 //a little time between each bullet
@@ -228,15 +228,15 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 
       if (g.nbullets < MAX_BULLETS) {
       //shoot a bullet...
-      //Bullet *b = new Bullet;
+      
       Bullet *b = &g.barr[g.nbullets];
       timeCopy(&b->time, &bt);
-      b->pos[0] = g.ship.pos[0];
-      b->pos[1] = g.ship.pos[1];
-      b->vel[0] = g.ship.vel[0];
-      b->vel[1] = g.ship.vel[1];
-      //convert ship angle to radians
-      Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+      b->pos[0] = g.player1.pos[0];
+      b->pos[1] = g.player1.pos[1];
+      b->vel[0] = g.player1.vel[0];
+      b->vel[1] = g.player1.vel[1];
+      //convert player1 angle to radians
+      Flt rad = ((g.player1.angle+90.0) / 360.0f) * PI * 2.0;
       //convert angle to a vector
       Flt xdir = cos(rad);
       Flt ydir = sin(rad);
@@ -262,24 +262,24 @@ void bug_fix (Game &g)
 
   //*****************bug fix*****************
   //top left corner
-  	while(((g.ship.pos[0] == -3.5) && (g.ship.pos[1] > 343.5))) {
-        g.ship.pos[0] = 0;
-        g.ship.pos[1] = 340;    
+  	while(((g.player1.pos[0] == -3.5) && (g.player1.pos[1] > 343.5))) {
+        g.player1.pos[0] = 0;
+        g.player1.pos[1] = 340;    
   	}
   	//top right corner
-  	while(((g.ship.pos[0] == 1253.5) && (g.ship.pos[1] > 343.5))) {
-        g.ship.pos[0] = 1250;
-        g.ship.pos[1] = 340;    
+  	while(((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] > 343.5))) {
+        g.player1.pos[0] = 1250;
+        g.player1.pos[1] = 340;    
   	}
   	//bottom left corner
-  	while(((g.ship.pos[0] == -3.5) && (g.ship.pos[1] < -3.5))) {
-        g.ship.pos[0] = 0;
-        g.ship.pos[1] = 0;
+  	while(((g.player1.pos[0] == -3.5) && (g.player1.pos[1] < -3.5))) {
+        g.player1.pos[0] = 0;
+        g.player1.pos[1] = 0;
     }
     //bottom right corner    
-  	while(((g.ship.pos[0] == 1253.5) && (g.ship.pos[1] < -3.5))) {
-        g.ship.pos[0] = 1250;
-        g.ship.pos[1] = 0;
+  	while(((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] < -3.5))) {
+        g.player1.pos[0] = 1250;
+        g.player1.pos[1] = 0;
     }
   
 }
