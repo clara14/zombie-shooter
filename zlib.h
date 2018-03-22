@@ -81,6 +81,8 @@ public:
 	int health;
 	const char * name;
 	string weaponType;
+	struct timespec time;
+	double ptime;
 
 public:
         Player1() {
@@ -95,6 +97,7 @@ public:
 		health = 100;
 		name = "DOOM_GUY";
 		weaponType = "BFG";
+		ptime = 0.0;
         }
 };
 

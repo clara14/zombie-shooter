@@ -48,7 +48,14 @@ void listScores(Game &g) {
 	}
 }
 
+void updateTime(Game &g);
 
+void updateTime(Game &g) {
+    	struct timespec pt;
+	clock_gettime(CLOCK_REALTIME, &pt);
+	g.player1.ptime = timeDiff(&g.player1.time, &pt);
+
+}
 
 void drawZombies(Game &g);
 

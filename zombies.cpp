@@ -1,6 +1,7 @@
 //program: zombies.cpp
 #include "zlib.h"
 
+#define PROFILING_ON
 
 //function prototypes
 void init_opengl(Global &gl, Game &g);
@@ -23,6 +24,7 @@ extern void show_jorge(Global &gl, Game &g);
 extern void showMenu(Global &gl);
 extern void showTutorial(Global &gl);
 extern void showScores(Global &gl, Game &g);
+extern void updateTime(Game &g);
 
 #define MENU 1
 #define GAME 2
@@ -61,8 +63,10 @@ int main()
 
 void physics(Global &gl, Game &g)
 {
-	if (gl.menuState == GAME)
-		cesar_physics(gl, g);       
+	if (gl.menuState == GAME) {
+		updateTime(g);
+	    	cesar_physics(gl, g);
+	}	
 }
 
 int check_keys(XEvent *e, Global &gl, Game &g)
@@ -120,6 +124,9 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 		case XK_e:
 			if (gl.menuState == MENU) {
 				if (gl.menuOption == 0) {
+				    	struct timespec pt;
+				    	clock_gettime(CLOCK_REALTIME, &pt);
+					timeCopy(&g.player1.time, &pt);
 					gl.menuState = GAME;
 				} 
 				else if (gl.menuOption == 1) {
@@ -192,6 +199,7 @@ void render(Global &gl, Game &g)
 		glClear(GL_COLOR_BUFFER_BIT);
 		// rendering the heads up display	
 		displayHUD(gl, g);
+#ifdef PROFILING_ON
 		// Displaying group names for lab5 assignment
 		//
 		if ( displayNames == false ) {	
@@ -210,6 +218,12 @@ void render(Global &gl, Game &g)
 		display_name_cesar(gl, g);
 	
 		show_jorge(gl, g);
+
+		Rect r;
+		r.bot = 800;
+		r.left = 500;
+		ggprint16(&r, 16, 0x009508f8, "player time: %f", g.player1.ptime);
+#endif
 		showFloor(gl, g);
         	//-------------
         	//Draw the ship
