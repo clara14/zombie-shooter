@@ -7,7 +7,7 @@
 void init_opengl(Global &gl, Game &g);
 int check_keys(XEvent *e, Global &gl, Game &g);
 void physics(Global &gl, Game &g);
-void cesar_physics(Global &gl, Game &g);
+void cesar_physics_and_movement(Global &gl, Game &g);
 void render(Global &gl, Game &g);
 void normalize2d(Vec v);
 extern double timeDiff(struct timespec *start, struct timespec *end);
@@ -65,7 +65,7 @@ void physics(Global &gl, Game &g)
 {
 	if (gl.menuState == GAME) {
 		updateTime(g);
-	    	cesar_physics(gl, g);
+	    	cesar_physics_and_movement(gl, g);
 	}	
 }
 
