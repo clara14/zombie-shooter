@@ -5,7 +5,10 @@
 //only involves infintite bullets once we get that working we will
 //incorportate a mechanic that allows resupply and limits on bullers.
 
-//21MAR2018 upadate: bug has been fixed explained below
+//21MAR2018 update: bug has been fixed explained below
+//22MAR2018 update: tried to add another oject into the
+//                  the screen but the game crashed. Also
+//                  made the bug fix solution into a function
 
 #include "zlib.h"
 #include <time.h>       
@@ -15,6 +18,8 @@ extern struct timespec timeStart, timeCurrent;
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 extern void normalize2d(Vec);
+
+void bug_fix(Game &g);
 
 double time_function1();
 double time_function2();
@@ -37,7 +42,6 @@ void display_name_cesar(Global &gl, Game &g)
       ggprint8b(&r1, 16, 0x00ff0000, "Cesar Aleman");
 
       clock_gettime(CLOCK_REALTIME, &timeEnd);
-      //time = &timeEnd - &timeStart;
       time += timeDiff(&timeStart, &timeEnd);
 
       r2.bot = 725;
@@ -62,7 +66,6 @@ double time_function1()
   struct timespec timeStart, timeEnd;
   clock_gettime(CLOCK_REALTIME, &timeStart);
   int i = 0;
-  //int b = 2;
   int a = 2;
  while (i < 100) {
     a = pow(a, 2);
@@ -70,7 +73,6 @@ double time_function1()
     i++;
  }
   clock_gettime(CLOCK_REALTIME, &timeEnd);
-  //time = &timeEnd - &timeStart;
   time += timeDiff(&timeStart, &timeEnd);
   return time; 
 }
@@ -82,14 +84,12 @@ double time_function2()
   struct timespec timeStart, timeEnd;
   clock_gettime(CLOCK_REALTIME, &timeStart);
   int i = 0;
-  //int b = 2;
   int a = 2;
   while (i < 100) {
     a = a * a;
     i++;
  }
   clock_gettime(CLOCK_REALTIME, &timeEnd);
-  //time = &timeEnd - &timeStart;
   time += timeDiff(&timeStart, &timeEnd);
   return time; 
 }
@@ -107,7 +107,6 @@ double time_function3()
     i++;
  }
   clock_gettime(CLOCK_REALTIME, &timeEnd);
-  //time = &timeEnd - &timeStart;
   time += timeDiff(&timeStart, &timeEnd);
   return time; 
 }
@@ -125,13 +124,13 @@ double time_function4()
     i++;
  }
   clock_gettime(CLOCK_REALTIME, &timeEnd);
-  //time = &timeEnd - &timeStart;
   time += timeDiff(&timeStart, &timeEnd);
   return time; 
 }
 
-void cesar_physics (Global &gl, Game &g)
+void cesar_physics_and_movement (Global &gl, Game &g)
 {
+  bug_fix(g);
   //end of wall
   if (g.ship.pos[0] < 0.0) {
 	   g.ship.pos[0] = 0;
@@ -145,6 +144,7 @@ void cesar_physics (Global &gl, Game &g)
   else if (g.ship.pos[1] < 0) {
      g.ship.pos[1] = 0;
   }
+
   //bullet positions
   struct timespec bt;
   clock_gettime(CLOCK_REALTIME, &bt);
@@ -168,11 +168,12 @@ void cesar_physics (Global &gl, Game &g)
       if (b->pos[0] < 0.0) {
           b->pos[0] += 5;
           memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
+          g.nbullets--;
       }
       else if (b->pos[0] > (float)gl.xres) {
           b->pos[0] = gl.xres + 5;
-		  memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
-		  g.nbullets--;
+		      memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
+		      g.nbullets--;
       }
       else if (b->pos[1] < 0.0) {
           b->pos[1] = gl.xres;
@@ -222,6 +223,9 @@ void cesar_physics (Global &gl, Game &g)
     double ts = timeDiff(&g.bulletTimer, &bt);
     if (ts > 0.1) {
       timeCopy(&g.bulletTimer, &bt);
+
+      //here is where the ammo system will be incorporated
+
       if (g.nbullets < MAX_BULLETS) {
       //shoot a bullet...
       //Bullet *b = new Bullet;
@@ -247,12 +251,16 @@ void cesar_physics (Global &gl, Game &g)
       }
     }
   }
-  //the bug allowed the player to go outside the boundary of the game
+ 
+}
+void bug_fix (Game &g) 
+{
+   //the bug allowed the player to go outside the boundary of the game
   //area. once the player got to any of the corners and held the appropriate
   //keys to go diagnoally, the object would exit the boundary, below is the
   //solution I found to this issue
 
-  //*****************bug fix***************** 
+  //*****************bug fix*****************
   //top left corner
   	while(((g.ship.pos[0] == -3.5) && (g.ship.pos[1] > 343.5))) {
         g.ship.pos[0] = 0;
@@ -275,9 +283,3 @@ void cesar_physics (Global &gl, Game &g)
     }
   
 }
-
-
-
-    
-
-
