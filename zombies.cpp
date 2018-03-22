@@ -25,6 +25,8 @@ extern void showMenu(Global &gl);
 extern void showTutorial(Global &gl);
 extern void showScores(Global &gl, Game &g);
 extern void updateTime(Game &g);
+extern void drawZombies(Game &g);
+extern int checkQuad(Global &gl, Game &g);
 
 #define MENU 1
 #define GAME 2
@@ -222,15 +224,16 @@ void render(Global &gl, Game &g)
 		Rect r;
 		r.bot = 800;
 		r.left = 500;
-		ggprint16(&r, 16, 0x009508f8, "player time: %f", g.player1.ptime);
+		int quad = checkQuad(gl, g);
+		ggprint16(&r, 16, 0x009508f8, "player quad: %i", quad);
 #endif
 		showFloor(gl, g);
         	//-------------
         	//Draw the ship
         	glColor3fv(g.ship.color);
         	glPushMatrix();
-        	glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
-        	glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
+        	glTranslatef(g.player1.pos[0], g.player1.pos[1], g.player1.pos[2]);
+        	glRotatef(g.player1.angle, 0.0f, 0.0f, 1.0f);
         	glBegin(GL_TRIANGLES);
                 	glVertex2f(-12.0f, -10.0f);
                 	glVertex2f(  0.0f, 20.0f);
@@ -247,7 +250,7 @@ void render(Global &gl, Game &g)
         	if (gl.keys[XK_Up] || g.mouseThrustOn) {
                 	int i;
                 	//draw thrust
-                	Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+                	Flt rad = ((g.player1.angle+90.0) / 360.0f) * PI * 2.0;
                 	//convert angle to a vector
                 	Flt xdir = cos(rad);
                 	Flt ydir = sin(rad);
@@ -260,8 +263,8 @@ void render(Global &gl, Game &g)
                                 	xe = -xdir * r + rnd() * 18.0 - 9.0;
                                 	ye = -ydir * r + rnd() * 18.0 - 9.0;
                                 	glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
-                                	glVertex2f(g.ship.pos[0]+xs,g.ship.pos[1]+ys);
-                                	glVertex2f(g.ship.pos[0]+xe,g.ship.pos[1]+ye);
+                                	glVertex2f(g.player1.pos[0]+xs,g.player1.pos[1]+ys);
+                                	glVertex2f(g.player1.pos[0]+xe,g.player1.pos[1]+ye);
                         	}
                 	glEnd();
         	}
@@ -286,6 +289,8 @@ void render(Global &gl, Game &g)
                 	glEnd();
                 	++b;
         	}
+		// Draw all existing zombies
+		drawZombies(g);
 	}
 	
 	else if (gl.menuState == HELP) {

@@ -23,6 +23,8 @@ void displayCesarL(int bpos, int cpos, int lpos, int color,
 	ggprint16(&r, 16, color, "function time: %f", duration);
 }
 
+//High-score functions
+//
 bool checkScore(Game &g);
 
 bool checkScore(Game &g) {
@@ -32,9 +34,9 @@ bool checkScore(Game &g) {
 	return check;
 }
 
-void listScores(Game &g);
+void sortScores(Game &g);
 
-void listScores(Game &g) {
+void sortScores(Game &g) {
 	string name(g.player1.name);
 	g.topPlayers[9] = name;
 	g.topScores[9] = g.score;
@@ -48,6 +50,22 @@ void listScores(Game &g) {
 	}
 }
 
+void saveScores(Game &g);
+
+void saveScores(Game &g) {
+    	ofstream fout;
+	fout.open("scores.txt");
+	if (fout.fail()) {
+	    	cout << "scores.txt failed to open\n";
+		exit(1);
+	}
+	for (int i=0;i<10;i++) {
+	    	fout << g.topPlayers[i] << "\t" << g.topScores[i] << endl;
+	}
+}
+
+// Player functions
+//
 void updateTime(Game &g);
 
 void updateTime(Game &g) {
@@ -57,22 +75,44 @@ void updateTime(Game &g) {
 
 }
 
+int checkQuad(Global &gl, Game &g);
+
+int checkQuad(Global &gl, Game &g) {
+    	float xpos = g.ship.pos[0];
+	float ypos = g.ship.pos[1];
+	int quadrant = 3;
+	if (xpos >= (gl.xres / 2)) {
+	    	if (ypos <= 340 && ypos > 170)
+		    	quadrant = 1;
+		else if (ypos <= 170)
+		    	quadrant = 4;
+	} else {
+	    	if (ypos > 170)
+		    	quadrant = 2;
+	}
+	return quadrant;
+}
+	    	
+// Zombie functions
+//
+void createZombie(Game &g);
+
 void drawZombies(Game &g);
 
 void drawZombies(Game &g) {
     	Zombie *z = g.zarr;
 	while (z) {
-	    glColor3ub(20,74,23);
-	    glPushMatrix();
-	    glTranslatef(z->pos[0], z->pos[1], z->pos[2]);
-	    glBegin(GL_QUADS);
-	    	glVertex2i(-25, -50);
-		glVertex2i(-25, 50);
-		glVertex2i(25, 50);
-		glVertex2i(25, -50);
-	    glEnd();
-	    glPopMatrix();
-	    z = z->next;
+	    	glColor3ub(20,74,23);
+	    	glPushMatrix();
+	    	glTranslatef(z->pos[0], z->pos[1], z->pos[2]);
+	    	glBegin(GL_QUADS);
+	    		glVertex2i(-25, -50);
+			glVertex2i(-25, 50);
+			glVertex2i(25, 50);
+			glVertex2i(25, -50);
+	    	glEnd();
+	    	glPopMatrix();
+	    	z = z->next;
 	}
 }
 	
@@ -114,7 +154,7 @@ void showMenu(Global &gl) {
 	//
         for(int i=0;i<4;i++) {
             r.bot = (500 - (i*120)) - 12;
-            r.left = 625;
+            r.left = gl.xres / 2;
             if(i == 0)
                 ggprint16(&r, 16, 0xffffffff, "%s", "Play Game");
             if(i == 1)
@@ -142,14 +182,14 @@ void showMenu(Global &gl) {
         glBegin(GL_TRIANGLES);
                 glVertex2f(-55.0f, 0.0f);
                 glVertex2f(  0.0f, 30.0f);
-                glVertex2f(  0.0f, 0.0f);
+                glVertex2f(  -8.0f, 0.0f);
+	glEnd();
+	glColor3ub(210, 210, 210);
+	glBegin(GL_TRIANGLES);
                 glVertex2f(  0.0f, -30.0f);
-                glVertex2f(  0.0f, 0.0f);
+                glVertex2f( -8.0f, 0.0f);
                 glVertex2f( -55.0f, 0.0f);
         glEnd();
-	glBegin(GL_POINTS);
-		glVertex2f(0.0f, 0.0f);
-	glEnd();
 	glPopMatrix();
 	// Add time to it
 #ifdef PROFILING_ON

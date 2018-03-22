@@ -70,7 +70,7 @@ public:
 	}
 };
 
-class Player1 {
+class Player {
 public:
         Vec dir;
         Vec pos;
@@ -85,7 +85,7 @@ public:
 	double ptime;
 
 public:
-        Player1() {
+        Player() {
                 VecZero(dir);
                 pos[0] = (Flt)(XRES/2);
                 pos[1] = (Flt)(YRES/2);
@@ -150,7 +150,7 @@ public:
 
 class Game {
 public:
-        Player1 player1;
+        Player player1;
 	int topScores[10];
 	string topPlayers[10];
     	Ship ship;
