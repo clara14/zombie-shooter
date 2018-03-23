@@ -150,11 +150,12 @@ public:
 
 class Game {
 public:
+	Vec pos[4];
         Player player1;
 	int topScores[10];
 	string topPlayers[10];
     	Ship ship;
-	Zombie *zarr;
+	Zombie *znext;
         Bullet *barr;
         int nasteroids;
         int nbullets;
@@ -165,8 +166,20 @@ public:
         bool mouseThrustOn;
 public:
         Game(Global gl) {
+		pos[0][0] = 1170;
+		pos[0][1] = 310;
+		pos[0][2] = 0;
+		pos[1][0] = 30;
+		pos[1][1] = 310;
+		pos[1][2] = 0;
+		pos[2][0] = 30;
+		pos[2][1] = 30;
+		pos[2][2] = 0;
+		pos[3][0] = 1170;
+		pos[3][1] = 30;
+		pos[3][2] = 0;
                 barr = new Bullet[MAX_BULLETS];
-		zarr = new Zombie[MAX_ZOMBIES];
+		znext = NULL;
 		nzombies = 0;
                 nasteroids = 0;
                 nbullets = 0;
@@ -186,7 +199,6 @@ public:
         }
         ~Game() {
                 delete [] barr;
-		delete [] zarr;
         }
 };
 

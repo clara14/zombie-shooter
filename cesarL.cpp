@@ -78,8 +78,8 @@ void updateTime(Game &g) {
 int checkQuad(Global &gl, Game &g);
 
 int checkQuad(Global &gl, Game &g) {
-    	float xpos = g.ship.pos[0];
-	float ypos = g.ship.pos[1];
+    	float xpos = g.player1.pos[0];
+	float ypos = g.player1.pos[1];
 	int quadrant = 3;
 	if (xpos >= (gl.xres / 2)) {
 	    	if (ypos <= 340 && ypos > 170)
@@ -95,12 +95,33 @@ int checkQuad(Global &gl, Game &g) {
 	    	
 // Zombie functions
 //
-void createZombie(Game &g);
+void createZombie(Global &gl, Game &g, int pquad, int n) {
+	int quad = 4;
+	while (quad == pquad) {
+		quad = rand() % 4 + 1;
+	}
+	for(int i=0;i<n;i++) {
+		Zombie *z = new Zombie;
+		z->pos[0] = g.pos[quad-1][0];
+		z->pos[1] = g.pos[quad-1][1];
+		z->pos[2] = 0.0f;
+		z->next = g.znext;
+		if (g.znext != NULL)
+			g.znext->prev = z;
+		g.znext = z;
+		++g.nzombies;
+		if (quad != 4)
+			quad++;
+		else
+			quad = 1;
+	}
+}
+			
 
 void drawZombies(Game &g);
 
-void drawZombies(Game &g) {
-    	Zombie *z = g.zarr;
+void drawZombies(Game &g) {	
+    	Zombie *z = g.znext;
 	while (z) {
 	    	glColor3ub(20,74,23);
 	    	glPushMatrix();
@@ -112,7 +133,7 @@ void drawZombies(Game &g) {
 			glVertex2i(25, -50);
 	    	glEnd();
 	    	glPopMatrix();
-	    	z = z->next;
+		z = z->next;
 	}
 }
 	
