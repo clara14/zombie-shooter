@@ -9,6 +9,8 @@
 //22MAR2018 update: tried to add another oject into the
 //                  the screen but the game crashed. Also
 //                  made the bug fix solution into a function
+//23MAR2018 update: collision detection is being added, early stages
+
 
 #include "zlib.h"
 #include <time.h>       
@@ -131,6 +133,8 @@ double time_function4()
 void cesar_physics_and_movement (Global &gl, Game &g)
 {
   bug_fix(g);
+
+  Flt z_coordx, z_coordy, dist;
   //end of wall
   if (g.player1.pos[0] < 0.0) {
 	   g.player1.pos[0] = 0;
@@ -187,6 +191,26 @@ void cesar_physics_and_movement (Global &gl, Game &g)
       }
       i++;
   }
+  /*
+  //collision detection between zombie and bullet
+  int i = 0;
+  while (i < g.nbullets) {
+  	Bullet *b = &g.barr[i];
+	z_coordx = b.pos[0] - z.pos[0];
+	z_coordy = b.pos[1] - z.pos[1];
+	dist = (z_coordx*z_coordx + z_coordy*z_coordy);
+	
+	//collision with bullet
+	if (dist > z.pos[0]) {
+		deleteZombie(&g, z);
+		g.nzombies--;
+
+		memcpy(&g.barr[i], &g.barr[g.nbullets - 1], sizeof(Bullet));
+		g.nbullets--;
+	}	
+  }
+  */
+
         //---------------------------------------------------
         //check keys pressed now
 	     //     LEFT
@@ -217,7 +241,7 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 	    g.player1.pos[1] -= 3.5;
 	}	    
 	if (gl.keys[XK_space]) {
-                //a little time between each bullet
+     //a little time between each bullet
     struct timespec bt;
     clock_gettime(CLOCK_REALTIME, &bt);
     double ts = timeDiff(&g.bulletTimer, &bt);
