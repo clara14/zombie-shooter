@@ -48,6 +48,7 @@ void displayHUD(Global &gl, Game &g) {
     ggprint8b(&r, 16, 0x00ffff00, "| \t PlayerName: %s", g.player1.name);
     ggprint8b(&r, 16, 0x00ffff00, "| \t Health: %i", g.player1.health);
     ggprint8b(&r, 16, 0x00ffff00, "| \t Weapon: 9mm Handgun");
+    ggprint8b(&r, 16, 0x00ffff00, "| \t Score:  %i", g.score);
     ggprint8b(&r, 16, 0x00ff0000, "-------------------------------------");
 }
 
