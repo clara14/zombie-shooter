@@ -161,6 +161,7 @@ public:
         int nbullets;
 	int nzombies;
 	int score;
+	int wave;
         struct timespec bulletTimer;
         struct timespec mouseThrustTimer;
         bool mouseThrustOn;
@@ -178,6 +179,7 @@ public:
 		pos[3][0] = 1170;
 		pos[3][1] = 30;
 		pos[3][2] = 0;
+		wave = 0;
                 barr = new Bullet[MAX_BULLETS];
 		znext = NULL;
 		nzombies = 0;

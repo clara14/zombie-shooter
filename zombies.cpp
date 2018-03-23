@@ -27,6 +27,8 @@ extern void showScores(Global &gl, Game &g);
 extern void updateTime(Game &g);
 extern void drawZombies(Game &g);
 extern int checkQuad(Global &gl, Game &g);
+extern void deleteZombies(Game &g);
+extern void spawnWave(Global &gl, Game &g);
 
 #define MENU 1
 #define GAME 2
@@ -67,6 +69,7 @@ void physics(Global &gl, Game &g)
 {
 	if (gl.menuState == GAME) {
 		updateTime(g);
+		spawnWave(gl, g);
 	    	cesar_physics_and_movement(gl, g);
 	}	
 }
@@ -98,6 +101,7 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 			}
 			if (gl.menuState == GAME) {
 				gl.menuState = MENU;
+				deleteZombies(g);
 			}
 			if (gl.menuState == HELP) {
 				if (gl.helpScreen == 1)
@@ -129,6 +133,7 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 				    	struct timespec pt;
 				    	clock_gettime(CLOCK_REALTIME, &pt);
 					timeCopy(&g.player1.time, &pt);
+					g.wave = 0;
 					gl.menuState = GAME;
 				} 
 				else if (gl.menuOption == 1) {
@@ -226,6 +231,9 @@ void render(Global &gl, Game &g)
 		r.left = 500;
 		int quad = checkQuad(gl, g);
 		ggprint16(&r, 16, 0x009508f8, "player quad: %i", quad);
+		r.bot = 750;
+		quad = g.nzombies;
+		ggprint16(&r, 16, 0x009508f8, "zombies: %i", quad);
 #endif
 		showFloor(gl, g);
         	//-------------

@@ -72,6 +72,9 @@ void updateTime(Game &g) {
     	struct timespec pt;
 	clock_gettime(CLOCK_REALTIME, &pt);
 	g.player1.ptime = timeDiff(&g.player1.time, &pt);
+	if (g.player1.ptime > 5.0 && g.wave < 1) {
+	    	g.wave++;
+	}
 
 }
 
@@ -95,7 +98,18 @@ int checkQuad(Global &gl, Game &g) {
 	    	
 // Zombie functions
 //
-void createZombie(Global &gl, Game &g, int pquad, int n) {
+extern void listZombies(Game &g);
+extern void createZombie(Game &g, int pquad, int n);
+
+void spawnWave(Global &gl, Game &g) {
+    	if(g.wave == 1) {
+	    	createZombie(g, checkQuad(gl, g), 3);
+		listZombies(g);
+		g.wave += 1;
+	}
+}
+
+void createZombie(Game &g, int pquad, int n) {
 	int quad = 4;
 	while (quad == pquad) {
 		quad = rand() % 4 + 1;
@@ -109,14 +123,29 @@ void createZombie(Global &gl, Game &g, int pquad, int n) {
 		if (g.znext != NULL)
 			g.znext->prev = z;
 		g.znext = z;
-		++g.nzombies;
+		g.nzombies++;
 		if (quad != 4)
 			quad++;
 		else
 			quad = 1;
 	}
 }
-			
+
+// prints the linked list to make sure pointers were assigned correctly
+// during createZombie
+void listZombies(Game &g);
+
+void listZombies(Game &g) {
+    	Zombie *z = g.znext;
+	int n = 1;
+	while (z) {
+	    	cout << n << "th zombie address: " << z << endl
+		     << "\tprev: " << z->prev << endl
+		     << "\tnext: " << z->next << endl;
+		z = z->next;
+		n++;
+	}
+}
 
 void drawZombies(Game &g);
 
@@ -136,7 +165,48 @@ void drawZombies(Game &g) {
 		z = z->next;
 	}
 }
-	
+
+// removes one zombie
+void removeZombie(Game &g, Zombie *z);
+
+void removeZombie(Game &g, Zombie *z) {
+	Zombie *temp = z->next;    
+    	if (z->prev == NULL) {
+	    	if (z->next == NULL) {
+		    g.znext = NULL;
+		} else {
+		    z->next->prev = NULL;
+		    g.znext = z->next;
+		}
+	} else {
+	    	if (z->next == NULL) {
+		    z->prev->next = NULL;
+		} else {
+		    z->prev->next = z->next;
+		    z->next->prev = z->prev;
+		}
+	}
+	delete z;
+	z = temp;
+	g.nzombies--;
+}
+
+// traverses list and deletes all zombies
+void deleteZombies(Game &g);
+
+void deleteZombies(Game &g) {
+    	Zombie *temp1;
+	Zombie *temp2;
+	temp1 = g.znext;
+	while (temp1!=NULL) {
+	    	temp2 = temp1->next;
+		delete temp1;
+		temp1 = temp2;
+	}
+	g.nzombies = 0;
+	g.znext = NULL;
+}
+
 void showMenu(Global &gl);
 
 void showMenu(Global &gl) {
