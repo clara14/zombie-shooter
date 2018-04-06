@@ -350,7 +350,56 @@ void showScores(Global &gl, Game &g) {
 	
 }
 
-void enterScore(Global &g, Game &g);
+void enterScore(Global &gl, Game &g);
 
-void enterScore(Global &g, Game &g) {
+void enterScore(Global &gl, Game &g) {
+    	glClear(GL_COLOR_BUFFER_BIT);
+	Rect r1, r2;
+	r1.bot = 800;
+	r1.left = gl.xres / 2;
+	ggprint16(&r1, 16, 0x00ffffff, "NEW HIGH SCORE");
+	r2.bot = 700;
+	r2.left = gl.xres / 2;
+	ggprint16(&r2, 16, 0x00ffffff, "- ENTER NAME -");
+	for (int i=0;i<5;i++) {
+		glColor3ub(255,255,255);
+                glPushMatrix();
+                glTranslatef(465 + (i * 80), 380, 0);
+                glBegin(GL_QUADS);
+                        glVertex2i(-20, -2);
+                        glVertex2i(-20, 2);
+                        glVertex2i(20, 2);
+                        glVertex2i(20, -2);
+                glEnd();
+                glPopMatrix();
+	}
+/*	// Render boxes for main menu options
+	int txtcolor, boxcolor[3];
+	if (scoreoption == 5) {
+		txtcolor = 0x00ffffff;
+		boxcolor[0] = 20;
+		boxcolor[1] = 74;
+		boxcolor[2] = 23;
+	} else {
+		txtcolor = 0x00dddddd;
+		boxcolor[0] = 7;
+		boxcolor[1] = 28;
+		boxcolor[2] = 9;
+	}
+	glColor3ub(bcolor[0],bcolor[1],bcolor[2]); // darker one is 7, 28, 9
+	glPushMatrix();
+	glTranslatef(625, 280, 0);
+	glBegin(GL_QUADS);
+		glVertex2i(-200, -40);
+		glVertex2i(-200, 40);
+        	glVertex2i(200, 40);
+        	glVertex2i(200, -40);
+	glEnd();
+	glPopMatrix();
+        // Draw text for menu options
+	Rect r3;
+	r3.bot = 280;
+	r3.left = gl.xres / 2;
+	ggprint16(&r, 16, 0xffffffff, "%s", "Play Game");
+*/	
 }
