@@ -10,6 +10,7 @@
 //                  the screen but the game crashed. Also
 //                  made the bug fix solution into a function
 //23MAR2018 update: collision detection is being added, early stages
+//06APR2018 update: collision dectection now working.
 
 
 #include "zlib.h"
