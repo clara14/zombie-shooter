@@ -19,6 +19,7 @@
 extern struct timespec timeStart, timeCurrent;
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
+extern void removeZombie(Game &g, Zombie *z);
 extern void normalize2d(Vec);
 
 void bug_fix(Game &g);
@@ -134,7 +135,6 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 {
   bug_fix(g);
 
-  Flt z_coordx, z_coordy, dist;
   //end of wall
   if (g.player1.pos[0] < 0.0) {
 	   g.player1.pos[0] = 0;
@@ -191,26 +191,44 @@ void cesar_physics_and_movement (Global &gl, Game &g)
       }
       i++;
   }
-  /*
-  //collision detection between zombie and bullet
-  int i = 0;
-  while (i < g.nbullets) {
-  	Bullet *b = &g.barr[i];
-	z_coordx = b.pos[0] - z.pos[0];
-	z_coordy = b.pos[1] - z.pos[1];
-	dist = (z_coordx*z_coordx + z_coordy*z_coordy);
-	
-	//collision with bullet
-	if (dist > z.pos[0]) {
-		deleteZombie(&g, z);
-		g.nzombies--;
+  
+  	//collision detection between zombie and bullet
+  	if(g.nzombies > 0)
+  		cout << "Before collision detection" << endl;
 
-		memcpy(&g.barr[i], &g.barr[g.nbullets - 1], sizeof(Bullet));
-		g.nbullets--;
-	}	
-  }
-  */
+	Zombie *z = g.znext;
+	while(z) {
+		int w, h, i = 0;
+		w = z->width;
+		h = z->height;
+		cout << "inside 'while(z)' function" << endl;
+		//while (i < g.nbullets) {
+  			Bullet *b = &g.barr[i];
+			//collision with bullet
+			cout << "bfore long 'if' statement" << endl;
+			cout << "value of x-coordinate of bullet: " << b->pos[0] << endl;
+			cout << "value of y-coordinate of bullet: " << b->pos[1] << endl;
 
+			cout << "value of x-coordinate of zombie: " << z->pos[0] << endl;
+			cout << "value of x-coordinate of zombie: " << z->pos[1] << endl;
+			
+			if (b->pos[0] >= z->pos[0] - w &&
+				b->pos[0] <= z->pos[0] + w &&
+				b->pos[1] <= z->pos[1] + h &&
+				b->pos[1] >= z->pos[1] - h) {
+			/*
+			if (b->pos[0] == z->pos[0] &&
+			    b->pos[1] == z->pos[1]) {
+			*/
+				cout << "before if statment condidtions" << endl;
+				removeZombie(g, z);
+				g.nzombies--;
+				memcpy(&g.barr[i], &g.barr[g.nbullets - 1], sizeof(Bullet));
+				g.nbullets--;
+			}
+			cout << "after if statement " << endl;
+	z = z->next;
+	}
         //---------------------------------------------------
         //check keys pressed now
 	     //     LEFT
