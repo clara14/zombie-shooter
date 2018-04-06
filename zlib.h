@@ -126,6 +126,8 @@ public:
 	Vec dir;
 	Vec pos;
 	Vec vel;
+	int height;
+	int width;
 	int health;
 	float attack;
 	float defense;
@@ -133,6 +135,9 @@ public:
 	struct Zombie *next;
 public:
 	Zombie() {
+	    	height = 50;
+		width = 25;
+		health = 100;
 		prev = NULL;
 		next = NULL;
 	}

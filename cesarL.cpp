@@ -151,15 +151,18 @@ void drawZombies(Game &g);
 
 void drawZombies(Game &g) {	
     	Zombie *z = g.znext;
+	int w, h;
 	while (z) {
+	    	w = z->width;
+		h = z->height;
 	    	glColor3ub(20,74,23);
 	    	glPushMatrix();
 	    	glTranslatef(z->pos[0], z->pos[1], z->pos[2]);
 	    	glBegin(GL_QUADS);
-	    		glVertex2i(-25, -50);
-			glVertex2i(-25, 50);
-			glVertex2i(25, 50);
-			glVertex2i(25, -50);
+	    		glVertex2i(-w, -h);
+			glVertex2i(-w, h);
+			glVertex2i(w, h);
+			glVertex2i(w, -h);
 	    	glEnd();
 	    	glPopMatrix();
 		z = z->next;
@@ -345,4 +348,9 @@ void showScores(Global &gl, Game &g) {
 		r.bot -= 50;
 	}
 	
+}
+
+void enterScore(Global &g, Game &g);
+
+void enterScore(Global &g, Game &g) {
 }
