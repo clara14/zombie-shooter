@@ -129,12 +129,14 @@ public:
 	int height;
 	int width;
 	int health;
+	int zdamage;
 	float attack;
 	float defense;
 	struct Zombie *prev;
 	struct Zombie *next;
 public:
 	Zombie() {
+	    	zdamage = 0;
 	    	height = 50;
 		width = 25;
 		health = 100;
@@ -149,8 +151,11 @@ public:
         Vec vel;
         float color[3];
         struct timespec time;
+	int damage;
 public:
-        Bullet() { }
+        Bullet() {
+		damage = 0;
+	}
 };
 
 class Game {

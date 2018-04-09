@@ -11,7 +11,7 @@
 //                  made the bug fix solution into a function
 //23MAR2018 update: collision detection is being added, early stages
 //06APR2018 update: collision dectection now working.
-
+//09APR2018 update: collision with zombie is in beginning stages
 
 #include "zlib.h"
 #include <time.h>       
@@ -30,6 +30,8 @@ double time_function2();
 double time_function3();
 double time_function4();
 
+int BULLET_DAMAGE = 50;
+int ZOMBIE_DAMAGE = 50;
 
 void display_name_cesar(Global &gl, Game &g)
 {
@@ -204,31 +206,53 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 		h = z->height;
 		cout << "inside 'while(z)' function" << endl;
 		//while (i < g.nbullets) {
-  			Bullet *b = &g.barr[i];
+  		Bullet *b = &g.barr[i];
 			//collision with bullet
-			cout << "bfore long 'if' statement" << endl;
-			cout << "value of x-coordinate of bullet: " << b->pos[0] << endl;
-			cout << "value of y-coordinate of bullet: " << b->pos[1] << endl;
+		cout << "bfore long 'if' statement" << endl;
+		cout << "value of x-coordinate of bullet: " << b->pos[0] << endl;
+		cout << "value of y-coordinate of bullet: " << b->pos[1] << endl;
 
-			cout << "value of x-coordinate of zombie: " << z->pos[0] << endl;
-			cout << "value of x-coordinate of zombie: " << z->pos[1] << endl;
+		cout << "value of x-coordinate of zombie: " << z->pos[0] << endl;
+		cout << "value of x-coordinate of zombie: " << z->pos[1] << endl;
 			
-			if (b->pos[0] >= z->pos[0] - w &&
-				b->pos[0] <= z->pos[0] + w &&
-				b->pos[1] <= z->pos[1] + h &&
-				b->pos[1] >= z->pos[1] - h) {
-			/*
-			if (b->pos[0] == z->pos[0] &&
-			    b->pos[1] == z->pos[1]) {
-			*/
+		//hit has been detected
+		if (b->pos[0] >= z->pos[0] - w &&
+		    b->pos[0] <= z->pos[0] + w &&
+		    b->pos[1] <= z->pos[1] + h &&
+		    b->pos[1] >= z->pos[1] - h) {
+			    	
+	    		b->damage = BULLET_DAMAGE;	    
+			z->health = z->health - b->damage;
+			if (z->health < 0) {
 				cout << "before if statment condidtions" << endl;
 				removeZombie(g, z);
-				g.nzombies--;
-				memcpy(&g.barr[i], &g.barr[g.nbullets - 1], sizeof(Bullet));
-				g.nbullets--;
+				g.score = g.score + 100;
+				z->health = 100;
 			}
-			cout << "after if statement " << endl;
-	z = z->next;
+			memcpy(&g.barr[i], &g.barr[g.nbullets - 1], sizeof(Bullet));
+			g.nbullets--;
+		}
+		cout << "after if statement " << endl;
+		
+		//this will be for collision with the zombie
+		//use the global timer to determine how long between 
+		//hits so the zombie doesn't kill instantly
+
+		if (g.player1.pos[0] >= z->pos[0] - w &&
+		    g.player1.pos[0] <= z->pos[0] + w &&
+		    g.player1.pos[1] <= z->pos[1] + h &&
+		    g.player1.pos[1] >= z->pos[1] - h) {
+
+			z->zdamage = ZOMBIE_DAMAGE;
+			g.player1.health = g.player1.health - z->zdamage;
+			//sleep(5);
+
+			cout << "YA DEAD!" << endl;
+			if (g.player1.health < 0) {
+				
+			}
+		}
+		z = z->next;
 	}
         //---------------------------------------------------
         //check keys pressed now
@@ -324,5 +348,5 @@ void bug_fix (Game &g)
         g.player1.pos[0] = 1250;
         g.player1.pos[1] = 0;
     }
-  
+
 }
