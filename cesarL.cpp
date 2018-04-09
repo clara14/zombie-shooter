@@ -354,13 +354,14 @@ void enterScore(Global &gl, Game &g);
 
 void enterScore(Global &gl, Game &g) {
     	glClear(GL_COLOR_BUFFER_BIT);
-	Rect r1, r2;
-	r1.bot = 800;
-	r1.left = gl.xres / 2;
-	ggprint16(&r1, 16, 0x00ffffff, "NEW HIGH SCORE");
-	r2.bot = 700;
-	r2.left = gl.xres / 2;
-	ggprint16(&r2, 16, 0x00ffffff, "- ENTER NAME -");
+	Rect r;
+	r.bot = 800;
+	r.left = gl.xres / 2;
+	ggprint16(&r, 16, 0x00ffffff, "NEW HIGH SCORE");
+	r.bot = 700;
+	r.left = gl.xres / 2;
+	ggprint16(&r, 16, 0x00ffffff, "- ENTER NAME -");
+	// Underlines for chars
 	for (int i=0;i<5;i++) {
 		glColor3ub(255,255,255);
                 glPushMatrix();
@@ -373,18 +374,19 @@ void enterScore(Global &gl, Game &g) {
                 glEnd();
                 glPopMatrix();
 	}
-/*	// Render boxes for main menu options
-	int txtcolor, boxcolor[3];
+	/*
+	// Render boxes for main menu options
+	int txtcolor, bcolor[3];
 	if (scoreoption == 5) {
 		txtcolor = 0x00ffffff;
-		boxcolor[0] = 20;
-		boxcolor[1] = 74;
-		boxcolor[2] = 23;
+		bcolor[0] = 20;
+		bcolor[1] = 74;
+		bcolor[2] = 23;
 	} else {
 		txtcolor = 0x00dddddd;
-		boxcolor[0] = 7;
-		boxcolor[1] = 28;
-		boxcolor[2] = 9;
+		bcolor[0] = 7;
+		bcolor[1] = 28;
+		bcolor[2] = 9;
 	}
 	glColor3ub(bcolor[0],bcolor[1],bcolor[2]); // darker one is 7, 28, 9
 	glPushMatrix();
@@ -397,9 +399,16 @@ void enterScore(Global &gl, Game &g) {
 	glEnd();
 	glPopMatrix();
         // Draw text for menu options
-	Rect r3;
-	r3.bot = 280;
-	r3.left = gl.xres / 2;
-	ggprint16(&r, 16, 0xffffffff, "%s", "Play Game");
-*/	
+	r.bot = 280;
+	r.left = gl.xres / 2;
+	ggprint16(&r, 16, txtcolor, "%s", "Continue");
+	// Render letters for name
+	char arr[5] = { 'a', 'b', 'c', 'd', 'e' };
+	for (int i=0;i<(scoreoption+1);i++) {
+	    	r.bot = 400;
+		r.left = 465 + (i * 80);
+		ggprint16(&r, 16, 0x00ffffff, "%c", arr[i]);
+	}
+	*/
+
 }
