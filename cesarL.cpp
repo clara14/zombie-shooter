@@ -353,6 +353,11 @@ void showScores(Global &gl, Game &g) {
 void showEndScreen(Global &gl, Game &g);
 
 void showEndScreen(Global &gl, Game &g) {
+    	glClear(GL_COLOR_BUFFER_BIT);
+	Rect r;
+	r.bot = 800;
+	r.left = gl.xres / 2;
+	ggprint16(&r, 16, 0x00ffffff, "GAME OVER");
 }
 
 void enterScore(Global &gl, Game &g);
@@ -384,6 +389,7 @@ void enterScore(Global &gl, Game &g) {
 	
 	// Render box for continuing
 	int txtcolor, bcolor[3];
+	int ybox = 280;
 	if (scoreoption == 5) {
 		txtcolor = 0x00ffffff;
 		bcolor[0] = 20;
@@ -397,7 +403,7 @@ void enterScore(Global &gl, Game &g) {
 	}
 	glColor3ub(bcolor[0],bcolor[1],bcolor[2]); // darker one is 7, 28, 9
 	glPushMatrix();
-	glTranslatef(625, 280, 0);
+	glTranslatef(625, ybox, 0);
 	glBegin(GL_QUADS);
 		glVertex2i(-200, -40);
 		glVertex2i(-200, 40);
@@ -405,42 +411,48 @@ void enterScore(Global &gl, Game &g) {
         	glVertex2i(200, -40);
 	glEnd();
 	glPopMatrix();
-	// Render cursors
-	glColor3ub(255, 255, 255);
-        glPushMatrix();
-        int xposition;
-        if (gl.menuOption == 0)
-                xposition = 500;
-        if (gl.menuOption == 1)
-                xposition = 380;
-        if (gl.menuOption == 2)
-                xposition = 260;
-        if (gl.menuOption == 3)
-                xposition = 140;
-        glTranslatef(880, xposition , 0);
-        glBegin(GL_TRIANGLES);
-                glVertex2f(-55.0f, 0.0f);
-                glVertex2f(  0.0f, 30.0f);
-                glVertex2f(  -8.0f, 0.0f);
-        glEnd();
-        glColor3ub(210, 210, 210);
-        glBegin(GL_TRIANGLES);
-                glVertex2f(  0.0f, -30.0f);
-                glVertex2f( -8.0f, 0.0f);
-                glVertex2f( -55.0f, 0.0f);
-        glEnd();
-        glPopMatrix();
-
 	r.bot = 280;
 	r.left = gl.xres / 2;
-	ggprint16(&r, 16, txtcolor, "%s", "Continue");
+	ggprint16(&r, 16, txtcolor, "Continue");
+	// Render cursors
+	if (scoreoption != 5) {
+	    	int xposition = 465 + (80 * scoreoption);
+		glColor3ub(255, 255, 255);
+        	glPushMatrix();
+        	glTranslatef(xposition, 450 , 0);
+        	glBegin(GL_TRIANGLES);
+                	glVertex2f(-55.0f, 0.0f);
+                	glVertex2f(  0.0f, 30.0f);
+                	glVertex2f(  -8.0f, 0.0f);
+        	glEnd();
+        	glColor3ub(210, 210, 210);
+        	glBegin(GL_TRIANGLES);
+                	glVertex2f(  0.0f, -30.0f);
+                	glVertex2f( -8.0f, 0.0f);
+                	glVertex2f( -55.0f, 0.0f);
+        	glEnd();
+        	glPopMatrix();
+	} else {
+		glColor3ub(255, 255, 255);
+		glPushMatrix();
+		glTranslatef(700, ybox, 0);
+		glBegin(GL_TRIANGLES);
+                        glVertex2f(-55.0f, 0.0f);
+                        glVertex2f(  0.0f, 30.0f);
+                        glVertex2f(  -8.0f, 0.0f);
+                glEnd();
+                glColor3ub(210, 210, 210);
+                glBegin(GL_TRIANGLES);
+                        glVertex2f(  0.0f, -30.0f);
+                        glVertex2f( -8.0f, 0.0f);
+                        glVertex2f( -55.0f, 0.0f);
+                glEnd();
+                glPopMatrix();
+	}
 	// Render letters for name
-	for (int i=0;i<(scoreoption+1);i++) {
+	for (int i=0;i<=scoreoption;i++) {
 	    	r.bot = 400;
 		r.left = 465 + (i * 80);
 		ggprint16(&r, 16, 0x00ffffff, "%c", arr[i]);
 	}
-
-	
-
 }
