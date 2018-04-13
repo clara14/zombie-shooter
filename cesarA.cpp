@@ -12,10 +12,16 @@
 //23MAR2018 update: collision detection is being added, early stages
 //06APR2018 update: collision dectection now working.
 //09APR2018 update: collision with zombie is in beginning stages
+//13APR2018 update: health is now being subtracted from the player at a
+//		    appropriate rate once there is collision between
+//		    player and zombie.
+
 
 #include "zlib.h"
 #include <time.h>       
 #include <math.h>
+#include <unistd.h>
+
 
 extern struct timespec timeStart, timeCurrent;
 extern double timeDiff(struct timespec *start, struct timespec *end);
@@ -237,19 +243,23 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 		//this will be for collision with the zombie
 		//use the global timer to determine how long between 
 		//hits so the zombie doesn't kill instantly
-
+		
 		if (g.player1.pos[0] >= z->pos[0] - w &&
 		    g.player1.pos[0] <= z->pos[0] + w &&
 		    g.player1.pos[1] <= z->pos[1] + h &&
 		    g.player1.pos[1] >= z->pos[1] - h) {
 
-			z->zdamage = ZOMBIE_DAMAGE;
-			g.player1.health = g.player1.health - z->zdamage;
-			//sleep(5);
-
-			cout << "YA DEAD!" << endl;
-			if (g.player1.health < 0) {
-				
+			double currentTime = g.player1.ptime;
+			if (currentTime - z->lastAttack > z->dBuffer) {
+				z->zdamage = ZOMBIE_DAMAGE;
+				g.player1.health = g.player1.health - z->zdamage;
+				z->lastAttack = currentTime;
+			}
+			//for now, upon death the player gets put back
+			//into the menu.
+			if (g.player1.health <= 0) {
+				gl.menuState = 1;	
+				cout << "YA DEAD!" << endl;
 			}
 		}
 		z = z->next;
@@ -330,23 +340,23 @@ void bug_fix (Game &g)
   //*****************bug fix*****************
   //top left corner
   	while(((g.player1.pos[0] == -3.5) && (g.player1.pos[1] > 343.5))) {
-        g.player1.pos[0] = 0;
-        g.player1.pos[1] = 340;    
+        	g.player1.pos[0] = 0;
+        	g.player1.pos[1] = 340;    
   	}
   	//top right corner
   	while(((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] > 343.5))) {
-        g.player1.pos[0] = 1250;
-        g.player1.pos[1] = 340;    
+        	g.player1.pos[0] = 1250;
+        	g.player1.pos[1] = 340;    
   	}
   	//bottom left corner
   	while(((g.player1.pos[0] == -3.5) && (g.player1.pos[1] < -3.5))) {
-        g.player1.pos[0] = 0;
-        g.player1.pos[1] = 0;
-    }
-    //bottom right corner    
+        	g.player1.pos[0] = 0;
+        	g.player1.pos[1] = 0;
+    	}
+   	 //bottom right corner    
   	while(((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] < -3.5))) {
-        g.player1.pos[0] = 1250;
-        g.player1.pos[1] = 0;
+        	g.player1.pos[0] = 1250;
+        	g.player1.pos[1] = 0;
     }
 
 }
