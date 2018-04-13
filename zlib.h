@@ -132,6 +132,8 @@ public:
 	int zdamage;
 	float attack;
 	float defense;
+	double dBuffer;
+	double lastAttack;
 	struct Zombie *prev;
 	struct Zombie *next;
 public:
@@ -142,6 +144,8 @@ public:
 		health = 100;
 		prev = NULL;
 		next = NULL;
+		dBuffer = 1.0;
+		lastAttack = 1.0;
 	}
 };
 
@@ -158,8 +162,27 @@ public:
 	}
 };
 
+class HighScore {
+public:
+    	int cursorPos;
+	char charList[36];
+	int charPos;
+public:
+	HighScore() {
+	    	cursorPos = 0;
+		charPos = 10;
+		for(int i=0;i<10;i++) {
+		    	charList[i] = (48 + i);
+		}
+		for(int i=10;i<36;i++) {
+		    	charList[i] = (i + 55);
+		}
+	}
+};
+
 class Game {
 public:
+    	HighScore scoreUI;
 	Vec pos[4];
         Player player1;
 	int topScores[10];
