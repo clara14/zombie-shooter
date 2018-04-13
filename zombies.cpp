@@ -15,9 +15,16 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 extern void display_name_cesar(Global &gl, Game &g);
 
+
+// Alfredo's Functions---------------------------------------------------------
 extern void displayHUD(Global &gl, Game &g);
 extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 			int textColor, const char* textName); 
+extern void initialize_player1(Global &gl);
+extern void initialize_mainRoad(Global &gl);
+extern void draw_player1(Global &gl, Game &g);
+extern void drawMainRoad(Global &gl, Game &g);
+//----------------------------------------------------------------------------
 
 extern void showFloor(Global &gl, Game &g);
 extern void show_jorge(Global &gl, Game &g);
@@ -182,6 +189,53 @@ int check_keys(XEvent *e, Global &gl, Game &g)
         return 0;
 }
 
+unsigned char *buildAlphaData(Image *img)                                       
+{                                                                     
+	// transparency color RGB value: (180, 250, 188)          
+	//add 4th component to RGB stream...                                    
+	int i;                                                                  
+	int a,b,c;                                                              
+	unsigned char *newdata, *ptr;                                           
+	unsigned char *data = (unsigned char *)img->data;                       
+	newdata = (unsigned char *)malloc(img->width * img->height * 4);        
+	ptr = newdata;                                                          
+	for (i=0; i<img->width * img->height * 3; i+=3) {                       
+		a = *(data+0);                                                  
+		b = *(data+1);                                                  
+		c = *(data+2);                                                  
+		*(ptr+0) = a;                                                   
+		*(ptr+1) = b;                                                   
+		*(ptr+2) = c;                                                   
+		//-----------------------------------------------               
+		//get largest color component...                                
+		//*(ptr+3) = (unsigned char)((                                  
+		//              (int)*(ptr+0) +                                 
+		//              (int)*(ptr+1) +                                 
+		//              (int)*(ptr+2)) / 3);                            
+		//d = a;                                                        
+		//if (b >= a && b >= c) d = b;                                  
+		//if (c >= a && c >= b) d = c;                                  
+		//*(ptr+3) = d;                                                 
+		//-----------------------------------------------               
+		//this code optimizes the commented code above.                 
+		*(ptr+3) = (a|b|c);
+
+		/*
+		   if( a == trans_color[0] && b == trans_color[1] && 
+		   c == trans_color[2] ) {
+
+		 *(ptr + 3) = 0;
+		 }
+
+		 */
+		//-----------------------------------------------               
+		ptr += 4;                                                       
+		data += 3;                                                      
+	}                                                                       
+	return newdata;                                                         
+}                           
+
+
 void normalize2d(Vec v)
 {
         Flt len = v[0]*v[0] + v[1]*v[1];
@@ -195,10 +249,44 @@ void normalize2d(Vec v)
         v[1] *= len;
 }
 
+
+void init_opengl(Global &gl, Game &g)
+{
+	//OpenGL initialization
+	glViewport(0, 0, gl.xres, gl.yres);
+	//Initialize matrices
+	glMatrixMode(GL_PROJECTION); glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+	//This sets 2D mode (no perspective)
+	glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
+	//
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_FOG);
+	glDisable(GL_CULL_FACE);
+	//
+	//Clear the screen to black 
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	//Do this to allow fonts
+	glEnable(GL_TEXTURE_2D);
+	initialize_fonts();
+
+
+//	initialize_mainRoad(gl);
+//	initialize_player1(gl);
+}
+
+
+
 extern void displayCesarL(int, int, int, int, const char*);
 
 void render(Global &gl, Game &g)
 {
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f( 1.0, 1.0, 1.0);
+
+
 	// Show the menu, game, tutorial, or high scores
 	if (gl.menuState == MENU) {
 		showMenu(gl);
@@ -206,6 +294,8 @@ void render(Global &gl, Game &g)
 		glClear(GL_COLOR_BUFFER_BIT);
 		// rendering the heads up display	
 		displayHUD(gl, g);
+
+//============================================================================
 #ifdef PROFILING_ON
 		// Displaying group names for lab5 assignment
 		//
@@ -235,10 +325,15 @@ void render(Global &gl, Game &g)
 		quad = g.nzombies;
 		ggprint16(&r, 16, 0x009508f8, "zombies: %i", quad);
 #endif
+//=============================================================================
+		
 		showFloor(gl, g);
-        	//-------------
+        	
+		//draw_player1(gl, g);
+		//-------------
         	//Draw the ship
-        	glColor3fv(g.ship.color);
+        	
+		glColor3fv(g.ship.color);
         	glPushMatrix();
         	glTranslatef(g.player1.pos[0], g.player1.pos[1], g.player1.pos[2]);
         	glRotatef(g.player1.angle, 0.0f, 0.0f, 1.0f);
@@ -255,7 +350,10 @@ void render(Global &gl, Game &g)
                 glVertex2f(0.0f, 0.0f);
         	glEnd();
         	glPopMatrix();
-        	if (gl.keys[XK_Up] || g.mouseThrustOn) {
+        
+		
+	
+		if (gl.keys[XK_Up] || g.mouseThrustOn) {
                 	int i;
                 	//draw thrust
                 	Flt rad = ((g.player1.angle+90.0) / 360.0f) * PI * 2.0;
@@ -309,27 +407,4 @@ void render(Global &gl, Game &g)
 		showScores(gl, g);
 	}
 }
-
-void init_opengl(Global &gl, Game &g)
-{
-        //OpenGL initialization
-        glViewport(0, 0, gl.xres, gl.yres);
-        //Initialize matrices
-        glMatrixMode(GL_PROJECTION); glLoadIdentity();
-        glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-        //This sets 2D mode (no perspective)
-        glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
-        //
-        glDisable(GL_LIGHTING);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_FOG);
-        glDisable(GL_CULL_FACE);
-        //
-        //Clear the screen to black 
-        glClearColor(0.0, 0.0, 0.0, 1.0);
-        //Do this to allow fonts
-        glEnable(GL_TEXTURE_2D);
-        initialize_fonts();
-}
-
 
