@@ -350,10 +350,17 @@ void showScores(Global &gl, Game &g) {
 	
 }
 
+void showEndScreen(Global &gl, Game &g);
+
+void showEndScreen(Global &gl, Game &g) {
+}
+
 void enterScore(Global &gl, Game &g);
 
 void enterScore(Global &gl, Game &g) {
     	glClear(GL_COLOR_BUFFER_BIT);
+	int scoreoption = g.scoreUI.cursorPos;
+	char *arr = g.scoreUI.charList;
 	Rect r;
 	r.bot = 800;
 	r.left = gl.xres / 2;
@@ -374,8 +381,8 @@ void enterScore(Global &gl, Game &g) {
                 glEnd();
                 glPopMatrix();
 	}
-	/*
-	// Render boxes for main menu options
+	
+	// Render box for continuing
 	int txtcolor, bcolor[3];
 	if (scoreoption == 5) {
 		txtcolor = 0x00ffffff;
@@ -398,17 +405,42 @@ void enterScore(Global &gl, Game &g) {
         	glVertex2i(200, -40);
 	glEnd();
 	glPopMatrix();
-        // Draw text for menu options
+	// Render cursors
+	glColor3ub(255, 255, 255);
+        glPushMatrix();
+        int xposition;
+        if (gl.menuOption == 0)
+                xposition = 500;
+        if (gl.menuOption == 1)
+                xposition = 380;
+        if (gl.menuOption == 2)
+                xposition = 260;
+        if (gl.menuOption == 3)
+                xposition = 140;
+        glTranslatef(880, xposition , 0);
+        glBegin(GL_TRIANGLES);
+                glVertex2f(-55.0f, 0.0f);
+                glVertex2f(  0.0f, 30.0f);
+                glVertex2f(  -8.0f, 0.0f);
+        glEnd();
+        glColor3ub(210, 210, 210);
+        glBegin(GL_TRIANGLES);
+                glVertex2f(  0.0f, -30.0f);
+                glVertex2f( -8.0f, 0.0f);
+                glVertex2f( -55.0f, 0.0f);
+        glEnd();
+        glPopMatrix();
+
 	r.bot = 280;
 	r.left = gl.xres / 2;
 	ggprint16(&r, 16, txtcolor, "%s", "Continue");
 	// Render letters for name
-	char arr[5] = { 'a', 'b', 'c', 'd', 'e' };
 	for (int i=0;i<(scoreoption+1);i++) {
 	    	r.bot = 400;
 		r.left = 465 + (i * 80);
 		ggprint16(&r, 16, 0x00ffffff, "%c", arr[i]);
 	}
-	*/
+
+	
 
 }
