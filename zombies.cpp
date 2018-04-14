@@ -43,6 +43,7 @@ extern void endGame(Global &gl, Game &g);
 extern void enterScoreXK_e(Global &gl, Game &g);
 extern void enterScoreXK_w(Game &g);
 extern void enterScoreXK_s(Game &g);
+extern void enterScoreXK_q(Game &g);
 
 #define MENU 1
 #define GAME 2
@@ -135,6 +136,8 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 			if (gl.menuState == MENU) {
 				if (gl.menuOption > 0)
 					gl.menuOption--;
+			} else if (gl.menuState == NEWSCORE) {
+				enterScoreXK_w(g);
 			}
                         break;
                 case XK_a:
@@ -143,7 +146,9 @@ int check_keys(XEvent *e, Global &gl, Game &g)
                         if (gl.menuState == MENU) {
 				if (gl.menuOption < 3)
 					gl.menuOption++;
-                        }
+                        } else if (gl.menuState == NEWSCORE) {
+				enterScoreXK_s(g);
+			}
                         break;
                 case XK_d:
                         break;
@@ -169,7 +174,7 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 					gl.menuState = MENU;
 				}
 			} else if (gl.menuState == END) {
-				if (checkScore) {
+				if (checkScore(g)) {
 					gl.menuState = NEWSCORE;
 				} else {
 					gl.menuState = MENU;
@@ -185,9 +190,10 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 					gl.helpScreen -= 1;
 				else 
 					gl.menuState = MENU;
-			}
-			else if (gl.menuState == SCORES) {
+			} else if (gl.menuState == SCORES) {
 				gl.menuState = MENU;
+			} else if (gl.menuState == NEWSCORE) {
+				enterScoreXK_q(g);
 			}
 			break;
                 case XK_equal:

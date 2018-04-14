@@ -24,8 +24,6 @@ void displayCesarL(int bpos, int cpos, int lpos, int color,
 }
 
 // key cases for check_keys function in main file
-void enterScoreXK_e(Global &gl, Game &g);
-
 void enterScoreXK_e(Global &gl, Game &g) {
 	HighScore *s = &g.scoreUI;
 	// char in list array is selected and entered into name array
@@ -35,32 +33,39 @@ void enterScoreXK_e(Global &gl, Game &g) {
 		s->charPos = 10;
 	} else {
 		gl.menuState = 1;
+		s->cursorPos = 0;
 	}
 }
 
-void enterScoreXK_w(Game &g);
-
 void enterScoreXK_w(Game &g) {
+	HighScore *s = &g.scoreUI;
+	if (s->cursorPos != 5) {
+		if (s->charPos > 0)
+			s->charPos--;
+	}
 }
-
-void enterScoreXK_s(Game &g);
 
 void enterScoreXK_s(Game &g) {
+	HighScore *s = &g.scoreUI;
+	if (s->cursorPos != 5) {
+		if (s->charPos < 36)
+			s->charPos++;
+	}
 }
-		
 
+void enterScoreXK_q(Game &g) {
+	HighScore *s = &g.scoreUI;
+	if (s->cursorPos > 0)
+		s->cursorPos--;
+}	
 //High-score functions
 //
-bool checkScore(Game &g);
-
 bool checkScore(Game &g) {
 	bool check = false;
 	if (g.topScores[9] < g.score)
 		check = true;
 	return check;
 }
-
-void sortScores(Game &g);
 
 void sortScores(Game &g) {
 	string name(g.player1.name);
@@ -76,8 +81,6 @@ void sortScores(Game &g) {
 	}
 }
 
-void saveScores(Game &g);
-
 void saveScores(Game &g) {
     	ofstream fout;
 	fout.open("scores.txt");
@@ -92,8 +95,6 @@ void saveScores(Game &g) {
 
 // Player functions
 //
-void updateTime(Game &g);
-
 void updateTime(Game &g) {
     	struct timespec pt;
 	clock_gettime(CLOCK_REALTIME, &pt);
@@ -103,8 +104,6 @@ void updateTime(Game &g) {
 	}
 
 }
-
-int checkQuad(Global &gl, Game &g);
 
 int checkQuad(Global &gl, Game &g) {
     	float xpos = g.player1.pos[0];
@@ -121,7 +120,6 @@ int checkQuad(Global &gl, Game &g) {
 	}
 	return quadrant;
 }
-	    	
 // Zombie functions
 //
 extern void listZombies(Game &g);
@@ -156,11 +154,8 @@ void createZombie(Game &g, int pquad, int n) {
 			quad = 1;
 	}
 }
-
 // prints the linked list to make sure pointers were assigned correctly
 // during createZombie
-void listZombies(Game &g);
-
 void listZombies(Game &g) {
     	Zombie *z = g.znext;
 	int n = 1;
@@ -172,8 +167,6 @@ void listZombies(Game &g) {
 		n++;
 	}
 }
-
-void drawZombies(Game &g);
 
 void drawZombies(Game &g) {	
     	Zombie *z = g.znext;
@@ -194,10 +187,7 @@ void drawZombies(Game &g) {
 		z = z->next;
 	}
 }
-
 // removes one zombie
-void removeZombie(Game &g, Zombie *z);
-
 void removeZombie(Game &g, Zombie *z) {
 	Zombie *temp = z->next;    
     	if (z->prev == NULL) {
@@ -219,10 +209,7 @@ void removeZombie(Game &g, Zombie *z) {
 	z = temp;
 	g.nzombies--;
 }
-
 // traverses list and deletes all zombies
-void deleteZombies(Game &g);
-
 void deleteZombies(Game &g) {
     	Zombie *temp1;
 	Zombie *temp2;
@@ -235,8 +222,6 @@ void deleteZombies(Game &g) {
 	g.nzombies = 0;
 	g.znext = NULL;
 }
-
-void showMenu(Global &gl);
 
 void showMenu(Global &gl) {
 	// reset tutorial screen
@@ -322,7 +307,6 @@ void showMenu(Global &gl) {
 #endif
 
 }
-void showTutorial(Global &gl);
 
 void showTutorial(Global &gl) {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -343,8 +327,6 @@ void showTutorial(Global &gl) {
                 ggprint16(&r, 16, 0x00ffffff, "Extra Info 2");
         }
 }
-
-void showScores(Global &gl, Game &g);
 
 void showScores(Global &gl, Game &g) {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -376,15 +358,11 @@ void showScores(Global &gl, Game &g) {
 	
 }
 
-void endGame(Global &gl, Game &g);
-
 void endGame(Global &gl, Game &g) {
 	g.player1.pos[0] = 250;
 	g.player1.pos[1] = 175;
 	g.player1.health = 100;
 }
-
-void showEndScreen(Global &gl, Game &g);
 
 void showEndScreen(Global &gl, Game &g) {
     	glClear(GL_COLOR_BUFFER_BIT);
@@ -426,8 +404,6 @@ void showEndScreen(Global &gl, Game &g) {
  
 }
 
-void enterScore(Global &gl, Game &g);
-
 void enterScore(Global &gl, Game &g) {
     	glClear(GL_COLOR_BUFFER_BIT);
 	int scoreoption = g.scoreUI.cursorPos;
@@ -443,7 +419,7 @@ void enterScore(Global &gl, Game &g) {
 	for (int i=0;i<5;i++) {
 		glColor3ub(255,255,255);
                 glPushMatrix();
-                glTranslatef(465 + (i * 80), 380, 0);
+                glTranslatef(465 + (i * 80), 450, 0);
                 glBegin(GL_QUADS);
                         glVertex2i(-20, -2);
                         glVertex2i(-20, 2);
@@ -477,31 +453,48 @@ void enterScore(Global &gl, Game &g) {
         	glVertex2i(200, -40);
 	glEnd();
 	glPopMatrix();
-	r.bot = 280;
+	r.bot = 268;
 	r.left = gl.xres / 2;
 	ggprint16(&r, 16, txtcolor, "Continue");
 	// Render cursors
 	if (scoreoption != 5) {
 	    	int xposition = 465 + (80 * scoreoption);
+		// top cursor
 		glColor3ub(255, 255, 255);
         	glPushMatrix();
-        	glTranslatef(xposition, 450 , 0);
+        	glTranslatef(xposition, 520 , 0);
         	glBegin(GL_TRIANGLES);
-                	glVertex2f(-55.0f, 0.0f);
-                	glVertex2f(  0.0f, 30.0f);
-                	glVertex2f(  -8.0f, 0.0f);
+                	glVertex2f(  -30.0f, 0.0f);
+                	glVertex2f(  0.0f, 55.0f);
+                	glVertex2f(  0.0f, 8.0f);
         	glEnd();
         	glColor3ub(210, 210, 210);
         	glBegin(GL_TRIANGLES);
-                	glVertex2f(  0.0f, -30.0f);
-                	glVertex2f( -8.0f, 0.0f);
-                	glVertex2f( -55.0f, 0.0f);
+                	glVertex2f(  30.0f, 0.0f);
+                	glVertex2f( 0.0f, 8.0f);
+                	glVertex2f( 0.0f, 55.0f);
         	glEnd();
         	glPopMatrix();
+		// Bottom cursor
+		glColor3ub(255, 255, 255);
+		glPushMatrix();
+		glTranslatef(xposition, 400, 0);
+		glBegin(GL_TRIANGLES);
+			glVertex2f( 0.0f, -55.0f);
+			glVertex2f(-30.0f, 0.0f);
+			glVertex2f( 0.0f, -8.0f);
+		glEnd();
+		glColor3ub(210, 210, 210);
+		glBegin(GL_TRIANGLES);
+			glVertex2f( 30.0f, 0.0f);
+			glVertex2f( 0.0f, -55.0f);
+			glVertex2f( 0.0f, -8.0f);
+		glEnd();
+		glPopMatrix();
 	} else {
 		glColor3ub(255, 255, 255);
 		glPushMatrix();
-		glTranslatef(700, ybox, 0);
+		glTranslatef(880, ybox, 0);
 		glBegin(GL_TRIANGLES);
                         glVertex2f(-55.0f, 0.0f);
                         glVertex2f(  0.0f, 30.0f);
@@ -518,13 +511,13 @@ void enterScore(Global &gl, Game &g) {
 	// Render letters for name
 	char c;
 	for (int i=0;i<scoreoption;i++) {
-	    	r.bot = 400;
+	    	r.bot = 470;
 		r.left = 465 + (i * 80);
 		c = g.scoreUI.playerName[i];
 		ggprint16(&r, 16, 0x00ffffff, "%c", c);
 	}
 	if (scoreoption != 5) {
-		r.bot = 400;
+		r.bot = 470;
 		r.left = 465 + (scoreoption * 80);
 		c = arr[g.scoreUI.charPos];
 		ggprint16(&r, 16, 0x00ffffff, "%c", c);
