@@ -23,6 +23,32 @@ void displayCesarL(int bpos, int cpos, int lpos, int color,
 	ggprint16(&r, 16, color, "function time: %f", duration);
 }
 
+// key cases for check_keys function in main file
+void enterScoreXK_e(Global &gl, Game &g);
+
+void enterScoreXK_e(Global &gl, Game &g) {
+	HighScore *s = &g.scoreUI;
+	// char in list array is selected and entered into name array
+	if (s->cursorPos != 5) {
+		char c = s->charList[s->charPos];
+		s->playerName[s->cursorPos++] = c;
+		s->charPos = 10;
+	} else {
+		gl.menuState = 1;
+	}
+}
+
+void enterScoreXK_w(Game &g);
+
+void enterScoreXK_w(Game &g) {
+}
+
+void enterScoreXK_s(Game &g);
+
+void enterScoreXK_s(Game &g) {
+}
+		
+
 //High-score functions
 //
 bool checkScore(Game &g);
@@ -350,6 +376,14 @@ void showScores(Global &gl, Game &g) {
 	
 }
 
+void endGame(Global &gl, Game &g);
+
+void endGame(Global &gl, Game &g) {
+	g.player1.pos[0] = 250;
+	g.player1.pos[1] = 175;
+	g.player1.health = 100;
+}
+
 void showEndScreen(Global &gl, Game &g);
 
 void showEndScreen(Global &gl, Game &g) {
@@ -358,6 +392,38 @@ void showEndScreen(Global &gl, Game &g) {
 	r.bot = 800;
 	r.left = gl.xres / 2;
 	ggprint16(&r, 16, 0x00ffffff, "GAME OVER");
+	// Option box
+	glColor3ub(20,74,23);
+	glPushMatrix();
+	glTranslatef((gl.xres/2),(gl.yres/2), 0);
+	glBegin(GL_QUADS);
+		glVertex2i(-200, -40);
+		glVertex2i(-200, 40);
+		glVertex2i(200, 40);
+		glVertex2i(200, -40);
+	glEnd();
+	glPopMatrix();
+	// Box text
+	r.bot = (gl.yres/2) - 12;
+	r.left = (gl.xres/2);
+	ggprint16(&r, 16, 0x00ffffff, "Continue");
+	// Cursor
+        glColor3ub(255, 255, 255);
+        glPushMatrix();
+        glTranslatef(880, (gl.yres/2) , 0);
+        glBegin(GL_TRIANGLES);
+                glVertex2f(-55.0f, 0.0f);
+                glVertex2f(  0.0f, 30.0f);
+                glVertex2f(  -8.0f, 0.0f);
+        glEnd();
+        glColor3ub(210, 210, 210);
+        glBegin(GL_TRIANGLES);
+                glVertex2f(  0.0f, -30.0f);
+                glVertex2f( -8.0f, 0.0f);
+                glVertex2f( -55.0f, 0.0f);
+        glEnd();
+        glPopMatrix();
+ 
 }
 
 void enterScore(Global &gl, Game &g);
@@ -450,9 +516,17 @@ void enterScore(Global &gl, Game &g) {
                 glPopMatrix();
 	}
 	// Render letters for name
-	for (int i=0;i<=scoreoption;i++) {
+	char c;
+	for (int i=0;i<scoreoption;i++) {
 	    	r.bot = 400;
 		r.left = 465 + (i * 80);
-		ggprint16(&r, 16, 0x00ffffff, "%c", arr[i]);
+		c = g.scoreUI.playerName[i];
+		ggprint16(&r, 16, 0x00ffffff, "%c", c);
+	}
+	if (scoreoption != 5) {
+		r.bot = 400;
+		r.left = 465 + (scoreoption * 80);
+		c = arr[g.scoreUI.charPos];
+		ggprint16(&r, 16, 0x00ffffff, "%c", c);
 	}
 }

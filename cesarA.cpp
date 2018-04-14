@@ -257,10 +257,6 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 			}
 			//for now, upon death the player gets put back
 			//into the menu.
-			if (g.player1.health <= 0) {
-				gl.menuState = 1;	
-				cout << "YA DEAD!" << endl;
-			}
 		}
 		z = z->next;
 	}

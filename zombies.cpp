@@ -1,7 +1,7 @@
 //program: zombies.cpp
 #include "zlib.h"
 
-#define PROFILING_OFF
+#define PROFILING_ON
 
 //function prototypes
 void init_opengl(Global &gl, Game &g);
@@ -36,11 +36,20 @@ extern void drawZombies(Game &g);
 extern int checkQuad(Global &gl, Game &g);
 extern void deleteZombies(Game &g);
 extern void spawnWave(Global &gl, Game &g);
+extern void enterScore(Global &gl, Game &g);
+extern void showEndScreen(Global &gl, Game &g);
+extern bool checkScore(Game &g);
+extern void endGame(Global &gl, Game &g);
+extern void enterScoreXK_e(Global &gl, Game &g);
+extern void enterScoreXK_w(Game &g);
+extern void enterScoreXK_s(Game &g);
 
 #define MENU 1
 #define GAME 2
 #define HELP 3
 #define SCORES 4
+#define END 5
+#define NEWSCORE 6
 
 bool displayNames = false;
 bool showCesarL = false;
@@ -78,6 +87,10 @@ void physics(Global &gl, Game &g)
 		updateTime(g);
 		spawnWave(gl, g);
 	    	cesar_physics_and_movement(gl, g);
+		if (g.player1.health <= 0) {
+			endGame(gl, g);
+			gl.menuState = END;
+		}
 	}	
 }
 
@@ -142,24 +155,29 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 					timeCopy(&g.player1.time, &pt);
 					g.wave = 0;
 					gl.menuState = GAME;
-				} 
-				else if (gl.menuOption == 1) {
+				} else if (gl.menuOption == 1) {
 					gl.menuState = HELP;
-				}
-				else if (gl.menuOption == 2) {
+				} else if (gl.menuOption == 2) {
 					gl.menuState = SCORES;
-				} 
-				else if (gl.menuOption == 3) {
+				} else if (gl.menuOption == 3) {
 					return 1;
 				}
-			}
-			else if (gl.menuState == HELP) {
+			} else if (gl.menuState == HELP) {
 				if (gl.helpScreen < 4)
 					gl.helpScreen += 1;
 				else {
 					gl.menuState = MENU;
 				}
-			}
+			} else if (gl.menuState == END) {
+				if (checkScore) {
+					gl.menuState = NEWSCORE;
+				} else {
+					gl.menuState = MENU;
+					endGame(gl, g);
+				}
+			} else if (gl.menuState == NEWSCORE) {
+				enterScoreXK_e(gl, g);
+			}	 
 			break;
 		case XK_q:
 			if (gl.menuState == HELP) {
@@ -405,6 +423,14 @@ void render(Global &gl, Game &g)
 	
 	else if (gl.menuState == SCORES) {
 		showScores(gl, g);
+	}
+	
+	else if (gl.menuState == END) {
+		showEndScreen(gl, g);
+	}
+
+	else if (gl.menuState == NEWSCORE) {
+		enterScore(gl, g);
 	}
 }
 

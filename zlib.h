@@ -81,7 +81,7 @@ class Player {
 		Vec vel;
 		float angle;
 		float color[3];
-
+		char pname[5];
 		int health;
 		const char * name;
 		string weaponType;
@@ -91,8 +91,8 @@ class Player {
 	public:
 		Player() {
 			VecZero(dir);
-			pos[0] = (Flt)(XRES/2);
-			pos[1] = (Flt)(YRES/2);
+			pos[0] = (Flt)(250);
+			pos[1] = (Flt)(175);
 			pos[2] = 0.0f;
 			VecZero(vel);
 			angle = 0.0;
@@ -148,7 +148,7 @@ class Zombie {
 			health = 100;
 			prev = NULL;
 			next = NULL;
-			dBuffer = 1.0;
+			dBuffer = 2.5;
 			lastAttack = 1.0;
 		}
 };
@@ -171,6 +171,7 @@ class HighScore {
 		int cursorPos;
 		char charList[36];
 		int charPos;
+		char playerName[5];
 	public:
 		HighScore() {
 			cursorPos = 0;
