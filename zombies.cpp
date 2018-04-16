@@ -376,7 +376,7 @@ void render(Global &gl, Game &g)
         	glPopMatrix();
         
 		
-	
+/*
 		if (gl.keys[XK_Up] || g.mouseThrustOn) {
                 	int i;
                 	//draw thrust
@@ -397,6 +397,7 @@ void render(Global &gl, Game &g)
                                 	glVertex2f(g.player1.pos[0]+xe,g.player1.pos[1]+ye);
                         	}
                 	glEnd();
+*/
         	}
         	//------------------
         	//----------------
