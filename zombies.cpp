@@ -1,7 +1,7 @@
 //program: zombies.cpp
 #include "zlib.h"
 
-#define PROFILING_ON
+#define PROFILING_OFF
 
 //function prototypes
 void init_opengl(Global &gl, Game &g);
