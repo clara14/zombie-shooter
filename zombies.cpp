@@ -397,8 +397,9 @@ void render(Global &gl, Game &g)
                                 	glVertex2f(g.player1.pos[0]+xe,g.player1.pos[1]+ye);
                         	}
                 	glEnd();
-*/
+
         	}
+*/
         	//------------------
         	//----------------
         	//Draw the bullets
