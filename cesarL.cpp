@@ -7,12 +7,11 @@
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 
-void displayCesarL(int bpos, int cpos, int lpos, int color,
-			 const char* name) {
+void displayCesarL(int bpos, int cpos, int lpos, int color, const char* name) {
 	static double duration = 0.0;
 	struct timespec timeStart, timeEnd;
 	clock_gettime(CLOCK_REALTIME, &timeStart);
-    	Rect r;
+	Rect r;
 	r.bot = bpos;
 	r.center = cpos;
 	r.left = lpos;
@@ -31,7 +30,7 @@ void enterScoreXK_e(Global &gl, Game &g) {
 		char c = s->charList[s->charPos];
 		s->playerName[s->cursorPos++] = c;
 		s->charPos = 10;
-	} else {
+	} else (
 		gl.menuState = 1;
 		s->cursorPos = 0;
 	}
@@ -57,7 +56,8 @@ void enterScoreXK_q(Game &g) {
 	HighScore *s = &g.scoreUI;
 	if (s->cursorPos > 0)
 		s->cursorPos--;
-}	
+}
+
 //High-score functions
 //
 bool checkScore(Game &g) {
@@ -89,34 +89,33 @@ void saveScores(Game &g) {
 		exit(1);
 	}
 	for (int i=0;i<10;i++) {
-	    	fout << g.topPlayers[i] << "\t" << g.topScores[i] << endl;
+		fout << g.topPlayers[i] << "\t" << g.topScores[i] << endl;
 	}
 }
 
 // Player functions
 //
 void updateTime(Game &g) {
-    	struct timespec pt;
+	struct timespec pt;
 	clock_gettime(CLOCK_REALTIME, &pt);
 	g.player1.ptime = timeDiff(&g.player1.time, &pt);
 	if (g.player1.ptime > 5.0 && g.wave < 1) {
-	    	g.wave++;
+		g.wave++;
 	}
-
 }
 
 int checkQuad(Global &gl, Game &g) {
-    	float xpos = g.player1.pos[0];
+	float xpos = g.player1.pos[0];
 	float ypos = g.player1.pos[1];
 	int quadrant = 3;
 	if (xpos >= (gl.xres / 2)) {
-	    	if (ypos <= 340 && ypos > 170)
-		    	quadrant = 1;
+		if (ypos <= 340 && ypos > 170)
+			quadrant = 1;
 		else if (ypos <= 170)
-		    	quadrant = 4;
+			quadrant = 4;
 	} else {
-	    	if (ypos > 170)
-		    	quadrant = 2;
+		if (ypos > 170)
+			quadrant = 2;
 	}
 	return quadrant;
 }
@@ -126,8 +125,8 @@ extern void listZombies(Game &g);
 extern void createZombie(Game &g, int pquad, int n);
 
 void spawnWave(Global &gl, Game &g) {
-    	if(g.wave == 1) {
-	    	createZombie(g, checkQuad(gl, g), 3);
+	if(g.wave == 1) {
+		createZombie(g, checkQuad(gl, g), 3);
 		listZombies(g);
 		g.wave += 1;
 	}
@@ -157,52 +156,52 @@ void createZombie(Game &g, int pquad, int n) {
 // prints the linked list to make sure pointers were assigned correctly
 // during createZombie
 void listZombies(Game &g) {
-    	Zombie *z = g.znext;
+	Zombie *z = g.znext;
 	int n = 1;
 	while (z) {
-	    	cout << n << "th zombie address: " << z << endl
-		     << "\tprev: " << z->prev << endl
-		     << "\tnext: " << z->next << endl;
+		cout << n << "th zombie address: " << z << endl;
+		cout << "\tprev: " << z->prev << endl;
+		cout << "\tnext: " << z->next << endl;
 		z = z->next;
 		n++;
 	}
 }
 
-void drawZombies(Game &g) {	
-    	Zombie *z = g.znext;
+void drawZombies(Game &g) {
+	Zombie *z = g.znext;
 	int w, h;
 	while (z) {
-	    	w = z->width;
+		w = z->width;
 		h = z->height;
-	    	glColor3ub(20,74,23);
-	    	glPushMatrix();
-	    	glTranslatef(z->pos[0], z->pos[1], z->pos[2]);
-	    	glBegin(GL_QUADS);
-	    		glVertex2i(-w, -h);
+		glColor3ub(20,74,23);
+		glPushMatrix();
+		glTranslatef(z->pos[0], z->pos[1], z->pos[2]);
+		glBegin(GL_QUADS);
+			glVertex2i(-w, -h);
 			glVertex2i(-w, h);
 			glVertex2i(w, h);
 			glVertex2i(w, -h);
-	    	glEnd();
-	    	glPopMatrix();
+		glEnd();
+		glPopMatrix();
 		z = z->next;
 	}
 }
 // removes one zombie
 void removeZombie(Game &g, Zombie *z) {
-	Zombie *temp = z->next;    
-    	if (z->prev == NULL) {
-	    	if (z->next == NULL) {
-		    g.znext = NULL;
+	Zombie *temp = z->next;
+	if (z->prev == NULL) {
+		if (z->next == NULL) {
+			g.znext = NULL;
 		} else {
-		    z->next->prev = NULL;
-		    g.znext = z->next;
+			z->next->prev = NULL;
+			g.znext = z->next;
 		}
 	} else {
-	    	if (z->next == NULL) {
-		    z->prev->next = NULL;
+		if (z->next == NULL) {
+			z->prev->next = NULL;
 		} else {
-		    z->prev->next = z->next;
-		    z->next->prev = z->prev;
+			z->prev->next = z->next;
+			z->next->prev = z->prev;
 		}
 	}
 	delete z;
@@ -211,11 +210,11 @@ void removeZombie(Game &g, Zombie *z) {
 }
 // traverses list and deletes all zombies
 void deleteZombies(Game &g) {
-    	Zombie *temp1;
+	Zombie *temp1;
 	Zombie *temp2;
 	temp1 = g.znext;
 	while (temp1!=NULL) {
-	    	temp2 = temp1->next;
+		temp2 = temp1->next;
 		delete temp1;
 		temp1 = temp2;
 	}
@@ -229,20 +228,18 @@ void showMenu(Global &gl) {
 		gl.helpScreen = 1;
 	// Implementing a timer
 #ifdef PROFILING_ON
-        static double duration = 0.0;
-        struct timespec timeStart, timeEnd;
-        clock_gettime(CLOCK_REALTIME, &timeStart);
+	static double duration = 0.0;
+	struct timespec timeStart, timeEnd;
+	clock_gettime(CLOCK_REALTIME, &timeStart);
 #endif
 	// Render game title
-	//
 	glClear(GL_COLOR_BUFFER_BIT);
-        Rect r;
-        r.bot = 700;
-        r.center = 450;
-        r.left = 625;
-        ggprint16(&r, 16, 0x00ffffff, "ZOMBIE SHOOTER");
-        // Render boxes for main menu options
-	//
+	Rect r;
+	r.bot = 700;
+	r.center = 450;
+	r.left = 625;
+	ggprint16(&r, 16, 0x00ffffff, "ZOMBIE SHOOTER");
+	// Render boxes for main menu options
 	for(int i=0;i<4;i++) {
 		glColor3ub(20,74,23);
 		glPushMatrix();
@@ -256,56 +253,44 @@ void showMenu(Global &gl) {
 		glPopMatrix();
 	}	
 	// Draw text for menu options
-	//
-        for(int i=0;i<4;i++) {
-            r.bot = (500 - (i*120)) - 12;
-            r.left = gl.xres / 2;
-            if(i == 0)
-                ggprint16(&r, 16, 0xffffffff, "%s", "Play Game");
-            if(i == 1)
-                ggprint16(&r, 16, 0xffffffff, "%s", "Tutorial");
-            if(i == 2)
-                ggprint16(&r, 16, 0xffffffff, "%s", "High Scores");
-            if(i == 3)
-                ggprint16(&r, 16, 0xffffffff, "%s", "Exit Game");
-
-        }
+	for(int i=0;i<4;i++) {
+		r.bot = (500 - (i*120)) - 12;
+		r.left = gl.xres / 2;
+		if(i == 0)
+			ggprint16(&r, 16, 0xffffffff, "%s", "Play Game");
+		if(i == 1)
+			ggprint16(&r, 16, 0xffffffff, "%s", "Tutorial");
+		if(i == 2)
+			ggprint16(&r, 16, 0xffffffff, "%s", "High Scores");
+		if(i == 3)
+			ggprint16(&r, 16, 0xffffffff, "%s", "Exit Game");
+	}
 	// Render the 'cursor' for choosing the menu options
-	//
-        glColor3ub(255, 255, 255);
-        glPushMatrix();
-	int position;
-	if (gl.menuOption == 0)
-		position = 500;
-	if (gl.menuOption == 1)
-		position = 380;
-	if (gl.menuOption == 2)
-		position = 260;
-	if (gl.menuOption == 3)
-		position = 140;
-        glTranslatef(880, position , 0);
-        glBegin(GL_TRIANGLES);
-                glVertex2f(-55.0f, 0.0f);
-                glVertex2f(  0.0f, 30.0f);
-                glVertex2f(  -8.0f, 0.0f);
+	glColor3ub(255, 255, 255);
+	glPushMatrix();
+	int position = 500 - (gl.menuOption * 120);
+	glTranslatef(880, position , 0);
+	glBegin(GL_TRIANGLES);
+		glVertex2f(-55.0f, 0.0f);
+		glVertex2f(  0.0f, 30.0f);
+		glVertex2f(  -8.0f, 0.0f);
 	glEnd();
 	glColor3ub(210, 210, 210);
 	glBegin(GL_TRIANGLES);
-                glVertex2f(  0.0f, -30.0f);
-                glVertex2f( -8.0f, 0.0f);
-                glVertex2f( -55.0f, 0.0f);
-        glEnd();
+		glVertex2f(  0.0f, -30.0f);
+		glVertex2f( -8.0f, 0.0f);
+		glVertex2f( -55.0f, 0.0f);
+	glEnd();
 	glPopMatrix();
 	// Add time to it
 #ifdef PROFILING_ON
-        clock_gettime(CLOCK_REALTIME, &timeEnd);
-        duration += timeDiff(&timeStart, &timeEnd);
+	clock_gettime(CLOCK_REALTIME, &timeEnd);
+	duration += timeDiff(&timeStart, &timeEnd);
 	r.bot = gl.yres - 50;
 	r.left = 100;
 	r.center += 20;
 	ggprint16(&r, 16, 0x00ff00fff, "render function time: %f", duration);
 #endif
-
 }
 
 void showTutorial(Global &gl) {
@@ -320,12 +305,12 @@ void showTutorial(Global &gl) {
 	if (gl.helpScreen == 2) {
 		ggprint16(&r, 16, 0x00ffffff, "Controls");
 	}
-        if (gl.helpScreen == 3) {
-                ggprint16(&r, 16, 0x00ffffff, "Extra Info");
-        }
-        if (gl.helpScreen == 4) {
-                ggprint16(&r, 16, 0x00ffffff, "Extra Info 2");
-        }
+	if (gl.helpScreen == 3) {
+		ggprint16(&r, 16, 0x00ffffff, "Extra Info");
+	}
+	if (gl.helpScreen == 4) {
+		ggprint16(&r, 16, 0x00ffffff, "Extra Info 2");
+	}
 }
 
 void showScores(Global &gl, Game &g) {
@@ -339,7 +324,7 @@ void showScores(Global &gl, Game &g) {
 	for(int i=0;i<10;i++) {
 		r.left = 312;
 		if (g.topPlayers[i] != "null")
-	    		ggprint16(&r, 16, 0x00ffffff, "NAME: ");
+			ggprint16(&r, 16, 0x00ffffff, "NAME: ");
 		r.bot -= 50;
 	}
 	r.bot = 725;
@@ -354,8 +339,7 @@ void showScores(Global &gl, Game &g) {
 		if (g.topScores[i] != 0)
 			ggprint16(&r, 16, 0x00ffffff, "SCORE");
 		r.bot -= 50;
-	}
-	
+	}	
 }
 
 void endGame(Global &gl, Game &g) {
@@ -365,7 +349,7 @@ void endGame(Global &gl, Game &g) {
 }
 
 void showEndScreen(Global &gl, Game &g) {
-    	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 	Rect r;
 	r.bot = 800;
 	r.left = gl.xres / 2;
@@ -386,26 +370,25 @@ void showEndScreen(Global &gl, Game &g) {
 	r.left = (gl.xres/2);
 	ggprint16(&r, 16, 0x00ffffff, "Continue");
 	// Cursor
-        glColor3ub(255, 255, 255);
-        glPushMatrix();
-        glTranslatef(880, (gl.yres/2) , 0);
-        glBegin(GL_TRIANGLES);
-                glVertex2f(-55.0f, 0.0f);
-                glVertex2f(  0.0f, 30.0f);
-                glVertex2f(  -8.0f, 0.0f);
-        glEnd();
-        glColor3ub(210, 210, 210);
-        glBegin(GL_TRIANGLES);
-                glVertex2f(  0.0f, -30.0f);
-                glVertex2f( -8.0f, 0.0f);
-                glVertex2f( -55.0f, 0.0f);
-        glEnd();
-        glPopMatrix();
- 
+	glColor3ub(255, 255, 255);
+	glPushMatrix();
+	glTranslatef(880, (gl.yres/2) , 0);
+	glBegin(GL_TRIANGLES);
+		glVertex2f(-55.0f, 0.0f);
+		glVertex2f(  0.0f, 30.0f);
+		glVertex2f(  -8.0f, 0.0f);
+	glEnd();
+	glColor3ub(210, 210, 210);
+	glBegin(GL_TRIANGLES);
+		glVertex2f(  0.0f, -30.0f);
+		glVertex2f( -8.0f, 0.0f);
+		glVertex2f( -55.0f, 0.0f);
+	glEnd();
+	glPopMatrix();
 }
 
 void enterScore(Global &gl, Game &g) {
-    	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 	int scoreoption = g.scoreUI.cursorPos;
 	char *arr = g.scoreUI.charList;
 	Rect r;
@@ -418,17 +401,16 @@ void enterScore(Global &gl, Game &g) {
 	// Underlines for chars
 	for (int i=0;i<5;i++) {
 		glColor3ub(255,255,255);
-                glPushMatrix();
-                glTranslatef(465 + (i * 80), 450, 0);
-                glBegin(GL_QUADS);
-                        glVertex2i(-20, -2);
-                        glVertex2i(-20, 2);
-                        glVertex2i(20, 2);
-                        glVertex2i(20, -2);
-                glEnd();
-                glPopMatrix();
+		glPushMatrix();
+		glTranslatef(465 + (i * 80), 450, 0);
+		glBegin(GL_QUADS);
+			glVertex2i(-20, -2);
+			glVertex2i(-20, 2);
+			glVertex2i(20, 2);
+			glVertex2i(20, -2);
+		glEnd();
+		glPopMatrix();
 	}
-	
 	// Render box for continuing
 	int txtcolor, bcolor[3];
 	int ybox = 280;
@@ -449,8 +431,8 @@ void enterScore(Global &gl, Game &g) {
 	glBegin(GL_QUADS);
 		glVertex2i(-200, -40);
 		glVertex2i(-200, 40);
-        	glVertex2i(200, 40);
-        	glVertex2i(200, -40);
+		glVertex2i(200, 40);
+		glVertex2i(200, -40);
 	glEnd();
 	glPopMatrix();
 	r.bot = 268;
@@ -458,23 +440,23 @@ void enterScore(Global &gl, Game &g) {
 	ggprint16(&r, 16, txtcolor, "Continue");
 	// Render cursors
 	if (scoreoption != 5) {
-	    	int xposition = 465 + (80 * scoreoption);
+		int xposition = 465 + (80 * scoreoption);
 		// top cursor
 		glColor3ub(255, 255, 255);
-        	glPushMatrix();
-        	glTranslatef(xposition, 520 , 0);
-        	glBegin(GL_TRIANGLES);
-                	glVertex2f(  -30.0f, 0.0f);
-                	glVertex2f(  0.0f, 55.0f);
-                	glVertex2f(  0.0f, 8.0f);
-        	glEnd();
-        	glColor3ub(210, 210, 210);
-        	glBegin(GL_TRIANGLES);
-                	glVertex2f(  30.0f, 0.0f);
-                	glVertex2f( 0.0f, 8.0f);
-                	glVertex2f( 0.0f, 55.0f);
-        	glEnd();
-        	glPopMatrix();
+		glPushMatrix();
+		glTranslatef(xposition, 520 , 0);
+		glBegin(GL_TRIANGLES);
+			glVertex2f(  -30.0f, 0.0f);
+			glVertex2f(  0.0f, 55.0f);
+			glVertex2f(  0.0f, 8.0f);
+		glEnd();
+		glColor3ub(210, 210, 210);
+		glBegin(GL_TRIANGLES);
+			glVertex2f(  30.0f, 0.0f);
+			glVertex2f( 0.0f, 8.0f);
+			glVertex2f( 0.0f, 55.0f);
+		glEnd();
+		glPopMatrix();
 		// Bottom cursor
 		glColor3ub(255, 255, 255);
 		glPushMatrix();
@@ -496,22 +478,22 @@ void enterScore(Global &gl, Game &g) {
 		glPushMatrix();
 		glTranslatef(880, ybox, 0);
 		glBegin(GL_TRIANGLES);
-                        glVertex2f(-55.0f, 0.0f);
-                        glVertex2f(  0.0f, 30.0f);
-                        glVertex2f(  -8.0f, 0.0f);
-                glEnd();
-                glColor3ub(210, 210, 210);
-                glBegin(GL_TRIANGLES);
-                        glVertex2f(  0.0f, -30.0f);
-                        glVertex2f( -8.0f, 0.0f);
-                        glVertex2f( -55.0f, 0.0f);
-                glEnd();
-                glPopMatrix();
+			glVertex2f(-55.0f, 0.0f);
+			glVertex2f(  0.0f, 30.0f);
+			glVertex2f(  -8.0f, 0.0f);
+		glEnd();
+		glColor3ub(210, 210, 210);
+		glBegin(GL_TRIANGLES);
+			glVertex2f(  0.0f, -30.0f);
+			glVertex2f( -8.0f, 0.0f);
+			glVertex2f( -55.0f, 0.0f);
+		glEnd();
+		glPopMatrix();
 	}
 	// Render letters for name
 	char c;
 	for (int i=0;i<scoreoption;i++) {
-	    	r.bot = 470;
+		r.bot = 470;
 		r.left = 465 + (i * 80);
 		c = g.scoreUI.playerName[i];
 		ggprint16(&r, 16, 0x00ffffff, "%c", c);
