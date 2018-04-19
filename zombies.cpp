@@ -44,6 +44,7 @@ extern void enterScoreXK_e(Global &gl, Game &g);
 extern void enterScoreXK_w(Game &g);
 extern void enterScoreXK_s(Game &g);
 extern void enterScoreXK_q(Game &g);
+extern void saveScores(Game &g);
 
 #define MENU 1
 #define GAME 2
@@ -91,6 +92,7 @@ void physics(Global &gl, Game &g)
 		if (g.player1.health <= 0) {
 			endGame(gl, g);
 			gl.menuState = END;
+			deleteZombies(g);
 		}
 	}	
 }
@@ -118,6 +120,7 @@ int check_keys(XEvent *e, Global &gl, Game &g)
         switch (key) {
                 case XK_Escape:
                         if (gl.menuState == MENU) {
+			    	saveScores(g);
 				return 1;
 			}
 			if (gl.menuState == GAME) {
@@ -165,6 +168,7 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 				} else if (gl.menuOption == 2) {
 					gl.menuState = SCORES;
 				} else if (gl.menuOption == 3) {
+				    	saveScores(g);
 					return 1;
 				}
 			} else if (gl.menuState == HELP) {
@@ -176,6 +180,7 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 			} else if (gl.menuState == END) {
 				if (checkScore(g)) {
 					gl.menuState = NEWSCORE;
+					endGame(gl, g);
 				} else {
 					gl.menuState = MENU;
 					endGame(gl, g);

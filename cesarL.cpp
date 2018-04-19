@@ -6,6 +6,7 @@
 
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
+extern void sortScores(Game &g);
 
 void displayCesarL(int bpos, int cpos, int lpos, int color, const char* name) {
 	static double duration = 0.0;
@@ -30,9 +31,14 @@ void enterScoreXK_e(Global &gl, Game &g) {
 		char c = s->charList[s->charPos];
 		s->playerName[s->cursorPos++] = c;
 		s->charPos = 10;
-	} else (
+	} else {
 		gl.menuState = 1;
 		s->cursorPos = 0;
+		string name(s->playerName);
+		g.topPlayers[9] = name;
+		g.topScores[9] = g.score;
+		sortScores(g);
+		g.score = 0;
 	}
 }
 
@@ -68,9 +74,6 @@ bool checkScore(Game &g) {
 }
 
 void sortScores(Game &g) {
-	string name(g.player1.name);
-	g.topPlayers[9] = name;
-	g.topScores[9] = g.score;
 	for(int oloop=0;oloop<10;oloop++) {
 		for(int iloop=0;iloop<9;iloop++) {
 			if(g.topScores[iloop] < g.topScores[iloop+1]) {
@@ -323,8 +326,10 @@ void showScores(Global &gl, Game &g) {
 	r.left = 312;
 	for(int i=0;i<10;i++) {
 		r.left = 312;
-		if (g.topPlayers[i] != "null")
-			ggprint16(&r, 16, 0x00ffffff, "NAME: ");
+		if (g.topPlayers[i] != "null") {
+		    	const char* c = g.topPlayers[i].c_str();
+			ggprint16(&r, 16, 0x00ffffff, "%s", c);
+		}
 		r.bot -= 50;
 	}
 	r.bot = 725;
@@ -337,9 +342,12 @@ void showScores(Global &gl, Game &g) {
 	for(int i=0;i<10;i++) {
 		r.left = 937;
 		if (g.topScores[i] != 0)
-			ggprint16(&r, 16, 0x00ffffff, "SCORE");
+			ggprint16(&r, 16, 0x00ffffff, "%i", g.topScores[i]);
 		r.bot -= 50;
-	}	
+	}
+	r.left = 105;
+	r.bot = 20;
+	ggprint16(&r, 16, 0x00ffffff, "Q - Return to Menu");	
 }
 
 void endGame(Global &gl, Game &g) {
