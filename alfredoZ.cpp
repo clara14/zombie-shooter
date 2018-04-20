@@ -4,17 +4,6 @@
 #include "zlib.h"
 #include "fonts.h"
 
-extern unsigned char *buildAlphaData(Image *img);
-
-Image mainCharacter = "./images/spartan.png";
-Image mainRoad = "./images/darkRoad.png";
-
-Image img[3] = {
-	"./images/8bit_bullet_bill_02.png",
-	"./images/spartan.png",
-	"./images/rocket_ship.png"
-};
-
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespace *source);
 
@@ -46,11 +35,9 @@ void displayAlfredo(int botPos, int leftPos, int centerPos,
 
 }
 
-
-
 void displayHUD(Global &gl, Game &g) {
 	Rect r;
-	glClear(GL_COLOR_BUFFER_BIT);
+//	glClear(GL_COLOR_BUFFER_BIT);
 	//
 	r.bot = gl.yres - 20;
 	r.left = 10;
@@ -107,50 +94,10 @@ double optimizedFunct() {
 	return amountOfTime;
 }
 
-
-void initialize_mainRoad(Global &gl)
-{
-	// main road 
-	glGenTextures(1, &gl.mainRoadTexture);
-
-	int w = mainRoad.width;
-	int h = mainRoad.height;
-
-	glBindTexture(GL_TEXTURE_2D, gl.mainRoadTexture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, 
-			GL_RGB, GL_UNSIGNED_BYTE, mainRoad.data);
-
-	// silhouette
-
-	glBindTexture(GL_TEXTURE_2D, gl.silhouetteTexture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	unsigned char *silhouetteData = buildAlphaData(&mainRoad);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
-			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-
-	free(silhouetteData);
-
-
-}
-
 void drawMainRoad(Global &gl, Game &g)
 {
-//	float wid = 45.0f;
-
-//	glPushMatrix();
-
-//	glTranslatef(g.player1.pos[0], g.player1.pos[1], 
-//			g.player1.pos[2]);
-
-
 	glBindTexture(GL_TEXTURE_2D, gl.mainRoadTexture);
+
 
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER,0.0f);
@@ -165,39 +112,9 @@ void drawMainRoad(Global &gl, Game &g)
 	glTexCoord2f(1.0f, 1.0f); glVertex2i(gl.xres, 0);
 	glEnd();
 
+	glPopMatrix();
 
 }
-
-void initialize_player1(Global &gl) 
-{
-	// main character 
-	glGenTextures(1, &gl.mainCharacterTexture);
-
-	int w = mainCharacter.width;
-	int h = mainCharacter.height;
-
-	glBindTexture(GL_TEXTURE_2D, gl.mainCharacterTexture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, 
-			GL_RGB, GL_UNSIGNED_BYTE, mainCharacter.data);
-
-	// silhouette
-
-	glBindTexture(GL_TEXTURE_2D, gl.silhouetteTexture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	unsigned char *silhouetteData = buildAlphaData(&mainCharacter);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
-			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-
-	free(silhouetteData);
-}
-
 
 void draw_player1(Global &gl, Game &g)
 {
@@ -225,7 +142,4 @@ void draw_player1(Global &gl, Game &g)
 	glPopMatrix();
 
 }
-
-
-
 

@@ -58,6 +58,7 @@ class Global {
 		GLuint mainCharacterTexture;
 		GLuint silhouetteTexture;
 		GLuint mainRoadTexture;
+		GLuint zombieTexture;
 
 		int menuState;
 		int xres, yres;
@@ -140,6 +141,7 @@ class Zombie {
 		double lastAttack;
 		struct Zombie *prev;
 		struct Zombie *next;
+		float color[3];
 	public:
 		Zombie() {
 			zdamage = 0;
@@ -150,6 +152,7 @@ class Zombie {
 			next = NULL;
 			dBuffer = 2.5;
 			lastAttack = 1.0;
+			color[0] = color[1] = color[2] = 1.0;
 		}
 };
 
@@ -405,4 +408,6 @@ class Image {
 		}                                                               
 };                                                                              
 
+//Image mainCharacter = "./images/spartan.jpg";
+//Image mainRoad = "./images/darkRoad.png";
 

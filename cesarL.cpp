@@ -190,25 +190,36 @@ void listZombies(Game &g) {
 	}
 }
 
-void drawZombies(Game &g) {
+void drawZombies(Global &gl, Game &g) 
+{
 	Zombie *z = g.znext;
 	int w, h;
 	while (z) {
 		w = z->width;
 		h = z->height;
-		glColor3ub(20,74,23);
+		
+		glColor3fv(z->color);
 		glPushMatrix();
 		glTranslatef(z->pos[0], z->pos[1], z->pos[2]);
+
+		glBindTexture(GL_TEXTURE_2D, gl.zombieTexture);
+
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER,0.0f);
+		glColor4ub(255,255,255,255);
+
 		glBegin(GL_QUADS);
-			glVertex2i(-w, -h);
-			glVertex2i(-w, h);
-			glVertex2i(w, h);
-			glVertex2i(w, -h);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
 		glEnd();
+	
 		glPopMatrix();
 		z = z->next;
 	}
 }
+
 // removes one zombie
 void removeZombie(Game &g, Zombie *z) {
 	Zombie *temp = z->next;

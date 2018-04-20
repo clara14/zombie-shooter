@@ -20,8 +20,6 @@ extern void display_name_cesar(Global &gl, Game &g);
 extern void displayHUD(Global &gl, Game &g);
 extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 			int textColor, const char* textName); 
-extern void initialize_player1(Global &gl);
-extern void initialize_mainRoad(Global &gl);
 extern void draw_player1(Global &gl, Game &g);
 extern void drawMainRoad(Global &gl, Game &g);
 //----------------------------------------------------------------------------
@@ -32,7 +30,7 @@ extern void showMenu(Global &gl);
 extern void showTutorial(Global &gl);
 extern void showScores(Global &gl, Game &g);
 extern void updateTime(Game &g);
-extern void drawZombies(Game &g);
+extern void drawZombies(Global &gl, Game &g);
 extern int checkQuad(Global &gl, Game &g);
 extern void deleteZombies(Game &g);
 extern void spawnWave(Global &gl, Game &g);
@@ -264,6 +262,9 @@ unsigned char *buildAlphaData(Image *img)
 	return newdata;                                                         
 }                           
 
+Image mainCharacter = "./images/spartan.png";
+Image mainRoad = "./images/darkRoad.png";
+Image zombieCharacters = "./images/8bit_bullet_bill_02.png";
 
 void normalize2d(Vec v)
 {
@@ -303,6 +304,77 @@ void init_opengl(Global &gl, Game &g)
 
 //	initialize_mainRoad(gl);
 //	initialize_player1(gl);
+	
+	glGenTextures(1, &gl.mainCharacterTexture);
+	glGenTextures(1, &gl.mainRoadTexture);
+	glGenTextures(1, &gl.zombieTexture);
+
+	// main character 
+	int w = mainCharacter.width;
+	int h = mainCharacter.height;
+
+	// PLAYER 1 
+	glBindTexture(GL_TEXTURE_2D, gl.mainCharacterTexture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, 
+			GL_RGB, GL_UNSIGNED_BYTE, mainCharacter.data);
+
+	// silhouette
+	glBindTexture(GL_TEXTURE_2D, gl.silhouetteTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//
+	unsigned char *silhouetteData = buildAlphaData(&mainCharacter);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	free(silhouetteData);
+	//--------------------------------------------------------------------
+	//
+
+	// MAIN ROAD 
+	glBindTexture(GL_TEXTURE_2D, gl.mainRoadTexture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, 
+	//		GL_RGB, GL_UNSIGNED_BYTE, mainRoad.data);
+
+	silhouetteData = buildAlphaData(&mainRoad);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mainRoad.width, mainRoad.height, 0, 
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+
+	free(silhouetteData);
+	//--------------------------------------------------------------------
+	//
+
+	// ZOMBIE CHARACTERS 
+	glBindTexture(GL_TEXTURE_2D, gl.zombieTexture);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, 
+			GL_RGB, GL_UNSIGNED_BYTE, zombieCharacters.data);
+
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	unsigned char * zombieData = buildAlphaData(&zombieCharacters);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, zombieCharacters.width,
+			zombieCharacters.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+			zombieData);
+
+	free(zombieData);
+	//--------------------------------------------------------------------
+	//
+
+
+
+
 }
 
 
@@ -332,7 +404,7 @@ void render(Global &gl, Game &g)
 			displayAlfredo( 500, 100, 150, 0x0079ccb3, 
 					"Press 'n' to display names");	
 		} else {
-			displayAlfredo( 500, 100, 150, 0x0079ccb3, "Alfredo Zavala");	
+			displayAlfredo(500,100,150,0x0079ccb3,"AlfredoZavala");	
 		}
 
 		if (showCesarL)
@@ -356,9 +428,13 @@ void render(Global &gl, Game &g)
 #endif
 //=============================================================================
 		
-		showFloor(gl, g);
+		//showFloor(gl, g);
         	
-		//draw_player1(gl, g);
+		drawMainRoad(gl,g);
+		
+	 	displayHUD(gl, g);
+		
+		draw_player1(gl, g);
 		//-------------
         	//Draw the ship
         	
@@ -427,7 +503,7 @@ void render(Global &gl, Game &g)
                 	++b;
         	}
 		// Draw all existing zombies
-		drawZombies(g);
+		drawZombies(gl, g);
 	}
 	
 	else if (gl.menuState == HELP) {
@@ -445,5 +521,4 @@ void render(Global &gl, Game &g)
 	else if (gl.menuState == NEWSCORE) {
 		enterScore(gl, g);
 	}
-}
-
+}   
