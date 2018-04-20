@@ -205,7 +205,7 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 	if(g.nzombies > 0)
 		cout << "Before collision detection" << endl;
 	Zombie *z = g.znext;
-	while(z) {
+	while (z) {
 		int w, h, i = 0;
 		w = z->width;
 		h = z->height;
@@ -332,23 +332,23 @@ void bug_fix (Game &g)
 	  //*****************bug fix*****************
 	
 	//top left corner
-	while(((g.player1.pos[0] == -3.5) && (g.player1.pos[1] > 343.5))) {
+	while (((g.player1.pos[0] == -3.5) && (g.player1.pos[1] > 343.5))) {
 		g.player1.pos[0] = 0;
 		g.player1.pos[1] = 340;    
 	}
 	
 	//top right corner
-	while(((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] > 343.5))) {
+	while (((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] > 343.5))) {
 		g.player1.pos[0] = 1250;
 		g.player1.pos[1] = 340;    
 	}
 	//bottom left corner
-	while(((g.player1.pos[0] == -3.5) && (g.player1.pos[1] < -3.5))) {
+	while (((g.player1.pos[0] == -3.5) && (g.player1.pos[1] < -3.5))) {
 		g.player1.pos[0] = 0;
 		g.player1.pos[1] = 0;
 	}
 	//bottom right corner    
-	while(((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] < -3.5))) {
+	while (((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] < -3.5))) {
 		g.player1.pos[0] = 1250;
 		g.player1.pos[1] = 0;
 	}
