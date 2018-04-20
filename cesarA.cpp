@@ -1,9 +1,14 @@
 //Cesar Aleman
-//movement and boundaries of the play area
-//this also includes the bullets currently we do have
+//Movement and Boundaries of the play area
+
+//This includes the bullets currently we do have
 //a cap on how many bullets there are but our basic requirement
 //only involves infintite bullets once we get that working we will
-//incorportate a mechanic that allows resupply and limits on bullers.
+//incorportate a mechanic that allows resupply and limits on bullets.
+//This will also incoporate hit detection against zombies and also reduction
+//of health once the player gets hit. This works with CesarL's file 
+//closely due to the zombies being generated from there as well as 
+// menu states.
 
 //21MAR2018 update: bug has been fixed explained below
 //22MAR2018 update: tried to add another oject into the
@@ -15,7 +20,8 @@
 //13APR2018 update: health is now being subtracted from the player at a
 //		    appropriate rate once there is collision between
 //		    player and zombie.
-
+//18APR2018 update: Cleaned up the file for evaluation. There were 
+//		    a couple issues but it is better now.
 
 #include "zlib.h"
 #include <time.h>       
