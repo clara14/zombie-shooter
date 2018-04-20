@@ -1,5 +1,5 @@
-// Modified by: Alfredo Zavala
-// Date: 2/24/2018
+// Author: Alfredo Zavala
+// Last Modified on: 4/20/2018
 
 #include "zlib.h"
 #include "fonts.h"
@@ -11,7 +11,8 @@ double unoptimizedFunct();
 double optimizedFunct();
 
 void displayAlfredo(int botPos, int leftPos, int centerPos,
-		int textColor, const char* textName) {
+		int textColor, const char* textName) 
+{
 
 	Rect r;
 	r.bot = botPos;
@@ -35,10 +36,9 @@ void displayAlfredo(int botPos, int leftPos, int centerPos,
 
 }
 
-void displayHUD(Global &gl, Game &g) {
+void displayHUD(Global &gl, Game &g) 
+{
 	Rect r;
-//	glClear(GL_COLOR_BUFFER_BIT);
-	//
 	r.bot = gl.yres - 20;
 	r.left = 10;
 	r.center = 0;
@@ -51,8 +51,8 @@ void displayHUD(Global &gl, Game &g) {
 }
 
 
-double unoptimizedFunct() {
-
+double unoptimizedFunct() 
+{
 	static double amountOfTime = 0.0;
 	struct timespec timeStart, timeEnd;
 
@@ -73,8 +73,8 @@ double unoptimizedFunct() {
 }
 
 
-double optimizedFunct() {
-
+double optimizedFunct() 
+{
 	static double amountOfTime = 0.0;
 	struct timespec timeStart, timeEnd;
 
@@ -96,15 +96,16 @@ double optimizedFunct() {
 
 void drawMainRoad(Global &gl, Game &g)
 {
+	// Binding the texture 
 	glBindTexture(GL_TEXTURE_2D, gl.mainRoadTexture);
-
-
+	// Enabling alpha channel 
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER,0.0f);
 	glColor4ub(255,255,255,255);
 
 	glPushMatrix();
 	
+	// Drawing the main road
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
 	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, gl.yres);

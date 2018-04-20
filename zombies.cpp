@@ -301,10 +301,6 @@ void init_opengl(Global &gl, Game &g)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 
-
-//	initialize_mainRoad(gl);
-//	initialize_player1(gl);
-	
 	glGenTextures(1, &gl.mainCharacterTexture);
 	glGenTextures(1, &gl.mainRoadTexture);
 	glGenTextures(1, &gl.zombieTexture);
@@ -344,8 +340,8 @@ void init_opengl(Global &gl, Game &g)
 	//		GL_RGB, GL_UNSIGNED_BYTE, mainRoad.data);
 
 	silhouetteData = buildAlphaData(&mainRoad);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mainRoad.width, mainRoad.height, 0, 
-			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	glTexImage2D(GL_TEXTURE_2D,0, GL_RGBA, mainRoad.width, mainRoad.height,
+			0,GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
 	free(silhouetteData);
 	//--------------------------------------------------------------------
@@ -385,7 +381,7 @@ void render(Global &gl, Game &g)
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f( 1.0, 1.0, 1.0);
+	//glColor3f( 1.0, 1.0, 1.0);
 
 
 	// Show the menu, game, tutorial, or high scores
@@ -427,20 +423,15 @@ void render(Global &gl, Game &g)
 		ggprint16(&r, 16, 0x009508f8, "zombies: %i", quad);
 #endif
 //=============================================================================
-		
-		//showFloor(gl, g);
-        	
 		drawMainRoad(gl,g);
-		
 	 	displayHUD(gl, g);
-		
 		draw_player1(gl, g);
-		//-------------
-        	//Draw the ship
         	
+		//Draw the ship
 		glColor3fv(g.ship.color);
         	glPushMatrix();
-        	glTranslatef(g.player1.pos[0], g.player1.pos[1], g.player1.pos[2]);
+        	glTranslatef(g.player1.pos[0],
+				g.player1.pos[1],g.player1.pos[2]);
         	glRotatef(g.player1.angle, 0.0f, 0.0f, 1.0f);
         	glBegin(GL_TRIANGLES);
                 	glVertex2f(-12.0f, -10.0f);
@@ -457,31 +448,8 @@ void render(Global &gl, Game &g)
         	glPopMatrix();
         
 		
-/*
-		if (gl.keys[XK_Up] || g.mouseThrustOn) {
-                	int i;
-                	//draw thrust
-                	Flt rad = ((g.player1.angle+90.0) / 360.0f) * PI * 2.0;
-                	//convert angle to a vector
-                	Flt xdir = cos(rad);
-                	Flt ydir = sin(rad);
-                	Flt xs,ys,xe,ye,r;
-                	glBegin(GL_LINES);
-                        	for (i=0; i<16; i++) {
-                                	xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
-                                	ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
-                                	r = rnd()*40.0+40.0;
-                                	xe = -xdir * r + rnd() * 18.0 - 9.0;
-                                	ye = -ydir * r + rnd() * 18.0 - 9.0;
-                                	glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
-                                	glVertex2f(g.player1.pos[0]+xs,g.player1.pos[1]+ys);
-                                	glVertex2f(g.player1.pos[0]+xe,g.player1.pos[1]+ye);
-                        	}
-                	glEnd();
 
-        	}
-*/
-        	//------------------
+		//------------------
         	//----------------
         	//Draw the bullets
         	Bullet *b = &g.barr[0];
@@ -504,21 +472,13 @@ void render(Global &gl, Game &g)
         	}
 		// Draw all existing zombies
 		drawZombies(gl, g);
-	}
-	
-	else if (gl.menuState == HELP) {
+	} else if (gl.menuState == HELP) {
 		showTutorial(gl);
-	}
-	
-	else if (gl.menuState == SCORES) {
+	} else if (gl.menuState == SCORES) {
 		showScores(gl, g);
-	}
-	
-	else if (gl.menuState == END) {
+	} else if (gl.menuState == END) {
 		showEndScreen(gl, g);
-	}
-
-	else if (gl.menuState == NEWSCORE) {
+	} else if (gl.menuState == NEWSCORE) {
 		enterScore(gl, g);
 	}
 }   
