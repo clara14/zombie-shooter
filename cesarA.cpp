@@ -1,14 +1,9 @@
 //Cesar Aleman
-//Movement and Boundaries of the play area
-
-//This includes the bullets currently we do have
+//movement and boundaries of the play area
+//this also includes the bullets currently we do have
 //a cap on how many bullets there are but our basic requirement
 //only involves infintite bullets once we get that working we will
-//incorportate a mechanic that allows resupply and limits on bullets.
-//This will also incoporate hit detection against zombies and also reduction
-//of health once the player gets hit. This works with CesarL's file 
-//closely due to the zombies being generated from there as well as 
-// menu states.
+//incorportate a mechanic that allows resupply and limits on bullers.
 
 //21MAR2018 update: bug has been fixed explained below
 //22MAR2018 update: tried to add another oject into the
@@ -20,8 +15,7 @@
 //13APR2018 update: health is now being subtracted from the player at a
 //		    appropriate rate once there is collision between
 //		    player and zombie.
-//18APR2018 update: Cleaned up the file for evaluation. There were 
-//		    a couple issues but it is better now.
+
 
 #include "zlib.h"
 #include <time.h>       
@@ -205,10 +199,9 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 			g.nbullets--;
 		}
 		i++;
-	}
-	  
+	} 
 	//collision detection between zombie and bullet
-	if(g.nzombies > 0)
+	if (g.nzombies > 0)
 		cout << "Before collision detection" << endl;
 	Zombie *z = g.znext;
 	while (z) {
@@ -243,8 +236,6 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 			memcpy(&g.barr[i], &g.barr[g.nbullets - 1], sizeof(Bullet));
 			g.nbullets--;
 		}
-		cout << "after if statement " << endl;
-
 		//this will be for collision with the zombie
 		//use the global timer to determine how long between 
 		//hits so the zombie doesn't kill instantly
@@ -287,7 +278,7 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 			g.player1.vel[0] *= speed;
 			g.player1.vel[1] *= speed;                
 		}
-		g.player1.pos[1]+=3.5;
+		g.player1.pos[1] += 3.5;
 	}
 	//      DOWN
 	if (gl.keys[XK_s]) {
@@ -327,6 +318,39 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 			}
 		}
 	}
+	
+	Zombie *z1 = g.znext;
+	while (z1) {
+		/*
+	for(double i = 0.1; i < g.player1.pos[0]; i = i + 0.1){
+			z1->pos[0] = 0.75*abs((g.player1.pos[0] - z1->pos[0]));
+	}
+	for(double j = 0.1; j < g.player1.pos[1]; j = j + 0.1){
+			z1->pos[1] = 0.75*abs((g.player1.pos[1] - z1->pos[1]));		
+	}
+	*/
+		if (z1->pos[0] > g.player1.pos[0])
+			z1->pos[0] -= 3.5;
+		if (z1->pos[0] < g.player1.pos[0])
+			z1->pos[0] += 3.5;
+
+		
+
+		if (z1->pos[1] > g.player1.pos[1])
+			z1->pos[1] -= 3.5;
+		if (z1->pos[1] < g.player1.pos[1])
+			z1->pos[1] += 3.5;
+
+		z1 = z1->next;
+	}
+	/*
+	Zombie *z1 = g.znext;
+	while (z1) {
+		z->pos[0] = g.player1.pos[0] - z->pos[0];
+		z->pos[1] = g.player1.pos[1] - z->pos[1];
+		z1 = z1->next;
+	}
+	*/
 }
 void bug_fix (Game &g) 
 {
@@ -338,23 +362,23 @@ void bug_fix (Game &g)
 	  //*****************bug fix*****************
 	
 	//top left corner
-	while (((g.player1.pos[0] == -3.5) && (g.player1.pos[1] > 343.5))) {
+	while(((g.player1.pos[0] == -3.5) && (g.player1.pos[1] > 343.5))) {
 		g.player1.pos[0] = 0;
 		g.player1.pos[1] = 340;    
 	}
 	
 	//top right corner
-	while (((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] > 343.5))) {
+	while(((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] > 343.5))) {
 		g.player1.pos[0] = 1250;
 		g.player1.pos[1] = 340;    
 	}
 	//bottom left corner
-	while (((g.player1.pos[0] == -3.5) && (g.player1.pos[1] < -3.5))) {
+	while(((g.player1.pos[0] == -3.5) && (g.player1.pos[1] < -3.5))) {
 		g.player1.pos[0] = 0;
 		g.player1.pos[1] = 0;
 	}
 	//bottom right corner    
-	while (((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] < -3.5))) {
+	while(((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] < -3.5))) {
 		g.player1.pos[0] = 1250;
 		g.player1.pos[1] = 0;
 	}
