@@ -137,13 +137,30 @@ void spawnWave(Global &gl, Game &g) {
 
 void createZombie(Game &g, int pquad, int n) {
 	int quad = 4;
+	int spawnx, spawny;
 	while (quad == pquad) {
 		quad = rand() % 4 + 1;
 	}
 	for(int i=0;i<n;i++) {
+	    	if (quad == 1) {
+	    		spawnx = rand() % 80 + 1160;
+	    		spawny = rand() % 30 + 310;
+		}
+		if (quad == 2) {
+    			spawnx = rand() % 30 + 1;
+    			spawny = rand() % 30 + 310;
+		}
+		if (quad == 3) {
+    			spawnx = rand() % 30 + 1;
+    			spawny = rand() % 30 + 1;
+		}
+		if (quad == 4) {
+    			spawnx = rand() % 80 + 1160;
+    			spawny = rand() % 30 + 1;
+		}			
 		Zombie *z = new Zombie;
-		z->pos[0] = g.pos[quad-1][0];
-		z->pos[1] = g.pos[quad-1][1];
+		z->pos[0] = spawnx;
+		z->pos[1] = spawny;
 		z->pos[2] = 0.0f;
 		z->next = g.znext;
 		if (g.znext != NULL)
@@ -154,6 +171,9 @@ void createZombie(Game &g, int pquad, int n) {
 			quad++;
 		else
 			quad = 1;
+		while (quad == pquad) {
+		    	quad = rand() % 4 + 1;
+		}
 	}
 }
 // prints the linked list to make sure pointers were assigned correctly
@@ -194,8 +214,7 @@ void removeZombie(Game &g, Zombie *z) {
 	Zombie *temp = z->next;
 	if (z->prev == NULL) {
 		if (z->next == NULL) {
-			g.znext = NULL;
-		} else {
+
 			z->next->prev = NULL;
 			g.znext = z->next;
 		}
@@ -299,8 +318,7 @@ void showMenu(Global &gl) {
 void showTutorial(Global &gl) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	Rect r;
-	r.bot = 700;
-	r.center = 0;
+	r.bot = 800;
 	r.left = 625;
 	if (gl.helpScreen == 1) {
 		ggprint16(&r, 16, 0x00ffffff, "Intro");
@@ -313,6 +331,25 @@ void showTutorial(Global &gl) {
 	}
 	if (gl.helpScreen == 4) {
 		ggprint16(&r, 16, 0x00ffffff, "Extra Info 2");
+	}
+	if (gl.helpScreen == 1) {
+	    	r.left = 105;
+		r.bot = 20;
+		ggprint16(&r, 16, 0x00ffffff, "Q - Return to Menu");
+	} else {
+	    	r.left = 105;
+		r.bot = 20;
+		ggprint16(&r, 16, 0x00ffffff, "Q - Go Back");
+	}
+	Rect r2;
+	if (gl.helpScreen == 4) {
+	    	r2.left = 1145;
+		r2.bot = 20;
+		ggprint16(&r2, 16, 0x00ffffff, "E - Return to Menu");
+	} else {
+	    	r2.left = 1145;
+		r2.bot = 20;
+		ggprint16(&r2, 16, 0x00ffffff, "E - Next");
 	}
 }
 
