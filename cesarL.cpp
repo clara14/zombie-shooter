@@ -1,4 +1,5 @@
 // Author: Cesar Lara
+// Date last modified: 4/21/18
 
 
 #include "zlib.h"
@@ -8,7 +9,8 @@ extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 extern void sortScores(Game &g);
 
-void displayCesarL(int bpos, int cpos, int lpos, int color, const char* name) {
+void displayCesarL(int bpos, int cpos, int lpos, int color, const char* name)
+{
 	static double duration = 0.0;
 	struct timespec timeStart, timeEnd;
 	clock_gettime(CLOCK_REALTIME, &timeStart);
@@ -24,7 +26,8 @@ void displayCesarL(int bpos, int cpos, int lpos, int color, const char* name) {
 }
 
 // key cases for check_keys function in main file
-void enterScoreXK_e(Global &gl, Game &g) {
+void enterScoreXK_e(Global &gl, Game &g)
+{
 	HighScore *s = &g.scoreUI;
 	// char in list array is selected and entered into name array
 	if (s->cursorPos != 5) {
@@ -42,7 +45,8 @@ void enterScoreXK_e(Global &gl, Game &g) {
 	}
 }
 
-void enterScoreXK_w(Game &g) {
+void enterScoreXK_w(Game &g)
+{
 	HighScore *s = &g.scoreUI;
 	if (s->cursorPos != 5) {
 		if (s->charPos > 0)
@@ -50,7 +54,8 @@ void enterScoreXK_w(Game &g) {
 	}
 }
 
-void enterScoreXK_s(Game &g) {
+void enterScoreXK_s(Game &g)
+{
 	HighScore *s = &g.scoreUI;
 	if (s->cursorPos != 5) {
 		if (s->charPos < 36)
@@ -58,7 +63,8 @@ void enterScoreXK_s(Game &g) {
 	}
 }
 
-void enterScoreXK_q(Game &g) {
+void enterScoreXK_q(Game &g)
+{
 	HighScore *s = &g.scoreUI;
 	if (s->cursorPos > 0)
 		s->cursorPos--;
@@ -66,14 +72,16 @@ void enterScoreXK_q(Game &g) {
 
 //High-score functions
 //
-bool checkScore(Game &g) {
+bool checkScore(Game &g)
+{
 	bool check = false;
 	if (g.topScores[9] < g.score)
 		check = true;
 	return check;
 }
 
-void sortScores(Game &g) {
+void sortScores(Game &g)
+{
 	for(int oloop=0;oloop<10;oloop++) {
 		for(int iloop=0;iloop<9;iloop++) {
 			if(g.topScores[iloop] < g.topScores[iloop+1]) {
@@ -84,7 +92,8 @@ void sortScores(Game &g) {
 	}
 }
 
-void saveScores(Game &g) {
+void saveScores(Game &g)
+{
     	ofstream fout;
 	fout.open("scores.txt");
 	if (fout.fail()) {
@@ -98,7 +107,8 @@ void saveScores(Game &g) {
 
 // Player functions
 //
-void updateTime(Game &g) {
+void updateTime(Game &g)
+{
 	struct timespec pt;
 	clock_gettime(CLOCK_REALTIME, &pt);
 	g.player1.ptime = timeDiff(&g.player1.time, &pt);
@@ -107,7 +117,8 @@ void updateTime(Game &g) {
 	}
 }
 
-int checkQuad(Global &gl, Game &g) {
+int checkQuad(Global &gl, Game &g)
+{
 	float xpos = g.player1.pos[0];
 	float ypos = g.player1.pos[1];
 	int quadrant = 3;
@@ -127,7 +138,8 @@ int checkQuad(Global &gl, Game &g) {
 extern void listZombies(Game &g);
 extern void createZombie(Game &g, int pquad, int n);
 
-void spawnWave(Global &gl, Game &g) {
+void spawnWave(Global &gl, Game &g)
+{
 	if(g.wave == 1) {
 		createZombie(g, checkQuad(gl, g), 3);
 		listZombies(g);
@@ -135,7 +147,8 @@ void spawnWave(Global &gl, Game &g) {
 	}
 }
 
-void createZombie(Game &g, int pquad, int n) {
+void createZombie(Game &g, int pquad, int n)
+{
 	int quad = 4;
 	int spawnx, spawny;
 	while (quad == pquad) {
@@ -178,7 +191,8 @@ void createZombie(Game &g, int pquad, int n) {
 }
 // prints the linked list to make sure pointers were assigned correctly
 // during createZombie
-void listZombies(Game &g) {
+void listZombies(Game &g)
+{
 	Zombie *z = g.znext;
 	int n = 1;
 	while (z) {
@@ -221,7 +235,8 @@ void drawZombies(Global &gl, Game &g)
 }
 
 // removes one zombie
-void removeZombie(Game &g, Zombie *z) {
+void removeZombie(Game &g, Zombie *z)
+{
 	Zombie *temp = z->next;
 	if (z->prev == NULL) {
 		if (z->next == NULL) {
@@ -242,7 +257,8 @@ void removeZombie(Game &g, Zombie *z) {
 	g.nzombies--;
 }
 // traverses list and deletes all zombies
-void deleteZombies(Game &g) {
+void deleteZombies(Game &g)
+{
 	Zombie *temp1;
 	Zombie *temp2;
 	temp1 = g.znext;
@@ -255,7 +271,8 @@ void deleteZombies(Game &g) {
 	g.znext = NULL;
 }
 
-void showMenu(Global &gl) {
+void showMenu(Global &gl)
+{
 	// reset tutorial screen
 	if (gl.helpScreen != 1)
 		gl.helpScreen = 1;
@@ -326,7 +343,8 @@ void showMenu(Global &gl) {
 #endif
 }
 
-void showTutorial(Global &gl) {
+void showTutorial(Global &gl)
+{
 	glClear(GL_COLOR_BUFFER_BIT);
 	Rect r;
 	r.bot = 800;
@@ -364,7 +382,8 @@ void showTutorial(Global &gl) {
 	}
 }
 
-void showScores(Global &gl, Game &g) {
+void showScores(Global &gl, Game &g)
+{
 	glClear(GL_COLOR_BUFFER_BIT);
 	Rect r;
 	r.bot = 800;
@@ -398,13 +417,15 @@ void showScores(Global &gl, Game &g) {
 	ggprint16(&r, 16, 0x00ffffff, "Q - Return to Menu");	
 }
 
-void endGame(Global &gl, Game &g) {
+void endGame(Global &gl, Game &g)
+{
 	g.player1.pos[0] = 250;
 	g.player1.pos[1] = 175;
 	g.player1.health = 100;
 }
 
-void showEndScreen(Global &gl, Game &g) {
+void showEndScreen(Global &gl, Game &g)
+{
 	glClear(GL_COLOR_BUFFER_BIT);
 	Rect r;
 	r.bot = 800;
@@ -443,7 +464,8 @@ void showEndScreen(Global &gl, Game &g) {
 	glPopMatrix();
 }
 
-void enterScore(Global &gl, Game &g) {
+void enterScore(Global &gl, Game &g)
+{
 	glClear(GL_COLOR_BUFFER_BIT);
 	int scoreoption = g.scoreUI.cursorPos;
 	char *arr = g.scoreUI.charList;
