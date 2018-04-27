@@ -15,6 +15,8 @@
 //13APR2018 update: health is now being subtracted from the player at a
 //		    appropriate rate once there is collision between
 //		    player and zombie.
+//27APR2018 update: changed the movement of the zombies to make it 
+//					easier to manuever around them.
 
 
 #include "zlib.h"
@@ -145,17 +147,17 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 	bug_fix(g);
 
 	  //end of wall
-	if (g.player1.pos[0] < 0.0) {
-		g.player1.pos[0] = 0;
+	if (g.player1.pos[0] < 20.0) {
+		g.player1.pos[0] = 20;
 	}
-	else if (g.player1.pos[0] > (float)gl.xres) {
-		g.player1.pos[0] = gl.xres;
+	else if (g.player1.pos[0] > ((float)gl.xres - 20)) {
+		g.player1.pos[0] = gl.xres - 20;
 	}
-	else if (g.player1.pos[1] > 340) {
-		g.player1.pos[1] = 340;
+	else if (g.player1.pos[1] > 315) {
+		g.player1.pos[1] = 315;
 	}
-	else if (g.player1.pos[1] < 0) {
-		g.player1.pos[1] = 0;
+	else if (g.player1.pos[1] < 40) {
+		g.player1.pos[1] = 40;
 	}
 
 	  //bullet positions
@@ -318,39 +320,24 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 			}
 		}
 	}
-	
+	//zombie being drawn to the player.
 	Zombie *z1 = g.znext;
 	while (z1) {
-		/*
-	for(double i = 0.1; i < g.player1.pos[0]; i = i + 0.1){
-			z1->pos[0] = 0.75*abs((g.player1.pos[0] - z1->pos[0]));
-	}
-	for(double j = 0.1; j < g.player1.pos[1]; j = j + 0.1){
-			z1->pos[1] = 0.75*abs((g.player1.pos[1] - z1->pos[1]));		
-	}
-	*/
+
 		if (z1->pos[0] > g.player1.pos[0])
-			z1->pos[0] -= 3.5;
+			z1->pos[0] -= 2.0;
 		if (z1->pos[0] < g.player1.pos[0])
-			z1->pos[0] += 3.5;
+			z1->pos[0] += 2.0;
 
 		
 
 		if (z1->pos[1] > g.player1.pos[1])
-			z1->pos[1] -= 3.5;
+			z1->pos[1] -= 1.0;
 		if (z1->pos[1] < g.player1.pos[1])
-			z1->pos[1] += 3.5;
+			z1->pos[1] += 1.0;
 
 		z1 = z1->next;
 	}
-	/*
-	Zombie *z1 = g.znext;
-	while (z1) {
-		z->pos[0] = g.player1.pos[0] - z->pos[0];
-		z->pos[1] = g.player1.pos[1] - z->pos[1];
-		z1 = z1->next;
-	}
-	*/
 }
 void bug_fix (Game &g) 
 {
@@ -362,25 +349,40 @@ void bug_fix (Game &g)
 	  //*****************bug fix*****************
 	
 	//top left corner
-	while(((g.player1.pos[0] == -3.5) && (g.player1.pos[1] > 343.5))) {
-		g.player1.pos[0] = 0;
-		g.player1.pos[1] = 340;    
+	while(((g.player1.pos[0] == 16.5) && (g.player1.pos[1] > 315))) {
+		g.player1.pos[0] = 20;
+		g.player1.pos[1] = 315;    
 	}
 	
 	//top right corner
-	while(((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] > 343.5))) {
-		g.player1.pos[0] = 1250;
-		g.player1.pos[1] = 340;    
+	while(((g.player1.pos[0] == 1233.5) && (g.player1.pos[1] > 315))) {
+		g.player1.pos[0] = 1230;
+		g.player1.pos[1] = 315;    
 	}
 	//bottom left corner
-	while(((g.player1.pos[0] == -3.5) && (g.player1.pos[1] < -3.5))) {
-		g.player1.pos[0] = 0;
-		g.player1.pos[1] = 0;
+	while(((g.player1.pos[0] == 16.5) && (g.player1.pos[1] < 46.5))) {
+		g.player1.pos[0] = 20;
+		g.player1.pos[1] = 40;
 	}
 	//bottom right corner    
-	while(((g.player1.pos[0] == 1253.5) && (g.player1.pos[1] < -3.5))) {
-		g.player1.pos[0] = 1250;
-		g.player1.pos[1] = 0;
+	while(((g.player1.pos[0] == 1233.5) && (g.player1.pos[1] < 16.5))) {
+		g.player1.pos[0] = 1230;
+		g.player1.pos[1] = 40;
 	}
 
 }
+
+
+	/*
+	if (g.player1.pos[0] < 20.0) {
+		g.player1.pos[0] = 20;
+	}
+	else if (g.player1.pos[0] > (float)gl.xres) {
+		g.player1.pos[0] = gl.xres;
+	}
+	else if (g.player1.pos[1] > 325) {
+		g.player1.pos[1] = 325;
+	}
+	else if (g.player1.pos[1] < 40) {
+		g.player1.pos[1] = 40;
+		*/
