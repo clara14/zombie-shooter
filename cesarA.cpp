@@ -17,6 +17,8 @@
 //		    player and zombie.
 //27APR2018 update: changed the movement of the zombies to make it 
 //					easier to manuever around them.
+//30APR2019 update: made some changes to help remove some uneeded comments
+//					and other lines
 
 
 #include "zlib.h"
@@ -66,8 +68,7 @@ void display_name_cesar(Global &gl, Game &g)
 	ggprint8b(&r2, 20, 0x00fff000, "using pow function: %lf", (time_function1() * 1000));
 	ggprint8b(&r2, 20, 0x00fff000, "using asterisk: %lf", (time_function2() * 1000));
 	ggprint8b(&r2, 20, 0x00fff000, "using sqrt: %lf", (time_function3() * 1000));
-	ggprint8b(&r2, 20, 0x00fff000, "using pow with 0.5: %lf", (time_function4() * 1000));
-	 
+	ggprint8b(&r2, 20, 0x00fff000, "using pow with 0.5: %lf", (time_function4() * 1000));	 
 	ggprint8b(&r2, 20, 0x00fff000, "y postion of player1: %lf", g.player1.pos[1]);
 	ggprint8b(&r2, 20, 0x00fff000, "x postion of player1: %lf", g.player1.pos[0]);
 
@@ -172,7 +173,6 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 			memcpy(&g.barr[i], &g.barr[g.nbullets-1],
 			sizeof(Bullet));
 			g.nbullets--;
-			//do not increment i.
 			continue;
 	}
 		//move the bullet
@@ -217,7 +217,6 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 		cout << "bfore long 'if' statement" << endl;
 		cout << "value of x-coordinate of bullet: " << b->pos[0] << endl;
 		cout << "value of y-coordinate of bullet: " << b->pos[1] << endl;
-
 		cout << "value of x-coordinate of zombie: " << z->pos[0] << endl;
 		cout << "value of x-coordinate of zombie: " << z->pos[1] << endl;
 				
@@ -253,8 +252,6 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 				g.player1.health = g.player1.health - z->zdamage;
 				z->lastAttack = currentTime;
 			}
-				//for now, upon death the player gets put back
-				//into the menu.
 		}
 		z = z->next;
 	}
@@ -324,17 +321,19 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 	Zombie *z1 = g.znext;
 	while (z1) {
 
-		if (z1->pos[0] > g.player1.pos[0])
+		if (z1->pos[0] > g.player1.pos[0]){
 			z1->pos[0] -= 2.0;
-		if (z1->pos[0] < g.player1.pos[0])
+		}
+		if (z1->pos[0] < g.player1.pos[0]){
 			z1->pos[0] += 2.0;
+		}
 
-		
-
-		if (z1->pos[1] > g.player1.pos[1])
+		if (z1->pos[1] > g.player1.pos[1]){
 			z1->pos[1] -= 1.0;
-		if (z1->pos[1] < g.player1.pos[1])
+		}
+		if (z1->pos[1] < g.player1.pos[1]){
 			z1->pos[1] += 1.0;
+		}
 
 		z1 = z1->next;
 	}
@@ -367,22 +366,7 @@ void bug_fix (Game &g)
 	//bottom right corner    
 	while(((g.player1.pos[0] == 1233.5) && (g.player1.pos[1] < 16.5))) {
 		g.player1.pos[0] = 1230;
-		g.player1.pos[1] = 40;
+		g.player1.pos[1] = 10;
 	}
 
 }
-
-
-	/*
-	if (g.player1.pos[0] < 20.0) {
-		g.player1.pos[0] = 20;
-	}
-	else if (g.player1.pos[0] > (float)gl.xres) {
-		g.player1.pos[0] = gl.xres;
-	}
-	else if (g.player1.pos[1] > 325) {
-		g.player1.pos[1] = 325;
-	}
-	else if (g.player1.pos[1] < 40) {
-		g.player1.pos[1] = 40;
-		*/
