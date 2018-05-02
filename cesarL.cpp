@@ -212,7 +212,7 @@ void drawZombies(Global &gl, Game &g)
 		w = z->width;
 		h = z->height;
 		
-		glColor3fv(z->color);
+		glColor3ub(20,74,23);
 		glPushMatrix();
 		glTranslatef(z->pos[0], z->pos[1], z->pos[2]);
 
@@ -223,13 +223,19 @@ void drawZombies(Global &gl, Game &g)
 		glColor4ub(255,255,255,255);
 
 		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+		glTexCoord2f(0.0f, 1.0f); 
+		glVertex2i(-w, -h);
+		glTexCoord2f(0.0f, 0.0f); 
+		glVertex2i(-w, h);
+		glTexCoord2f(1.0f, 0.0f); 
+		glVertex2i(w, h);
+		glTexCoord2f(1.0f, 1.0f); 
+		glVertex2i(w, -h);
 		glEnd();
 	
 		glPopMatrix();
+		
+
 		z = z->next;
 	}
 }
@@ -332,6 +338,23 @@ void showMenu(Global &gl)
 		glVertex2f( -55.0f, 0.0f);
 	glEnd();
 	glPopMatrix();
+	// Show brief instructions for moving through options
+	r.bot = 20;
+	r.left = 130;
+	ggprint16(&r, 16, 0x00ffffff, "W / S - Menu Up / Down");
+	r.left = gl.xres / 2;
+	r.bot = 20;
+	const char* option;
+	if (gl.menuOption == 0) {
+		option = "Play Game";
+	} else if (gl.menuOption == 1) {
+		option = "View Tutorial";
+	} else if (gl.menuOption == 2) {
+		option = "View High Scores";
+	} else if (gl.menuOption == 3) {
+		option = "Exit Game";
+	}
+	ggprint16(&r, 16, 0x00ffffff, "E - %s", option);
 	// Add time to it
 #ifdef PROFILING_ON
 	clock_gettime(CLOCK_REALTIME, &timeEnd);
