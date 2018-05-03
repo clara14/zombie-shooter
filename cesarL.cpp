@@ -379,6 +379,11 @@ void showTutorial(Global &gl)
 	r.left = 625;
 	if (gl.helpScreen == 1) {
 		ggprint16(&r, 16, 0x00ffffff, "Intro");
+		r.bot = 700;
+		r.left = gl.xres / 2;
+		const char* text;
+		text = "A zombie apocalypse has taken over your city!";
+		ggprint16(&r, 16, 0x00ffffff, "%s", text);
 	}
 	if (gl.helpScreen == 2) {
 		ggprint16(&r, 16, 0x00ffffff, "Controls");
