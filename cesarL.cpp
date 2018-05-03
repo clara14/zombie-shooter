@@ -243,24 +243,29 @@ void drawZombies(Global &gl, Game &g)
 // removes one zombie
 void removeZombie(Game &g, Zombie *z)
 {
-	Zombie *temp = z->next;
-	if (z->prev == NULL) {
-		if (z->next == NULL) {
-
-			z->next->prev = NULL;
-			g.znext = z->next;
-		}
+	cout << "beginning of removeZombie()\n";
+	if (g.nzombies == 0)
+		return;
+	Zombie *temp;
+	Zombie *prev;
+	if (g.znext == z) {
+		temp = g.znext->next;
+		delete g.znext;
+		g.nzombies--;
+		g.znext = temp;
 	} else {
-		if (z->next == NULL) {
-			z->prev->next = NULL;
-		} else {
-			z->prev->next = z->next;
-			z->next->prev = z->prev;
+		temp = g.znext;
+		while (temp != NULL && temp != z) {
+			prev = temp;
+			temp = temp->next;
+		}
+		if (temp) {
+			prev->next = temp->next;
+			delete temp;
+			g.nzombies--;
 		}
 	}
-	delete z;
-	z = temp;
-	g.nzombies--;
+	cout << "end of removeZombie()\n";
 }
 // traverses list and deletes all zombies
 void deleteZombies(Game &g)

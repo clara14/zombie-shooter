@@ -232,7 +232,6 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 				cout << "before if statment condidtions" << endl;
 				removeZombie(g, z);
 				g.score = g.score + 100;
-				z->health = 100;
 			}
 			memcpy(&g.barr[i], &g.barr[g.nbullets - 1], sizeof(Bullet));
 			g.nbullets--;
