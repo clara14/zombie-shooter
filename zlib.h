@@ -138,7 +138,9 @@ class Zombie {
 		float attack;
 		float defense;
 		double dBuffer;
+		double sBuffer;
 		double lastAttack;
+		double lastPlayed
 		struct Zombie *prev;
 		struct Zombie *next;
 		float color[3];
@@ -151,7 +153,9 @@ class Zombie {
 			prev = NULL;
 			next = NULL;
 			dBuffer = 2.5;
+			sBuffer = 2.5;
 			lastAttack = 1.0;
+			lastPlayed = 1.0;
 			color[0] = color[1] = color[2] = 1.0;
 		}
 };
