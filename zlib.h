@@ -140,7 +140,7 @@ class Zombie {
 		double dBuffer;
 		double sBuffer;
 		double lastAttack;
-		double lastPlayed
+		double lastPlayed;
 		struct Zombie *prev;
 		struct Zombie *next;
 		float color[3];
