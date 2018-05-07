@@ -22,6 +22,8 @@ extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 			int textColor, const char* textName); 
 extern void draw_player1(Global &gl, Game &g);
 extern void drawMainRoad(Global &gl, Game &g);
+extern void renderMovingBackground(Global &gl, Game &g);
+
 //----------------------------------------------------------------------------
 
 extern void showFloor(Global &gl, Game &g);
@@ -94,6 +96,9 @@ void physics(Global &gl, Game &g)
 			deleteZombies(g);
 		}
 	}	
+
+	gl.texture.xc[0] += 0.001;
+	gl.texture.xc[1] += 0.001;
 }
 
 int check_keys(XEvent *e, Global &gl, Game &g)
@@ -204,6 +209,11 @@ unsigned char *buildAlphaData(Image *img)
 Image mainCharacter = "./images/spartan.png";
 Image mainRoad = "./images/darkRoad.png";
 Image zombieCharacters = "./images/8bit_bullet_bill_02.png";
+Image bulletProjectiles = "./images/bulletHole.png";
+
+//Image bgTexture = "./images/seamless_back.jpg";
+
+Image bgTexture = "./images/greenForest.jpg";
 
 void normalize2d(Vec v)
 {
@@ -243,6 +253,7 @@ void init_opengl(Global &gl, Game &g)
 	glGenTextures(1, &gl.mainCharacterTexture);
 	glGenTextures(1, &gl.mainRoadTexture);
 	glGenTextures(1, &gl.zombieTexture);
+	glGenTextures(1, &gl.bulletProjectileTexture);
 
 	// main character 
 	int w = mainCharacter.width;
@@ -307,6 +318,44 @@ void init_opengl(Global &gl, Game &g)
 	//--------------------------------------------------------------------
 	//
 
+	// BULLET PROJECTILES
+	glBindTexture(GL_TEXTURE_2D, gl.bulletProjectileTexture);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, 
+			GL_RGB, GL_UNSIGNED_BYTE, bulletProjectiles.data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	unsigned char * bulletProjectileData = buildAlphaData(&bulletProjectiles);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bulletProjectiles.width,
+			bulletProjectiles.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+			bulletProjectileData);
+
+	free(bulletProjectileData);
+	
+	//--------------------------------------------------------------------
+	//
+
+	// BACKGROUND TEXTURE
+	gl.texture.backImage = &bgTexture;
+	
+	glGenTextures(1, &gl.texture.backTexture);                                      
+    w = gl.texture.backImage->width;                                                
+    h = gl.texture.backImage->height;                                               
+    glBindTexture(GL_TEXTURE_2D, gl.texture.backTexture);                           
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_NEAREST);           
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_NEAREST);           
+    glTexImage2D(GL_TEXTURE_2D, 0,3,w,h,0,                                      
+            GL_RGB, GL_UNSIGNED_BYTE, gl.texture.backImage->data);                  
+    gl.texture.xc[0] = 0.0;                                                         
+    gl.texture.xc[1] = 0.25;                                                        
+    gl.texture.yc[0] = 0.0;                                                         
+    gl.texture.yc[1] = 1.0;                                                         
+
+
 
 
 
@@ -328,8 +377,6 @@ void render(Global &gl, Game &g)
 		showMenu(gl);
 	} else if (gl.menuState == GAME) {
 		glClear(GL_COLOR_BUFFER_BIT);
-		// rendering the heads up display	
-		displayHUD(gl, g);
 
 //============================================================================
 #ifdef PROFILING_ON
@@ -362,7 +409,10 @@ void render(Global &gl, Game &g)
 		ggprint16(&r, 16, 0x009508f8, "zombies: %i", quad);
 #endif
 //=============================================================================
-		drawMainRoad(gl,g);
+		
+		renderMovingBackground(gl,g);
+
+		// rendering the heads up display	
 	 	displayHUD(gl, g);
 		draw_player1(gl, g);
         	
@@ -394,19 +444,30 @@ void render(Global &gl, Game &g)
         	Bullet *b = &g.barr[0];
         	for (int i=0; i<g.nbullets; i++) {
                 	//Log("draw bullet...\n");
-                	glColor3f(1.0, 1.0, 1.0);
-                	glBegin(GL_POINTS);
-                        	glVertex2f(b->pos[0],      b->pos[1]);
-                        	glVertex2f(b->pos[0]-1.0f, b->pos[1]);
-                        	glVertex2f(b->pos[0]+1.0f, b->pos[1]);
-                        	glVertex2f(b->pos[0],      b->pos[1]-1.0f);
-                        	glVertex2f(b->pos[0],      b->pos[1]+1.0f);
-                        glColor3f(0.8, 0.8, 0.8);
-                        	glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
-                        	glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
-                        	glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
-                        	glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
-                	glEnd();
+                	
+					glColor3fv(g.barr->color);
+					glPushMatrix();
+					glBindTexture(GL_TEXTURE_2D, gl.bulletProjectileTexture);
+
+					glEnable(GL_ALPHA_TEST);
+					glAlphaFunc(GL_GREATER, 0.0f);
+					glColor4ub(255,255,255,255);
+
+
+            	glBegin(GL_QUADS);
+                        	glTexCoord2f(b->pos[0],      b->pos[1]);
+                        	glTexCoord2f(b->pos[0]-1.0f, b->pos[1]);
+                        	glTexCoord2f(b->pos[0]+1.0f, b->pos[1]);
+                        	glTexCoord2f(b->pos[0],      b->pos[1]-1.0f);
+                        	glTexCoord2f(b->pos[0],      b->pos[1]+1.0f);
+                        //glColor3f(0.8, 0.8, 0.8);
+							glVertex2f(b->pos[0]-6.0f, b->pos[1]-6.0f);
+    						glVertex2f(b->pos[0]-6.0f, b->pos[1]+6.0f);
+                        	glVertex2f(b->pos[0]+6.0f, b->pos[1]-6.0f);
+                        	glVertex2f(b->pos[0]+6.0f, b->pos[1]+6.0f);
+                	
+					
+				  	glEnd();
                 	++b;
         	}
 		// Draw all existing zombies
