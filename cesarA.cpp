@@ -25,6 +25,14 @@
 #include <time.h>       
 #include <math.h>
 #include <unistd.h>
+#include </usr/include/AL/alut.h>
+
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 
 extern struct timespec timeStart, timeCurrent;
@@ -39,6 +47,7 @@ double time_function1();
 double time_function2();
 double time_function3();
 double time_function4();
+void soundTesting (Global &gl, Game &g);
 
 int BULLET_DAMAGE = 50;
 int ZOMBIE_DAMAGE = 50;
@@ -283,6 +292,7 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 		g.player1.pos[1] -= 3.5;
 	}	    
 	if (gl.keys[XK_space]) {
+		soundTesting(gl, g);
 	     //a little time between each bullet
 		struct timespec bt;
 		clock_gettime(CLOCK_REALTIME, &bt);
@@ -367,5 +377,55 @@ void bug_fix (Game &g)
 		g.player1.pos[0] = 1230;
 		g.player1.pos[1] = 10;
 	}
+
+}
+
+void soundTesting (Global &gl, Game &g)
+{
+	Zombie *z;
+	double currentTime = g.player1.ptime;
+	
+	//Get started right here.
+	alutInit(0, NULL);
+	if (alGetError() != AL_NO_ERROR) {
+		printf("ERROR: alutInit()\n");
+	}
+	//Clear error state.
+	alGetError();
+	//
+	//Setup the listener.
+	//Forward and up vectors are used.
+	float vec[6] = {0.0f,0.0f,1.0f, 0.0f,1.0f,0.0f};
+	alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
+	alListenerfv(AL_ORIENTATION, vec);
+	alListenerf(AL_GAIN, 1.0f);
+	//
+	
+	//Buffer holds the sound information.
+	ALuint alBuffer;
+	alBuffer = alutCreateBufferFromFile("./9mm.wav");
+	//
+	
+	//Source refers to the sound.
+	ALuint alSource;
+	//Generate a source, and store it in a buffer.
+	alGenSources(1, &alSource);
+	alSourcei(alSource, AL_BUFFER, alBuffer);
+	//Set volume and pitch to normal, no looping of sound.
+	alSourcef(alSource, AL_GAIN, 1.0f);
+	alSourcef(alSource, AL_PITCH, 1.0f);
+	alSourcei(alSource, AL_LOOPING, AL_FALSE);
+	if (alGetError() != AL_NO_ERROR) {
+		printf("ERROR: setting source\n");
+	}
+	for (int i=0; i<1; i++) {
+		if (currentTime - z->lastPlayed > z->sBuffer) {
+			alSourcePlay(alSource);
+			usleep(25000);
+		}
+
+	}
+
+
 
 }

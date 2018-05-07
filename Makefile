@@ -17,7 +17,9 @@ all: zombies
 zombies: zombies.cpp log.cpp timers.cpp alfredoZ.cpp cesarA.cpp jorgeV.cpp\
 	 cesarL.cpp
 	g++ $(CFLAGS) zombies.cpp log.cpp timers.cpp alfredoZ.cpp cesarA.cpp \
-	jorgeV.cpp cesarL.cpp libggfonts.a -Wall $(LFLAGS) -o zombies
+	jorgeV.cpp cesarL.cpp libggfonts.a -Wall $(LFLAGS) -o zombies \
+	/usr/lib/x86_64-linux-gnu/libopenal.so \
+	/usr/lib/x86_64-linux-gnu/libalut.so
 
 clean:
 	rm -f zombies
