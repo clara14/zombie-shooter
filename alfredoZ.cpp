@@ -104,7 +104,7 @@ void drawMainRoad(Global &gl, Game &g)
 	glColor4ub(255,255,255,255);
 
 	glPushMatrix();
-	
+
 	// Drawing the main road
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
@@ -126,7 +126,7 @@ void draw_player1(Global &gl, Game &g)
 
 	glTranslatef(g.player1.pos[0], g.player1.pos[1], 
 			g.player1.pos[2]);
-	
+
 	glBindTexture(GL_TEXTURE_2D, gl.silhouetteTexture);
 
 	glEnable(GL_ALPHA_TEST);
@@ -144,3 +144,24 @@ void draw_player1(Global &gl, Game &g)
 
 }
 
+void renderMovingBackground(Global &gl, Game &g) 
+{
+	glColor3f(1.0, 1.0, 1.0);
+
+	glBindTexture(GL_TEXTURE_2D, gl.texture.backTexture);
+	glBegin(GL_QUADS);
+	
+	glTexCoord2f(gl.texture.xc[0], gl.texture.yc[1]); 
+	glVertex2i(0, 0);
+	
+	glTexCoord2f(gl.texture.xc[0], gl.texture.yc[0]); 
+	glVertex2i(0, gl.yres);
+	
+	glTexCoord2f(gl.texture.xc[1], gl.texture.yc[0]); 
+	glVertex2i(gl.xres, gl.yres);
+	
+	glTexCoord2f(gl.texture.xc[1], gl.texture.yc[1]); 
+	glVertex2i(gl.xres, 0);
+	glEnd();
+
+}
