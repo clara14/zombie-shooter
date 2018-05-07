@@ -38,10 +38,11 @@ extern void enterScore(Global &gl, Game &g);
 extern void showEndScreen(Global &gl, Game &g);
 extern bool checkScore(Game &g);
 extern void endGame(Global &gl, Game &g);
-extern void enterScoreXK_e(Global &gl, Game &g);
-extern void enterScoreXK_w(Game &g);
-extern void enterScoreXK_s(Game &g);
-extern void enterScoreXK_q(Game &g);
+extern int xk_escape(Global &gl, Game &g);
+extern int xk_e(Global &gl, Game &g);
+extern void xk_w(Global &gl, Game &g);
+extern void xk_s(Global &gl, Game &g);
+extern void xk_q(Global &gl, Game &g);
 extern void saveScores(Game &g);
 
 #define MENU 1
@@ -117,87 +118,25 @@ int check_keys(XEvent *e, Global &gl, Game &g)
         (void)shift; 
         switch (key) {
                 case XK_Escape:
-                        if (gl.menuState == MENU) {
-			    	saveScores(g);
+			if (xk_escape(gl, g) == 1)
 				return 1;
-			}
-			if (gl.menuState == GAME) {
-				gl.menuState = MENU;
-				deleteZombies(g);
-			}
-			if (gl.menuState == HELP) {
-				if (gl.helpScreen == 1)
-					gl.menuState = MENU;
-			}
-			if (gl.menuState == SCORES) {
-				gl.menuState = MENU;
-			}
 			break;
                 case XK_w:
-			if (gl.menuState == MENU) {
-				if (gl.menuOption > 0)
-					gl.menuOption--;
-			} else if (gl.menuState == NEWSCORE) {
-				enterScoreXK_w(g);
-			}
+			xk_w(gl, g);
                         break;
                 case XK_a:
                         break;
                 case XK_s:
-                        if (gl.menuState == MENU) {
-				if (gl.menuOption < 3)
-					gl.menuOption++;
-                        } else if (gl.menuState == NEWSCORE) {
-				enterScoreXK_s(g);
-			}
+			xk_s(gl, g);
                         break;
                 case XK_d:
                         break;
 		case XK_e:
-			if (gl.menuState == MENU) {
-				if (gl.menuOption == 0) {
-				    	struct timespec pt;
-				    	clock_gettime(CLOCK_REALTIME, &pt);
-					timeCopy(&g.player1.time, &pt);
-					g.wave = 0;
-					gl.menuState = GAME;
-				} else if (gl.menuOption == 1) {
-					gl.menuState = HELP;
-				} else if (gl.menuOption == 2) {
-					gl.menuState = SCORES;
-				} else if (gl.menuOption == 3) {
-				    	saveScores(g);
-					return 1;
-				}
-			} else if (gl.menuState == HELP) {
-				if (gl.helpScreen < 4)
-					gl.helpScreen += 1;
-				else {
-					gl.menuState = MENU;
-				}
-			} else if (gl.menuState == END) {
-				if (checkScore(g)) {
-					gl.menuState = NEWSCORE;
-					endGame(gl, g);
-				} else {
-					gl.menuState = MENU;
-					endGame(gl, g);
-				}
-			} else if (gl.menuState == NEWSCORE) {
-				enterScoreXK_e(gl, g);
-			}	 
+			if (xk_e(gl,g) == 1)
+			    return 1;
 			break;
 		case XK_q:
-			if (gl.menuState == HELP) {
-				if (gl.helpScreen > 1)
-					gl.helpScreen -= 1;
-				else 
-					gl.menuState = MENU;
-			} else if (gl.menuState == SCORES) {
-				gl.menuState = MENU;
-			} else if (gl.menuState == NEWSCORE) {
-				enterScoreXK_q(g);
-			}
+			xk_q(gl, g);
 			break;
                 case XK_equal:
                         break;

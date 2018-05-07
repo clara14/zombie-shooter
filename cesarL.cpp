@@ -8,6 +8,17 @@
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 extern void sortScores(Game &g);
+extern void saveScores(Game &g);
+extern bool checkScore(Game &g);
+extern void endGame(Global &gl, Game &g);
+extern void deleteZombies(Game &g);
+
+#define MENU 1
+#define GAME 2
+#define HELP 3
+#define SCORES 4
+#define END 5
+#define NEWSCORE 6
 
 void displayCesarL(int bpos, int cpos, int lpos, int color, const char* name)
 {
@@ -26,48 +37,117 @@ void displayCesarL(int bpos, int cpos, int lpos, int color, const char* name)
 }
 
 // key cases for check_keys function in main file
-void enterScoreXK_e(Global &gl, Game &g)
+int xk_escape(Global &gl, Game &g)
 {
-	HighScore *s = &g.scoreUI;
-	// char in list array is selected and entered into name array
-	if (s->cursorPos != 5) {
-		char c = s->charList[s->charPos];
-		s->playerName[s->cursorPos++] = c;
-		s->charPos = 10;
-	} else {
-		gl.menuState = 1;
-		s->cursorPos = 0;
-		string name(s->playerName);
-		g.topPlayers[9] = name;
-		g.topScores[9] = g.score;
-		sortScores(g);
-		g.score = 0;
+	int ret = 0;
+	if (gl.menuState == MENU) {
+		saveScores(g);
+		ret = 1;
+	} else if (gl.menuState == GAME) {
+		gl.menuState = MENU;
+		deleteZombies(g);
+	} else if (gl.menuState == HELP) {
+		if (gl.helpScreen == 1)
+			gl.menuState = MENU;
+	} else if (gl.menuState == SCORES) {
+		gl.menuState = MENU;
+	}
+	return ret;
+}
+int xk_e(Global &gl, Game &g)
+{
+	int ret = 0;
+	if (gl.menuState == MENU) {
+		if (gl.menuOption == 0) {
+			struct timespec pt;
+			clock_gettime(CLOCK_REALTIME, &pt);
+			timeCopy(&g.player1.time, &pt);
+			g.wave = 0;
+			gl.menuState = GAME;
+		} else if (gl.menuOption == 1) {
+			gl.menuState = HELP;
+		} else if (gl.menuOption == 2) {
+			gl.menuState = SCORES;
+		} else if (gl.menuOption == 3) {
+			saveScores(g);
+			ret = 1;
+		}
+	} else if (gl.menuState == HELP) {
+		if (gl.helpScreen < 4)
+			gl.helpScreen += 1;
+		else {
+			gl.menuState = MENU;
+		}
+	} else if (gl.menuState == END) {
+		if (checkScore(g)) {
+			gl.menuState = NEWSCORE;
+			endGame(gl, g);
+		} else {
+			gl.menuState = MENU;
+			endGame(gl, g);
+		}
+	} else if (gl.menuState == NEWSCORE) {
+		HighScore *s = &g.scoreUI;
+		// char in list array is selected and entered into name array
+		if (s->cursorPos != 5) {
+			char c = s->charList[s->charPos];
+			s->playerName[s->cursorPos++] = c;
+			s->charPos = 10;
+		} else {
+			gl.menuState = 1;
+			s->cursorPos = 0;
+			string name(s->playerName);
+			g.topPlayers[9] = name;
+			g.topScores[9] = g.score;
+			sortScores(g);
+			g.score = 0;
+		}
+	}
+	return ret;
+}
+
+void xk_w(Global &gl, Game &g)
+{
+	if (gl.menuState == MENU) {
+		if (gl.menuOption > 0)
+			gl.menuOption--;
+	} else if (gl.menuState == NEWSCORE) {
+		HighScore *s = &g.scoreUI;
+		if (s->cursorPos != 5) {
+			if (s->charPos > 0)
+				s->charPos--;
+		}
 	}
 }
 
-void enterScoreXK_w(Game &g)
+void xk_s(Global &gl, Game &g)
 {
-	HighScore *s = &g.scoreUI;
-	if (s->cursorPos != 5) {
-		if (s->charPos > 0)
-			s->charPos--;
+	if (gl.menuState == MENU) {
+		if (gl.menuOption < 3)
+			gl.menuOption++;
+	} else if (gl.menuState == NEWSCORE) {
+		HighScore *s = &g.scoreUI;
+		if (s->cursorPos != 5) {
+			if (s->charPos < 36)
+				s->charPos++;
+		}
 	}
 }
 
-void enterScoreXK_s(Game &g)
+void xk_q(Global &gl, Game &g)
 {
-	HighScore *s = &g.scoreUI;
-	if (s->cursorPos != 5) {
-		if (s->charPos < 36)
-			s->charPos++;
+	if (gl.menuState == HELP) {
+		if (gl.helpScreen > 1)
+			gl.helpScreen -= 1;
+		else
+			gl.menuState = MENU;
+	} else if (gl.menuState == SCORES) {
+		gl.menuState = MENU;
+	} else if (gl.menuState == NEWSCORE) {
+		HighScore *s = &g.scoreUI;
+		if (s->cursorPos > 0)
+			s->cursorPos--;
 	}
-}
-
-void enterScoreXK_q(Game &g)
-{
-	HighScore *s = &g.scoreUI;
-	if (s->cursorPos > 0)
-		s->cursorPos--;
 }
 
 //High-score functions
@@ -211,31 +291,24 @@ void drawZombies(Global &gl, Game &g)
 	while (z) {
 		w = z->width;
 		h = z->height;
-		
 		glColor3ub(20,74,23);
 		glPushMatrix();
 		glTranslatef(z->pos[0], z->pos[1], z->pos[2]);
-
 		glBindTexture(GL_TEXTURE_2D, gl.zombieTexture);
-
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER,0.0f);
 		glColor4ub(255,255,255,255);
-
 		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); 
-		glVertex2i(-w, -h);
-		glTexCoord2f(0.0f, 0.0f); 
-		glVertex2i(-w, h);
-		glTexCoord2f(1.0f, 0.0f); 
-		glVertex2i(w, h);
-		glTexCoord2f(1.0f, 1.0f); 
-		glVertex2i(w, -h);
+			glTexCoord2f(0.0f, 1.0f); 
+			glVertex2i(-w, -h);
+			glTexCoord2f(0.0f, 0.0f); 
+			glVertex2i(-w, h);
+			glTexCoord2f(1.0f, 0.0f); 
+			glVertex2i(w, h);
+			glTexCoord2f(1.0f, 1.0f); 
+			glVertex2i(w, -h);
 		glEnd();
-	
 		glPopMatrix();
-		
-
 		z = z->next;
 	}
 }
