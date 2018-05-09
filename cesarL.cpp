@@ -223,10 +223,16 @@ void spawnWave(Global &gl, Game &g)
 	g.gtime = timeDiff(&g.time, &gt);
 	int t = g.gtime;
 	if (t >= 5) {
-		int n = (rand() % 2) + 1;
+		int n = (rand() % (g.wave+1)) + 1;
 		createZombie(g, checkQuad(gl, g), n);
 		listZombies(g);
 		clock_gettime(CLOCK_REALTIME, &g.time);
+		g.wave++;
+		if (g.wave > 5) {
+			g.wave = 3;
+		} else {
+			g.wave++;
+		}
 	}
 }
 
