@@ -263,8 +263,8 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 		}
 		z = z->next;
 	}
-	        //---------------------------------------------------
-	        //check keys pressed now
+	     //---------------------------------------------------
+	     //check keys pressed now
 	//     LEFT	    
 	if (gl.keys[XK_a]) {
 		g.player1.pos[0]-=3.5;
@@ -299,10 +299,8 @@ void cesar_physics_and_movement (Global &gl, Game &g)
 		double ts = timeDiff(&g.bulletTimer, &bt);
 		if (ts > 0.1) {
 			timeCopy(&g.bulletTimer, &bt);
-	      	//here is where the ammo system will be incorporated
-
 			if (g.nbullets < MAX_BULLETS) {
-	      	//shoot a bullet...
+				//bullet...
 	      
 				Bullet *b = &g.barr[g.nbullets];
 				timeCopy(&b->time, &bt);
@@ -382,7 +380,7 @@ void bug_fix (Game &g)
 
 void soundTesting (Global &gl, Game &g)
 {
-	Zombie *z;
+	Player *player;
 	double currentTime = g.player1.ptime;
 	
 	//Get started right here.
@@ -416,10 +414,10 @@ void soundTesting (Global &gl, Game &g)
 	alSourcef(alSource, AL_PITCH, 1.0f);
 	alSourcei(alSource, AL_LOOPING, AL_FALSE);
 	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
+		printf("ERROR: setting s ource\n");
 	}
 	for (int i=0; i<1; i++) {
-		if (currentTime - z->lastPlayed > z->sBuffer) {
+		if (currentTime + player->lastPlayed > player->sBuffer) {
 			alSourcePlay(alSource);
 			usleep(25000);
 		}

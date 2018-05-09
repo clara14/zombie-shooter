@@ -157,6 +157,8 @@ class Player {
 		string weaponType;
 		struct timespec time;
 		double ptime;
+		double lastPlayed;
+		double sBuffer;
 
 	public:
 		Player() {
@@ -172,28 +174,13 @@ class Player {
 			name = "DOOM_GUY";
 			weaponType = "BFG";
 			ptime = 0.0;
+
+			lastPlayed = 1.0;
+			sBuffer = 2.5;
 		}
 };
 
 
-class Ship {
-	public:
-		Vec dir;
-		Vec pos;
-		Vec vel;
-		float angle;
-		float color[3];
-	public:
-		Ship() {
-			VecZero(dir);
-			pos[0] = (Flt)(XRES/2);
-			pos[1] = (Flt)(YRES/2);
-			pos[2] = 0.0f;
-			VecZero(vel);
-			angle = 0.0;
-			color[0] = color[1] = color[2] = 1.0;
-		}
-};
 
 class Zombie {
 	public:
@@ -207,9 +194,7 @@ class Zombie {
 		float attack;
 		float defense;
 		double dBuffer;
-		double sBuffer;
 		double lastAttack;
-		double lastPlayed;
 		struct Zombie *prev;
 		struct Zombie *next;
 		float color[3];
@@ -222,9 +207,7 @@ class Zombie {
 			prev = NULL;
 			next = NULL;
 			dBuffer = 2.5;
-			sBuffer = 2.5;
 			lastAttack = 1.0;
-			lastPlayed = 1.0;
 			color[0] = color[1] = color[2] = 1.0;
 		}
 };
@@ -271,7 +254,6 @@ class Game {
 		struct timespec time; 
 		int topScores[10];
 		string topPlayers[10];
-		Ship ship;
 		Zombie *znext;
 		Bullet *barr;
 		int nasteroids;
