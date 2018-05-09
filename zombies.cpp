@@ -214,7 +214,7 @@ Image bulletProjectiles = "./images/bullet.png";
 
 Image bgTexture = "./images/greenForest.jpg";
 Image foreground = "./images/foreground.jpg";
-Image gameScoreHUD = "./images/lineRoad.png";
+Image gameScoreHUD = "./images/scoreHUD.png";
 
 
 
@@ -274,31 +274,15 @@ void init_opengl(Global &gl, Game &g)
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, 
 			GL_RGB, GL_UNSIGNED_BYTE, mainCharacter.data);
 
-	// silhouette
-	glBindTexture(GL_TEXTURE_2D, gl.silhouetteTexture);
-	//
+	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//
+	
+	
+	
 	unsigned char *silhouetteData = buildAlphaData(&mainCharacter);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
-			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-	free(silhouetteData);
-	//--------------------------------------------------------------------
-	//
-
-	// MAIN ROAD 
-	glBindTexture(GL_TEXTURE_2D, gl.mainRoadTexture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, 
-	//		GL_RGB, GL_UNSIGNED_BYTE, mainRoad.data);
-
-	silhouetteData = buildAlphaData(&mainRoad);
-	glTexImage2D(GL_TEXTURE_2D,0, GL_RGBA, mainRoad.width, mainRoad.height,
-			0,GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mainCharacter.width,
+			mainCharacter.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 
 	free(silhouetteData);
 	//--------------------------------------------------------------------
