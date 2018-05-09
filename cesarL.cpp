@@ -74,7 +74,7 @@ int xk_e(Global &gl, Game &g)
 			ret = 1;
 		}
 	} else if (gl.menuState == HELP) {
-		if (gl.helpScreen < 4)
+		if (gl.helpScreen < 2)
 			gl.helpScreen += 1;
 		else {
 			gl.menuState = MENU;
@@ -454,21 +454,26 @@ void showTutorial(Global &gl)
 	r.bot = 800;
 	r.left = 625;
 	if (gl.helpScreen == 1) {
-		ggprint16(&r, 16, 0x00ffffff, "Intro");
+		ggprint16(&r, 16, 0x00ffffff, "Objective");
 		r.bot = 700;
-		r.left = gl.xres / 2;
+		r.left = (gl.xres / 2)-200;
 		const char* text;
 		text = "A zombie apocalypse has taken over your city!";
 		ggprint16(&r, 16, 0x00ffffff, "%s", text);
 	}
 	if (gl.helpScreen == 2) {
 		ggprint16(&r, 16, 0x00ffffff, "Controls");
-	}
-	if (gl.helpScreen == 3) {
-		ggprint16(&r, 16, 0x00ffffff, "Extra Info");
-	}
-	if (gl.helpScreen == 4) {
-		ggprint16(&r, 16, 0x00ffffff, "Extra Info 2");
+		r.bot = 700;
+		r.left = (gl.xres/2)- 20;
+		ggprint16(&r, 16, 0x00ffffff, "W - Move Up");
+		r.bot = 650;
+		ggprint16(&r, 16, 0x00ffffff, "S - Move Down");
+		r.bot = 600;
+		ggprint16(&r, 16, 0x00ffffff, "A - Move Left");
+		r.bot = 550;
+		ggprint16(&r, 16, 0x00ffffff, "D - Move Right");
+		r.bot = 500;
+		ggprint16(&r, 16, 0x00ffffff, "Space Bar - Shoot");
 	}
 	if (gl.helpScreen == 1) {
 	    	r.left = 105;
@@ -480,7 +485,7 @@ void showTutorial(Global &gl)
 		ggprint16(&r, 16, 0x00ffffff, "Q - Go Back");
 	}
 	Rect r2;
-	if (gl.helpScreen == 4) {
+	if (gl.helpScreen == 2) {
 	    	r2.left = 1145;
 		r2.bot = 20;
 		ggprint16(&r2, 16, 0x00ffffff, "E - Return to Menu");
