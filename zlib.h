@@ -265,6 +265,8 @@ class Game {
 		HighScore scoreUI;
 		Vec pos[4];
 		Player player1;
+		double gtime;
+		struct timespec time; 
 		int topScores[10];
 		string topPlayers[10];
 		Ship ship;
@@ -280,18 +282,7 @@ class Game {
 		bool mouseThrustOn;
 	public:
 		Game(Global gl) {
-			pos[0][0] = 1170;
-			pos[0][1] = 310;
-			pos[0][2] = 0;
-			pos[1][0] = 30;
-			pos[1][1] = 310;
-			pos[1][2] = 0;
-			pos[2][0] = 30;
-			pos[2][1] = 30;
-			pos[2][2] = 0;
-			pos[3][0] = 1170;
-			pos[3][1] = 30;
-			pos[3][2] = 0;
+			gtime = 0.0;
 			wave = 0;
 			barr = new Bullet[MAX_BULLETS];
 			znext = NULL;

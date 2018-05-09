@@ -62,6 +62,7 @@ int xk_e(Global &gl, Game &g)
 			struct timespec pt;
 			clock_gettime(CLOCK_REALTIME, &pt);
 			timeCopy(&g.player1.time, &pt);
+			timeCopy(&g.time, &pt);
 			g.wave = 0;
 			gl.menuState = GAME;
 		} else if (gl.menuOption == 1) {
@@ -192,9 +193,6 @@ void updateTime(Game &g)
 	struct timespec pt;
 	clock_gettime(CLOCK_REALTIME, &pt);
 	g.player1.ptime = timeDiff(&g.player1.time, &pt);
-	if (g.player1.ptime > 5.0 && g.wave < 1) {
-		g.wave++;
-	}
 }
 
 int checkQuad(Global &gl, Game &g)
@@ -220,10 +218,15 @@ extern void createZombie(Game &g, int pquad, int n);
 
 void spawnWave(Global &gl, Game &g)
 {
-	if(g.wave == 1) {
-		createZombie(g, checkQuad(gl, g), 3);
+	struct timespec gt;
+	clock_gettime(CLOCK_REALTIME, &gt);
+	g.gtime = timeDiff(&g.time, &gt);
+	int t = g.gtime;
+	if (t >= 5) {
+		int n = (rand() % 2) + 1;
+		createZombie(g, checkQuad(gl, g), n);
 		listZombies(g);
-		g.wave += 1;
+		clock_gettime(CLOCK_REALTIME, &g.time);
 	}
 }
 
@@ -236,20 +239,20 @@ void createZombie(Game &g, int pquad, int n)
 	}
 	for(int i=0;i<n;i++) {
 	    	if (quad == 1) {
-	    		spawnx = rand() % 80 + 1160;
-	    		spawny = rand() % 30 + 310;
+	    		spawnx = (rand() % 80) + 1160;
+	    		spawny = (rand() % 30) + 310;
 		}
 		if (quad == 2) {
-    			spawnx = rand() % 30 + 1;
-    			spawny = rand() % 30 + 310;
+    			spawnx = (rand() % 30) + 1;
+    			spawny = (rand() % 30) + 310;
 		}
 		if (quad == 3) {
-    			spawnx = rand() % 30 + 1;
-    			spawny = rand() % 30 + 1;
+    			spawnx = (rand() % 30) + 1;
+    			spawny = (rand() % 30) + 1;
 		}
 		if (quad == 4) {
-    			spawnx = rand() % 80 + 1160;
-    			spawny = rand() % 30 + 1;
+    			spawnx = (rand() % 80) + 1160;
+    			spawny = (rand() % 30) + 1;
 		}			
 		Zombie *z = new Zombie;
 		z->pos[0] = spawnx;
