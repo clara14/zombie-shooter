@@ -417,10 +417,10 @@ void soundTesting (Global &gl, Game &g)
 		printf("ERROR: setting s ource\n");
 	}
 	for (int i=0; i<1; i++) {
-		if (currentTime + player->lastPlayed > player->sBuffer) {
+		//if (currentTime + player->lastPlayed > player->sBuffer) {
 			alSourcePlay(alSource);
 			usleep(25000);
-		}
+		//}
 
 	}
 
