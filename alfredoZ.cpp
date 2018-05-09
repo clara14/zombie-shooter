@@ -165,3 +165,6 @@ void renderMovingBackground(Global &gl, Game &g)
 	glEnd();
 
 }
+
+
+

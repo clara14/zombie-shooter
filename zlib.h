@@ -124,6 +124,8 @@ class Global {
 		GLuint mainRoadTexture;
 		GLuint zombieTexture;
 		GLuint bulletProjectileTexture;
+		GLuint foregroundTexture;
+		GLuint scoreTexture;
 
 		Texture texture;
 
