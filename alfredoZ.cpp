@@ -127,7 +127,7 @@ void draw_player1(Global &gl, Game &g)
 	glTranslatef(g.player1.pos[0], g.player1.pos[1], 
 			g.player1.pos[2]);
 
-	glBindTexture(GL_TEXTURE_2D, gl.silhouetteTexture);
+	glBindTexture(GL_TEXTURE_2D, gl.mainCharacterTexture);
 
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER,0.0f);
