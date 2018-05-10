@@ -380,8 +380,8 @@ void bug_fix (Game &g)
 
 void soundTesting (Global &gl, Game &g)
 {
-	Player *player;
-	double currentTime = g.player1.ptime;
+	//Player *player;
+	//double currentTime = g.player1.ptime;
 	
 	//Get started right here.
 	alutInit(0, NULL);
