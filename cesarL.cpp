@@ -13,6 +13,9 @@ extern bool checkScore(Game &g);
 extern void endGame(Global &gl, Game &g);
 extern void deleteZombies(Game &g);
 
+// Function - alfredoZ.cpp
+extern void renderGameMenuBackground(Global &gl);
+
 #define MENU 1
 #define GAME 2
 #define HELP 3
@@ -377,11 +380,14 @@ void showMenu(Global &gl)
 #endif
 	// Render game title
 	glClear(GL_COLOR_BUFFER_BIT);
+	
+	renderGameMenuBackground(gl);
+	
 	Rect r;
 	r.bot = 700;
 	r.center = 450;
 	r.left = 625;
-	ggprint16(&r, 16, 0x00ffffff, "ZOMBIE SHOOTER");
+	ggprint16(&r, 16, 0x00ffffff, " ");
 	// Render boxes for main menu options
 	for(int i=0;i<4;i++) {
 		glColor3ub(20,74,23);

@@ -29,7 +29,7 @@ typedef Flt     Matrix[4][4];
 #define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
 #define VecDot(a,b)     ((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-			     (c)[1]=(a)[1]-(b)[1]; \
+							 (c)[1]=(a)[1]-(b)[1]; \
 (c)[2]=(a)[2]-(b)[2]
 //constants
 const float TIMESLICE = 1.0f;
@@ -41,6 +41,7 @@ const int MAX_ZOMBIES = 10;
 const Flt MINIMUM_ASTEROID_SIZE = 60.0;
 const int XRES = 1250;
 const int YRES = 900;
+
 
 
 class Image {                                                                   
@@ -94,8 +95,13 @@ class Image {
 			}                                                       
 			if (!ppmFlag)                                           
 				unlink(ppmname);                                
-		}                                                               
+
+		}                                                       
 };                                                                              
+
+
+#pragma once
+
 
 
 #pragma once
@@ -125,7 +131,12 @@ class Global {
 		GLuint zombieTexture;
 		GLuint bulletProjectileTexture;
 		GLuint foregroundTexture;
-		GLuint scoreTexture;
+		GLuint gameScoreTexture;
+		GLuint menuBgTexture;
+		GLuint playerAvatarTexture;
+		GLuint healthBarTexture;
+		GLuint playerWeaponTexture;
+		GLuint menuSelectTexture;
 
 		Texture texture;
 

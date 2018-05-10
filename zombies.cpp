@@ -14,6 +14,7 @@ extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 extern void display_name_cesar(Global &gl, Game &g);
+extern void renderHealthBarHUD(Global &gl);
 
 
 // Alfredo's Functions---------------------------------------------------------
@@ -23,6 +24,12 @@ extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 extern void draw_player1(Global &gl, Game &g);
 extern void drawMainRoad(Global &gl, Game &g);
 extern void renderMovingBackground(Global &gl, Game &g);
+extern void physicsScrollingBackground(Global &gl);
+extern void renderForegroundArena(Global  &gl, Game &g); 
+extern void renderScoreHUD(Global &gl, Game &g);
+extern void displyGameScore(Global &gl, Game &g);
+extern void renderPlayerAvatarHUD(Global &gl);
+extern void renderPlayerWeaponHUD(Global &gl);
 
 //----------------------------------------------------------------------------
 
@@ -97,9 +104,8 @@ void physics(Global &gl, Game &g)
 		}
 	}	
 
-	// scrolling background
-	gl.texture.xc[0] += 0.001;
-	gl.texture.xc[1] += 0.001;
+
+	physicsScrollingBackground(gl);
 }
 
 int check_keys(XEvent *e, Global &gl, Game &g)
@@ -215,9 +221,12 @@ Image bulletProjectiles = "./images/bullet.png";
 Image bgTexture = "./images/greenForest.jpg";
 Image foreground = "./images/foreground.jpg";
 Image gameScoreHUD = "./images/scoreHUD.png";
+Image menuBg = "./images/menuback.jpg";
+Image menuSelect = "./images/menuSelect.jpg";
 
-
-
+Image playerAvatar = "./images/playerHUD.png";
+Image healthBar = "./images/healthBar.png";
+Image playerWeapon = "./images/assaultRifle.jpg";
 
 
 void normalize2d(Vec v)
@@ -260,8 +269,13 @@ void init_opengl(Global &gl, Game &g)
 	glGenTextures(1, &gl.zombieTexture);
 	glGenTextures(1, &gl.bulletProjectileTexture);
 	glGenTextures(1, &gl.foregroundTexture);
-	glGenTextures(1, &gl.scoreTexture);
-
+	glGenTextures(1, &gl.gameScoreTexture);
+	glGenTextures(1, &gl.menuBgTexture);
+	glGenTextures(1, &gl.playerAvatarTexture);
+	glGenTextures(1, &gl.healthBarTexture);
+	glGenTextures(1, &gl.playerWeaponTexture);
+	glGenTextures(1, &gl.menuSelectTexture);
+		
 	// main character 
 	int w = mainCharacter.width;
 	int h = mainCharacter.height;
@@ -274,12 +288,9 @@ void init_opengl(Global &gl, Game &g)
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, 
 			GL_RGB, GL_UNSIGNED_BYTE, mainCharacter.data);
 
-	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
-	
-	
+
 	unsigned char *silhouetteData = buildAlphaData(&mainCharacter);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mainCharacter.width,
 			mainCharacter.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
@@ -371,8 +382,10 @@ void init_opengl(Global &gl, Game &g)
 	//
 
 	// GAMESCORE HUD TEXTURE
-	/*
-	glBindTexture(GL_TEXTURE_2D, gl.scoreTexture);
+	w = gameScoreHUD.width;
+	h = gameScoreHUD.height;
+
+	glBindTexture(GL_TEXTURE_2D, gl.gameScoreTexture);
 
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -383,14 +396,137 @@ void init_opengl(Global &gl, Game &g)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-	
 	unsigned char * gameScoreData = buildAlphaData(&gameScoreHUD);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gameScoreHUD.width,
 			gameScoreHUD.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
 			gameScoreData);
 
 	free(gameScoreData);
-	*/
+
+	//--------------------------------------------------------------------
+	//
+
+	// GAME MENU BACKGROUND 
+	w = menuBg.width;
+	h = menuBg.height;
+
+	glBindTexture(GL_TEXTURE_2D, gl.menuBgTexture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, menuBg.data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	unsigned char * menuBgData = buildAlphaData(&menuBg);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, menuBg.width,
+			menuBg.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+			menuBgData);
+
+	free(menuBgData);
+
+	//--------------------------------------------------------------------
+	//
+
+	// PLAYER AVATAR HUD DISPLAY 
+	w = playerAvatar.width;
+	h = playerAvatar.height;
+
+	glBindTexture(GL_TEXTURE_2D, gl.playerAvatarTexture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, playerAvatar.data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	unsigned char * playerAvatarData = buildAlphaData(&playerAvatar);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, playerAvatar.width,
+			playerAvatar.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+			playerAvatarData);
+
+	free(playerAvatarData);
+
+
+	//--------------------------------------------------------------------
+	//
+
+	// PLAYER HEALTH BAR 
+	w = healthBar.width;
+	h = healthBar.height;
+
+	glBindTexture(GL_TEXTURE_2D, gl.healthBarTexture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, healthBar.data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	unsigned char * healthBarData = buildAlphaData(&healthBar);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, healthBar.width,
+			healthBar.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+			healthBarData);
+
+	free(healthBarData);
+
+
+	//--------------------------------------------------------------------
+	//
+
+	// PLAYER WEAPON 
+	w = playerWeapon.width;
+	h = playerWeapon.height;
+
+	glBindTexture(GL_TEXTURE_2D, gl.playerWeaponTexture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, playerWeapon.data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	unsigned char * playerWeaponData = buildAlphaData(&playerWeapon);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, playerWeapon.width,
+			playerWeapon.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+			playerWeaponData);
+
+	free(playerWeaponData);
+
+	//--------------------------------------------------------------------
+	//
+
+	// MEAN SELECT ICON  
+	w = menuSelect.width;
+	h = menuSelect.height;
+
+	glBindTexture(GL_TEXTURE_2D, gl.menuSelectTexture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, menuSelect.data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	unsigned char * menuSelectData = buildAlphaData(&menuSelect);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, menuSelect.width,
+			menuSelect.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+			menuSelectData);
+
+	free(menuSelectData);
+
+
+
 
 
 
@@ -413,7 +549,7 @@ void render(Global &gl, Game &g)
 	} else if (gl.menuState == GAME) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//============================================================================
+		//====================================================================
 #ifdef PROFILING_ON
 		// Displaying group names for lab5 assignment
 		//
@@ -443,32 +579,28 @@ void render(Global &gl, Game &g)
 		quad = g.nzombies;
 		ggprint16(&r, 16, 0x009508f8, "zombies: %i", quad);
 #endif
-		//=============================================================================
+		//====================================================================
 
 		renderMovingBackground(gl,g);
 
-	// rendering foreground
-		glPushMatrix();
-		glTranslatef(0, 0, 0);
+		renderScoreHUD(gl, g); 
 
-		glBindTexture(GL_TEXTURE_2D, gl.foregroundTexture);                  
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER,0.0f);
-		glColor4ub(255,255,255,255);		
+		displyGameScore(gl, g);
 
-		glBegin(GL_QUADS);                                              
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(-140, -90);                     
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-90, gl.yres/2 - 60);                
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(gl.xres, gl.yres/2 - 60);           
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(gl.xres+140, -100);                
-		glEnd();                    
+		renderForegroundArena(gl, g); 
 
-		glPopMatrix();
+		renderPlayerAvatarHUD(gl);
 
-	
+		renderHealthBarHUD(gl);
 
-		displayHUD(gl, g);
+
+		renderPlayerWeaponHUD(gl);
+
+
+
+	//	displayHUD(gl, g);
 		draw_player1(gl, g);
+
 
 
 
@@ -502,13 +634,6 @@ void render(Global &gl, Game &g)
 			glVertex2i(b->pos[0]-bullet +15, b->pos[1]+bullet);
 			glVertex2i(b->pos[0]+bullet +15, b->pos[1]+bullet);
 			glVertex2i(b->pos[0]+bullet +15, b->pos[1]-bullet);
-
-/*
-			glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid, -wid);
-			glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid,  wid);
-			glTexCoord2f(1.0f, 0.0f); glVertex2i( wid,  wid);
-			glTexCoord2f(1.0f, 1.0f); glVertex2i( wid, -wid);
-*/
 
 			glEnd();
 			++b;

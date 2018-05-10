@@ -51,6 +51,16 @@ void displayHUD(Global &gl, Game &g)
 }
 
 
+void displyGameScore(Global &gl, Game &g)
+{
+		Rect r;
+		r.bot = gl.yres - 47;
+		r.left = gl.xres - 140;
+		r.center = 0;
+		ggprint8b(&r, 16, 0x00ff0000, "Score: %i", g.score);
+
+}
+
 double unoptimizedFunct() 
 {
 	static double amountOfTime = 0.0;
@@ -155,14 +165,145 @@ void renderMovingBackground(Global &gl, Game &g)
 	glVertex2i(0, 0);
 	
 	glTexCoord2f(gl.texture.xc[0], gl.texture.yc[0]); 
-	glVertex2i(0, gl.yres);
+	glVertex2i(0, gl.yres + 300);
 	
 	glTexCoord2f(gl.texture.xc[1], gl.texture.yc[0]); 
-	glVertex2i(gl.xres, gl.yres);
+	glVertex2i(gl.xres, gl.yres + 300);
 	
 	glTexCoord2f(gl.texture.xc[1], gl.texture.yc[1]); 
 	glVertex2i(gl.xres, 0);
 	glEnd();
+
+}
+
+void physicsScrollingBackground(Global &gl) 
+{
+	gl.texture.xc[0] += 0.001;
+	gl.texture.xc[1] += 0.001;
+}
+
+void renderForegroundArena(Global &gl, Game &g) 
+{
+		glPushMatrix();
+		glTranslatef(0, 0, 0);
+
+		glBindTexture(GL_TEXTURE_2D, gl.foregroundTexture);                  
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER,0.0f);
+		glColor4ub(255,255,255,255);		
+
+		glBegin(GL_QUADS);                                              
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(-140, -90);                     
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(-90, gl.yres/2 - 22);                
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(gl.xres, gl.yres/2 - 22);           
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(gl.xres+140, -100);                
+		glEnd();                    
+
+		glPopMatrix();
+
+}
+
+void renderScoreHUD(Global &gl, Game &g) 
+{
+		glPushMatrix();
+		glTranslatef(0, 0, 0);
+
+		glBindTexture(GL_TEXTURE_2D, gl.gameScoreTexture);                  
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER,0.0f);
+		glColor4ub(255,255,255,255);		
+
+		glBegin(GL_QUADS);                                
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(gl.xres - 200, gl.yres - 100 );                     
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(gl.xres - 200, gl.yres );                
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(gl.xres -   0, gl.yres );           
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(gl.xres -   0, gl.yres - 100);                
+		glEnd();                    
+		
+		glPopMatrix();
+}
+
+void renderGameMenuBackground(Global &gl)
+{
+	glBindTexture(GL_TEXTURE_2D, gl.menuBgTexture);
+	
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.0f);
+	glColor4ub(255,255,255,255);
+
+	glPushMatrix();
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, gl.yres);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(gl.xres, gl.yres);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(gl.xres, 0);
+	glEnd();
+
+	glPopMatrix();
+
+}
+
+void renderPlayerAvatarHUD(Global &gl)
+{
+	glBindTexture(GL_TEXTURE_2D, gl.playerAvatarTexture);
+	
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.0f);
+	glColor4ub(255,255,255,255);
+
+	glPushMatrix();
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(0		, gl.yres - 100);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(0		, gl.yres);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(100	, gl.yres);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(100	, gl.yres - 100);
+	glEnd();
+
+	glPopMatrix();
+
+}
+
+void renderHealthBarHUD(Global &gl)
+{
+	glBindTexture(GL_TEXTURE_2D, gl.healthBarTexture);
+	
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.0f);
+	glColor4ub(255,255,255,255);
+
+	glPushMatrix();
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(120	, gl.yres - 30);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(120	, gl.yres - 10);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(300	, gl.yres - 10);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(300	, gl.yres - 30);
+	glEnd();
+
+	glPopMatrix();
+
+}
+
+void renderPlayerWeaponHUD(Global &gl)
+{
+	glBindTexture(GL_TEXTURE_2D, gl.playerWeaponTexture);
+	
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.0f);
+	glColor4ub(255,255,255,255);
+
+	glPushMatrix();
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(120	, gl.yres - 95);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(120	, gl.yres - 33);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(300	, gl.yres - 33);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(300	, gl.yres - 95);
+	glEnd();
+
+	glPopMatrix();
 
 }
 
