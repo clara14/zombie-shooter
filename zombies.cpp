@@ -137,11 +137,15 @@ int check_keys(XEvent *e, Global &gl, Game &g)
 			xk_w(gl, g);
 			break;
 		case XK_a:
+			g.player1.facingRight = false;
+			cout << "facingRight = false" << endl;
 			break;
 		case XK_s:
 			xk_s(gl, g);
 			break;
 		case XK_d:
+			g.player1.facingRight = true;
+			cout << "facingRight = true" << endl;
 			break;
 		case XK_e:
 			if (xk_e(gl,g) == 1)

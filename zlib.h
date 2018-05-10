@@ -170,6 +170,7 @@ class Player {
 		double ptime;
 		double lastPlayed;
 		double sBuffer;
+		bool facingRight;
 
 	public:
 		Player() {
@@ -188,6 +189,8 @@ class Player {
 
 			lastPlayed = 1.0;
 			sBuffer = 2.5;
+
+			facingRight = true;
 		}
 };
 
