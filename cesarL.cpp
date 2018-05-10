@@ -15,6 +15,7 @@ extern void deleteZombies(Game &g);
 
 // Function - alfredoZ.cpp
 extern void renderGameMenuBackground(Global &gl);
+extern void renderGameOver(Global &gl);
 
 #define MENU 1
 #define GAME 2
@@ -572,10 +573,13 @@ void endGame(Global &gl, Game &g)
 void showEndScreen(Global &gl, Game &g)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+	
+	renderGameOver(gl);
+	
 	Rect r;
 	r.bot = 800;
 	r.left = gl.xres / 2;
-	ggprint16(&r, 16, 0x00ffffff, "GAME OVER");
+	ggprint16(&r, 16, 0x00ffffff, " ");
 	// Option box
 	glColor3ub(20,74,23);
 	glPushMatrix();

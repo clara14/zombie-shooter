@@ -35,6 +35,7 @@ extern void renderHealthBarHUD(Global &gl);
 extern void renderHealthBar2HUD(Global &gl);
 extern void renderHealthBar3HUD(Global &gl);
 
+extern void renderGameOver(Global &gl);
 //----------------------------------------------------------------------------
 
 extern void showFloor(Global &gl, Game &g);
@@ -231,6 +232,7 @@ Image foreground = "./images/foreground.jpg";
 Image gameScoreHUD = "./images/scoreHUD.png";
 Image menuBg = "./images/menuback.jpg";
 Image menuSelect = "./images/menuSelect.jpg";
+Image gameOver = "./images/gameOver.png";
 
 Image playerAvatar = "./images/playerHUD.png";
 Image healthBar = "./images/healthBar.png";
@@ -287,6 +289,7 @@ void init_opengl(Global &gl, Game &g)
 	glGenTextures(1, &gl.healthBar3Texture);
 	glGenTextures(1, &gl.playerWeaponTexture);
 	glGenTextures(1, &gl.menuSelectTexture);
+	glGenTextures(1, &gl.gameOverTexture);
 
 	// main character 
 	int w = mainCharacter.width;
@@ -585,6 +588,31 @@ void init_opengl(Global &gl, Game &g)
 			menuSelectData);
 
 	free(menuSelectData);
+
+	//--------------------------------------------------------------------
+	//
+
+	// GAME OVER END SCREEN  
+	w = gameOver.width;
+	h = gameOver.height;
+
+	glBindTexture(GL_TEXTURE_2D, gl.gameOverTexture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, gameOver.data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	unsigned char * gameOverData = buildAlphaData(&gameOver);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gameOver.width,
+			gameOver.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+			gameOverData);
+
+	free(gameOverData);
+
 
 
 

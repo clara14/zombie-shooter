@@ -50,6 +50,85 @@ void displayHUD(Global &gl, Game &g)
 	ggprint8b(&r, 16, 0x00ff0000, "-------------------------------------");
 }
 
+void displayGridTest () 
+{
+	Rect r;
+	r.bot = 0;
+	r.left = 0;
+	r.center = 0;
+
+	// X - values of the grid 
+	ggprint8b(&r, 16, 0x00ff0000,"0,0");
+	r.left = 100;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"100");
+	r.left = 200;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"200");
+	r.left = 300;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"300");
+	r.left = 400;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"400");
+	r.left = 500;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"500");
+	r.left = 600;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"600");
+	r.left = 700;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"700");
+	r.left = 800;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"800");
+	r.left = 900;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"900");
+	r.left = 1000;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"1000");
+	r.left = 1100;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"1100");
+	r.left = 1200;
+	r.bot = 1;
+	ggprint8b(&r, 16, 0x00ff0000,"1200");
+
+	// Y - values of the grid
+	r.left = 0;
+	r.bot = 100;
+	ggprint8b(&r, 16, 0x00ff0000,"100");
+	r.left = 0;
+	r.bot = 200;
+	ggprint8b(&r, 16, 0x00ff0000,"200");
+	r.left = 0;
+	r.bot = 300;
+	ggprint8b(&r, 16, 0x00ff0000,"300");
+	r.left = 0;
+	r.bot = 400;
+	ggprint8b(&r, 16, 0x00ff0000,"400");
+	r.left = 0;
+	r.bot = 500;
+	ggprint8b(&r, 16, 0x00ff0000,"500");
+	r.left = 0;
+	r.bot = 600;
+	ggprint8b(&r, 16, 0x00ff0000,"600");
+	r.left = 0;
+	r.bot = 700;
+	ggprint8b(&r, 16, 0x00ff0000,"700");
+	r.left = 0;
+	r.bot = 800;
+	ggprint8b(&r, 16, 0x00ff0000,"800");
+	r.left = 0;
+	r.bot = 900;
+	ggprint8b(&r, 16, 0x00ff0000,"900");
+}
+
+
+
+
 
 void displyGameScore(Global &gl, Game &g)
 {
@@ -365,5 +444,25 @@ void renderPlayerWeaponHUD(Global &gl)
 
 }
 
+void renderGameOver(Global &gl)
+{
+	glBindTexture(GL_TEXTURE_2D, gl.gameOverTexture);
+
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.0f);
+	glColor4ub(255,255,255,255);
+
+	glPushMatrix();
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(200		, gl.yres - 300);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(200		, gl.yres);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(gl.xres - 200, gl.yres);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(gl.xres - 200, gl.yres - 300);
+	glEnd();
+
+	glPopMatrix();
+
+}
 
 

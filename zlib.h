@@ -139,6 +139,7 @@ class Global {
 		GLuint healthBar3Texture;
 		GLuint playerWeaponTexture;
 		GLuint menuSelectTexture;
+		GLuint gameOverTexture;
 
 		Texture texture;
 
