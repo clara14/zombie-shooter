@@ -23,6 +23,7 @@ extern void displayAlfredo(int botPos, int leftPos, int centerPos,
 		int textColor, const char* textName); 
 extern void draw_player1(Global &gl, Game &g);
 extern void drawMainRoad(Global &gl, Game &g);
+extern void displayGridTest (); 
 extern void renderMovingBackground(Global &gl, Game &g);
 extern void physicsScrollingBackground(Global &gl);
 extern void renderForegroundArena(Global  &gl, Game &g); 
@@ -663,11 +664,12 @@ void render(Global &gl, Game &g)
 
 		renderPlayerWeaponHUD(gl);
 
-		//displayHUD(gl, g);
 		draw_player1(gl, g);
 
-
-
+		// USED FOR DISPLAYING PLAYER INFORMATION
+		//displayHUD(gl, g);
+		// USED FOR DISPLAY GRID POSITONS FOR VERTICES
+		//displayGridTest (); 
 
 		//------------------
 		//----------------
@@ -676,7 +678,7 @@ void render(Global &gl, Game &g)
 		for (int i=0; i<g.nbullets; i++) {
 			//Log("draw bullet...\n");
 
-			glColor3fv(g.barr->color);
+			//glColor3fv(g.barr->color);
 			glPushMatrix();
 			glBindTexture(GL_TEXTURE_2D, gl.bulletProjectileTexture);
 
@@ -693,12 +695,11 @@ void render(Global &gl, Game &g)
 			glTexCoord2f(b->pos[0],      b->pos[1]+1.0f);
 			//glColor3f(0.8, 0.8, 0.8);
 
-			int bullet = 6;
 
-			glVertex2i(b->pos[0]-bullet +15, b->pos[1]-bullet);
-			glVertex2i(b->pos[0]-bullet +15, b->pos[1]+bullet);
-			glVertex2i(b->pos[0]+bullet +15, b->pos[1]+bullet);
-			glVertex2i(b->pos[0]+bullet +15, b->pos[1]-bullet);
+			glVertex2i(b->pos[0], b->pos[1]);
+			glVertex2i(b->pos[0], b->pos[1] + 3);
+			glVertex2i(b->pos[0] + 15, b->pos[1]+ 3);
+			glVertex2i(b->pos[0] + 15, b->pos[1]);
 
 			glEnd();
 			++b;
