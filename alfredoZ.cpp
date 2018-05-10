@@ -300,6 +300,50 @@ void renderHealthBarHUD(Global &gl)
 
 }
 
+void renderHealthBar2HUD(Global &gl)
+{
+	glBindTexture(GL_TEXTURE_2D, gl.healthBar2Texture);
+
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.0f);
+	glColor4ub(255,255,255,255);
+
+	glPushMatrix();
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(120	, gl.yres - 30);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(120	, gl.yres - 10);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(300	, gl.yres - 10);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(300	, gl.yres - 30);
+	glEnd();
+
+	glPopMatrix();
+
+}
+
+void renderHealthBar3HUD(Global &gl)
+{
+	glBindTexture(GL_TEXTURE_2D, gl.healthBar3Texture);
+
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.0f);
+	glColor4ub(255,255,255,255);
+
+	glPushMatrix();
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(120	, gl.yres - 30);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(120	, gl.yres - 10);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(300	, gl.yres - 10);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(300	, gl.yres - 30);
+	glEnd();
+
+	glPopMatrix();
+
+}
+
+
+
 void renderPlayerWeaponHUD(Global &gl)
 {
 	glBindTexture(GL_TEXTURE_2D, gl.playerWeaponTexture);

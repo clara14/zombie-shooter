@@ -30,6 +30,9 @@ extern void renderScoreHUD(Global &gl, Game &g);
 extern void displyGameScore(Global &gl, Game &g);
 extern void renderPlayerAvatarHUD(Global &gl);
 extern void renderPlayerWeaponHUD(Global &gl);
+extern void renderHealthBarHUD(Global &gl);
+extern void renderHealthBar2HUD(Global &gl);
+extern void renderHealthBar3HUD(Global &gl);
 
 //----------------------------------------------------------------------------
 
@@ -230,6 +233,8 @@ Image menuSelect = "./images/menuSelect.jpg";
 
 Image playerAvatar = "./images/playerHUD.png";
 Image healthBar = "./images/healthBar.png";
+Image healthBar2 = "./images/healthBar2.png";
+Image healthBar3 = "./images/healthBar3.png";
 Image playerWeapon = "./images/assaultRifle.jpg";
 
 
@@ -277,9 +282,11 @@ void init_opengl(Global &gl, Game &g)
 	glGenTextures(1, &gl.menuBgTexture);
 	glGenTextures(1, &gl.playerAvatarTexture);
 	glGenTextures(1, &gl.healthBarTexture);
+	glGenTextures(1, &gl.healthBar2Texture);
+	glGenTextures(1, &gl.healthBar3Texture);
 	glGenTextures(1, &gl.playerWeaponTexture);
 	glGenTextures(1, &gl.menuSelectTexture);
-		
+
 	// main character 
 	int w = mainCharacter.width;
 	int h = mainCharacter.height;
@@ -480,6 +487,55 @@ void init_opengl(Global &gl, Game &g)
 
 	free(healthBarData);
 
+	//--------------------------------------------------------------------
+	//
+
+	// PLAYER HEALTH BAR 2 ( health is 50 )
+	w = healthBar2.width;
+	h = healthBar2.height;
+
+	glBindTexture(GL_TEXTURE_2D, gl.healthBar2Texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, healthBar2.data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	unsigned char * healthBar2Data = buildAlphaData(&healthBar2);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, healthBar2.width,
+			healthBar2.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+			healthBar2Data);
+
+	free(healthBar2Data);
+	
+	//--------------------------------------------------------------------
+	//
+
+	// PLAYER HEALTH BAR 3 ( health is 0 )
+	w = healthBar3.width;
+	h = healthBar3.height;
+
+	glBindTexture(GL_TEXTURE_2D, gl.healthBar3Texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, healthBar3.data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	unsigned char * healthBar3Data = buildAlphaData(&healthBar3);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, healthBar3.width,
+			healthBar3.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+			healthBar3Data);
+
+	free(healthBar3Data);
+
+
 
 	//--------------------------------------------------------------------
 	//
@@ -594,15 +650,20 @@ void render(Global &gl, Game &g)
 		renderForegroundArena(gl, g); 
 
 		renderPlayerAvatarHUD(gl);
-
-		renderHealthBarHUD(gl);
-
+		
+		if (g.player1.health == 100) {
+			renderHealthBarHUD(gl);
+		} 
+		if (g.player1.health == 50) {
+			renderHealthBar2HUD(gl);
+		}
+		if (g.player1.health < 50) {	
+			renderHealthBarHUD(gl);
+		}
 
 		renderPlayerWeaponHUD(gl);
 
-
-
-	//	displayHUD(gl, g);
+		//displayHUD(gl, g);
 		draw_player1(gl, g);
 
 
