@@ -351,7 +351,7 @@ class X11_wrapper {
 		void set_title() {
 			//Set the window title bar.
 			XMapWindow(dpy, win);
-			XStoreName(dpy, win, "Asteroids template");
+			XStoreName(dpy, win, "Zombie Shooter");
 		}
 		void check_resize(XEvent *e, Global &gl) {
 			//The ConfigureNotify is sent by the
