@@ -456,21 +456,40 @@ void showMenu(Global &gl)
 void showTutorial(Global &gl)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+	// heading underline
+	glColor3ub(255,255,255);
+	glPushMatrix();
+	glTranslatef(625, 770, 0);
+	glBegin(GL_QUADS);
+		glVertex2i(-120, -2);
+		glVertex2i(-120, 2);
+		glVertex2i(120, 2);
+		glVertex2i(120, -2);
+	glEnd();
+	glPopMatrix();
 	Rect r;
 	r.bot = 800;
-	r.left = 625;
+	r.left = 590;
 	if (gl.helpScreen == 1) {
 		ggprint16(&r, 16, 0x00ffffff, "Objective");
 		r.bot = 700;
 		r.left = (gl.xres / 2)-200;
 		const char* text;
-		text = "A zombie apocalypse has taken over your city!";
+		text = "A zombie apocalypse has taken over the world!";
+		ggprint16(&r, 16, 0x00ffffff, "%s", text);
+		text = "Fight your way through hoardes of zombies";
+		r.bot = 650;
+		r.left = 440;
+		ggprint16(&r, 16, 0x00ffffff, "%s", text);
+		text = "Survive as long as you can";
+		r.bot = 600;
+		r.left = 500;
 		ggprint16(&r, 16, 0x00ffffff, "%s", text);
 	}
 	if (gl.helpScreen == 2) {
 		ggprint16(&r, 16, 0x00ffffff, "Controls");
 		r.bot = 700;
-		r.left = (gl.xres/2)- 20;
+		r.left = (gl.xres/2)- 60;
 		ggprint16(&r, 16, 0x00ffffff, "W - Move Up");
 		r.bot = 650;
 		ggprint16(&r, 16, 0x00ffffff, "S - Move Down");
@@ -596,6 +615,13 @@ void enterScore(Global &gl, Game &g)
 	r.bot = 700;
 	r.left = gl.xres / 2;
 	ggprint16(&r, 16, 0x00ffffff, "- ENTER NAME -");
+	// instructions
+	r.bot = 20;
+	r.left = 625; 
+	ggprint16(&r, 16, 0x00ffffff, "W / S - Menu Up / Down");
+	r.left = 1145;
+	r.bot = 20;
+	ggprint16(&r, 16, 0x00ffffff, "E - Select");
 	// Underlines for chars
 	for (int i=0;i<5;i++) {
 		glColor3ub(255,255,255);
@@ -701,5 +727,11 @@ void enterScore(Global &gl, Game &g)
 		r.left = 465 + (scoreoption * 80);
 		c = arr[g.scoreUI.charPos];
 		ggprint16(&r, 16, 0x00ffffff, "%c", c);
+	}
+	// instruction to go back
+	if (scoreoption > 0) {
+		r.left = 130;
+		r.bot = 20;
+		ggprint16(&r, 16, 0x00ffffff, "Q - Go Back");
 	}
 }
